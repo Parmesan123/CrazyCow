@@ -9,6 +9,8 @@ public class SpawnData : ScriptableObject
     
     [field: Header("Vase Info")]
     [field: SerializeField, Range(0, 1)] public float VaseSpawnChance { get; private set; }
+    [field: SerializeField] public float VaseRadiusThreshold { get; private set; }
+    [field: SerializeField] public Vector2Int VaseCratesMinMaxCount { get; private set; }
     [field: SerializeField] public int InitialVaseCount { get; private set; }
     
     [field: Header("Base Values")]

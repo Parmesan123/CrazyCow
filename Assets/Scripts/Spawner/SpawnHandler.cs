@@ -5,49 +5,89 @@ using Random = UnityEngine.Random;
 
 public class SpawnHandler : MonoBehaviour
 {
-    private Pool<Crate> _pool;
+    private Pool<Crate> _cratePool;
+    private Pool<Vase> _vasePool;
     private SpawnData _spawnData;
     private Transform _playerTransform;
     
     [Inject]
-    public void Construct(CrateFactory crateFactory, SpawnData spawnData, PlayerTest playerTest)
+    public void Construct(CrateFactory crateFactory, VaseFactory vaseFactory, SpawnData spawnData, PlayerTest playerTest)
     {
         GameObject crateParent = new GameObject("Crates");
-        _pool = new Pool<Crate>(spawnData.InitialCrateCount, crateFactory, crateParent.transform);
+        _cratePool = new Pool<Crate>(spawnData.InitialCrateCount, crateFactory, crateParent.transform);
+
+        GameObject vaseParent = new GameObject("Vases");
+        _vasePool = new Pool<Vase>(spawnData.InitialVaseCount, vaseFactory, vaseParent.transform);
         
         _playerTransform = playerTest.transform;
         _spawnData = spawnData;
-        
+
         for (int i = 0; i < _spawnData.InitialCrateCount; i++)
-            SpawnAndPlaceCrate();
+        {
+            Vector3 randomOffset = new Vector3(Random.Range(-10f, 10f), 0, Random.Range(-10f, 10f));
+            Vector3 cratePosition = _playerTransform.CalculatePointOnCircle(_spawnData.BaseSpawnRadiusThreshold);
+            SpawnAndPlaceCrate((cratePosition + randomOffset) * Mathf.Pow(-1, i));
+        }
+
+        for (int i = 0; i < _spawnData.InitialVaseCount; i++)
+        {
+            Vector3 randomOffset = new Vector3(Random.Range(-10f, 10f), 0, Random.Range(-10f, 10f));
+            Vector3 vasePosition = _playerTransform.CalculatePointOnCircle(_spawnData.BaseSpawnRadiusThreshold);
+            SpawnAndPlaceVase((vasePosition + randomOffset) * Mathf.Pow(-1, i));
+        }
         
-        StartCoroutine(SpawnCrateAroundPlayer());
+        StartCoroutine(NextSpawnTick());
     }
 
-    private IEnumerator SpawnCrateAroundPlayer()
+    private IEnumerator NextSpawnTick()
     {
         yield return new WaitForSeconds(_spawnData.BaseSpawnTime);
 
         float tickResult = Random.Range(0f, 1f);
-        if (tickResult > _spawnData.CrateSpawnChance)
-            yield return SpawnCrateAroundPlayer();
+        if (tickResult <= _spawnData.CrateSpawnChance)
+        {
+            Vector3 randomOffset = new Vector3(Random.Range(-10f, 10f), 0, Random.Range(-10f, 10f));
+            Vector3 cratePosition = _playerTransform.CalculatePointOnCircle(_spawnData.BaseSpawnRadiusThreshold);
 
-        Debug.Log("Spawned!");
-        SpawnAndPlaceCrate();
-        yield return SpawnCrateAroundPlayer();
+            float sideComponent = Random.Range(-1f, 1f);
+            if (sideComponent > 0)
+                SpawnAndPlaceCrate(cratePosition + randomOffset);
+            else 
+                SpawnAndPlaceCrate(-cratePosition + randomOffset);
+        }
+
+        if (tickResult <= _spawnData.VaseSpawnChance)
+        {
+            Vector3 randomOffset = new Vector3(Random.Range(-10f, 10f), 0, Random.Range(-10f, 10f));
+            Vector3 vasePosition = _playerTransform.CalculatePointOnCircle(_spawnData.BaseSpawnRadiusThreshold);
+            
+            float sideComponent = Random.Range(-1f, 1f);
+            if (sideComponent > 0)
+                SpawnAndPlaceVase(vasePosition + randomOffset);
+            else 
+                SpawnAndPlaceVase(-vasePosition + randomOffset);
+        }
+        
+        yield return NextSpawnTick();
     }
 
-    private void SpawnAndPlaceCrate()
+    private void SpawnAndPlaceCrate(Vector3 position)
     {
-        float xCurrentMin = _playerTransform.position.x - _spawnData.BaseSpawnRadiusThreshold;
-        float xCurrentMax = _playerTransform.position.x + _spawnData.BaseSpawnRadiusThreshold;
-        
-        float xResult = Random.Range(xCurrentMin, xCurrentMax);
-        float yComponent = Mathf.Sqrt(Mathf.Pow(_spawnData.BaseSpawnRadiusThreshold, 2) - Mathf.Pow(xResult, 2));
-        float yResult = yComponent + _playerTransform.position.y;
+        Crate freeCrate = _cratePool.ObjectGetFreeOrCreate();
+        freeCrate.transform.position = position;
+    }
 
-        Crate freeCrate = _pool.ObjectGetFreeOrCreate();
-        Vector2 randomOffset = new Vector2(Random.Range(-5f, 5f), Random.Range(-5f, 5f));
-        freeCrate.transform.position = new Vector2(xResult, yResult) + randomOffset;
+    private void SpawnAndPlaceVase(Vector3 position)
+    {
+        Vase freeVase = _vasePool.ObjectGetFreeOrCreate();
+        freeVase.transform.position = position;
+
+        for (int i = 0; i < _spawnData.VaseCratesMinMaxCount.y; i++)
+        {
+            Vector3 randomOffset = new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
+            Vector3 cratePosition = freeVase.transform.CalculatePointOnCircle(_spawnData.VaseRadiusThreshold);
+
+            SpawnAndPlaceCrate((cratePosition + randomOffset) * Mathf.Pow(-1, i));
+        }
     }
 }

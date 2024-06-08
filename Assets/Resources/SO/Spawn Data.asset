@@ -15,6 +15,8 @@ MonoBehaviour:
   <CrateSpawnChance>k__BackingField: 0.3
   <InitialCrateCount>k__BackingField: 30
   <VaseSpawnChance>k__BackingField: 0.05
+  <VaseRadiusThreshold>k__BackingField: 1
+  <VaseCratesMinMaxCount>k__BackingField: {x: 1, y: 3}
   <InitialVaseCount>k__BackingField: 2
   <BaseSpawnRadiusThreshold>k__BackingField: 30
   <BaseSpawnTime>k__BackingField: 2

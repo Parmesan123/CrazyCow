@@ -33,6 +33,11 @@ public class LevelInstaller : MonoInstaller
             .BindInterfacesAndSelfTo<CrateFactory>()
             .FromNew()
             .AsSingle();
+
+        Container
+            .BindInterfacesAndSelfTo<VaseFactory>()
+            .FromNew()
+            .AsSingle();
     }
 
     private void BindSpawner()
