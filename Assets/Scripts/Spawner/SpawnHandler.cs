@@ -5,10 +5,11 @@ using Random = UnityEngine.Random;
 
 public class SpawnHandler : MonoBehaviour
 {
-    private Pool<Crate> _cratePool;
-    private Pool<Vase> _vasePool;
     private SpawnData _spawnData;
     private Transform _playerTransform;
+    private Pool<Crate> _cratePool;
+    private Pool<Vase> _vasePool;
+    private VaseHandler _vaseHandler;
     
     [Inject]
     public void Construct(CrateFactory crateFactory, VaseFactory vaseFactory, SpawnData spawnData, PlayerTest playerTest)
@@ -18,6 +19,7 @@ public class SpawnHandler : MonoBehaviour
 
         GameObject vaseParent = new GameObject("Vases");
         _vasePool = new Pool<Vase>(spawnData.InitialVaseCount, vaseFactory, vaseParent.transform);
+        _vaseHandler = new VaseHandler();
         
         _playerTransform = playerTest.transform;
         _spawnData = spawnData;
@@ -81,13 +83,17 @@ public class SpawnHandler : MonoBehaviour
     {
         Vase freeVase = _vasePool.ObjectGetFreeOrCreate();
         freeVase.transform.position = position;
+        _vaseHandler.AddVase(freeVase);
 
         for (int i = 0; i < _spawnData.VaseCratesMinMaxCount.y; i++)
         {
             Vector3 randomOffset = new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
             Vector3 cratePosition = freeVase.transform.CalculatePointOnCircle(_spawnData.VaseRadiusThreshold);
 
-            SpawnAndPlaceCrate((cratePosition + randomOffset) * Mathf.Pow(-1, i));
+            Crate freeCrate = _cratePool.ObjectGetFreeOrCreate();
+            freeCrate.transform.position = cratePosition + randomOffset;
+            freeCrate.OnDeath += () => _vaseHandler.RemoveCrateFrom(freeVase, freeCrate);
+            _vaseHandler.AddCrateTo(freeVase, freeCrate);
         }
     }
 }
