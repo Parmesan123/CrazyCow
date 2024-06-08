@@ -861,11 +861,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 1ea76d48-2fb9-431d-aefd-3740a616bd75
+  cloudProjectId: 9eae6cfb-8e00-4cbc-be21-46cd7c81110a
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: CrazyCow
-  organizationId: parmesan123
+  organizationId: unity_30e7d69fb92b447b0690
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

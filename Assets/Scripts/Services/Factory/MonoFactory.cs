@@ -5,7 +5,6 @@ public abstract class MonoFactory<T>: IMonoFactory<T> where T: MonoBehaviour
 {
     protected DiContainer _container;
     
-    [Inject]
     protected MonoFactory(DiContainer container)
     {
         _container = container;

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcfb6fdf2ec84af09ba5aff18d6899f5, type: 3}
+  m_Name: Spawn Data
+  m_EditorClassIdentifier: 
+  <CrateSpawnChance>k__BackingField: 0.3
+  <InitialCrateCount>k__BackingField: 30
+  <VaseSpawnChance>k__BackingField: 0.05
+  <InitialVaseCount>k__BackingField: 2
+  <BaseSpawnRadiusThreshold>k__BackingField: 30
+  <BaseSpawnTime>k__BackingField: 2
