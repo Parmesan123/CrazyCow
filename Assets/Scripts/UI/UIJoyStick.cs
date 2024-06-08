@@ -10,6 +10,7 @@ namespace UI
 {
     public class UIJoyStick : MonoBehaviour
     {
+        [SerializeField] private GameObject _joyStickGameObject;
         [SerializeField] private GameObject _joyStickUI;
         [SerializeField] private JoyStickData _joyStickData;
 
@@ -23,7 +24,7 @@ namespace UI
         
         private void Awake()
         {
-            gameObject.SetActive(false);
+            _joyStickGameObject.SetActive(false);
             
             _joyStickInput.OnMoveEvent += MoveJoyStick;
             _joyStickInput.OnTouchPerformedEvent += SetActiveJoyStick;
@@ -31,13 +32,17 @@ namespace UI
         
         private void OnDestroy()
         {
+            if (_joyStickInput == null)
+                return;
+            
             _joyStickInput.OnMoveEvent -= MoveJoyStick;
             _joyStickInput.OnTouchPerformedEvent -= SetActiveJoyStick;
         }
 
         private void MoveJoyStick(Vector2 direction)
         {
-            Vector3 offSet = new Vector3(direction.x * _joyStickData.JoyStickRadius, direction.y * _joyStickData.JoyStickRadius);
+            Vector3 offSet = new Vector3(direction.x * _joyStickData.JoyStickRadius, 
+                                         direction.y * _joyStickData.JoyStickRadius);
             
             _joyStickUI.transform.position = transform.position + offSet;
         }
@@ -46,7 +51,7 @@ namespace UI
         {
             transform.position = startPosition;
             
-            gameObject.SetActive(value);
+            _joyStickGameObject.SetActive(value);
         }
     }
 }
