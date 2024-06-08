@@ -26,16 +26,46 @@ public class SpawnHandler : MonoBehaviour
 
         for (int i = 0; i < _spawnData.InitialCrateCount; i++)
         {
-            Vector3 randomOffset = new Vector3(Random.Range(-10f, 10f), 0, Random.Range(-10f, 10f));
-            Vector3 cratePosition = _playerTransform.CalculatePointOnCircle(_spawnData.BaseSpawnRadiusThreshold);
-            SpawnAndPlaceCrate((cratePosition + randomOffset) * Mathf.Pow(-1, i));
+            int iter = 0;
+            while (true)
+            {
+                Vector3 randomOffset = new Vector3(Random.Range(-10f, 10f), 0, Random.Range(-10f, 10f));
+                Vector3 cratePosition = _playerTransform.CalculatePointOnCircle(_spawnData.BaseSpawnRadiusThreshold);
+
+                int sideComponent = Random.Range(1, 3);
+                Vector3 resultPosition = (cratePosition + randomOffset) * Mathf.Pow(-1, sideComponent);
+
+                if (++iter == 500)
+                    break;
+                Collider[] colliders = Physics.OverlapSphere(resultPosition, _spawnData.MinRangeBetweenCrates);
+                if (colliders.Length != 0)
+                    continue;
+                
+                SpawnAndPlaceCrate(resultPosition);
+                break;
+            }
         }
 
         for (int i = 0; i < _spawnData.InitialVaseCount; i++)
         {
-            Vector3 randomOffset = new Vector3(Random.Range(-10f, 10f), 0, Random.Range(-10f, 10f));
-            Vector3 vasePosition = _playerTransform.CalculatePointOnCircle(_spawnData.BaseSpawnRadiusThreshold);
-            SpawnAndPlaceVase((vasePosition + randomOffset) * Mathf.Pow(-1, i));
+            int iter = 0;
+            while (true)
+            {
+                Vector3 randomOffset = new Vector3(Random.Range(-10f, 10f), 0, Random.Range(-10f, 10f));
+                Vector3 vasePosition = _playerTransform.CalculatePointOnCircle(_spawnData.BaseSpawnRadiusThreshold);
+
+                int sideComponent = Random.Range(1, 3);
+                Vector3 resultPosition = (vasePosition + randomOffset) * Mathf.Pow(-1, sideComponent);
+
+                if (++iter == 500)
+                    break;
+                Collider[] colliders = Physics.OverlapSphere(resultPosition, _spawnData.MinRangeBetweenCrates);
+                if (colliders.Length != 0)
+                    continue;
+                
+                SpawnAndPlaceVase(resultPosition);
+                break;
+            }
         }
         
         StartCoroutine(NextSpawnTick());
@@ -48,14 +78,24 @@ public class SpawnHandler : MonoBehaviour
         float tickResult = Random.Range(0f, 1f);
         if (tickResult <= _spawnData.CrateSpawnChance)
         {
-            Vector3 randomOffset = new Vector3(Random.Range(-10f, 10f), 0, Random.Range(-10f, 10f));
-            Vector3 cratePosition = _playerTransform.CalculatePointOnCircle(_spawnData.BaseSpawnRadiusThreshold);
+            int iter = 0;
+            while (true)
+            {
+                Vector3 randomOffset = new Vector3(Random.Range(-10f, 10f), 0, Random.Range(-10f, 10f));
+                Vector3 cratePosition = _playerTransform.CalculatePointOnCircle(_spawnData.BaseSpawnRadiusThreshold);
 
-            float sideComponent = Random.Range(-1f, 1f);
-            if (sideComponent > 0)
-                SpawnAndPlaceCrate(cratePosition + randomOffset);
-            else 
-                SpawnAndPlaceCrate(-cratePosition + randomOffset);
+                int sideComponent = Random.Range(1, 3);
+                Vector3 resultPosition = (cratePosition + randomOffset) * Mathf.Pow(-1, sideComponent);
+
+                if (++iter == 500)
+                    break;
+                Collider[] colliders = Physics.OverlapSphere(resultPosition, _spawnData.MinRangeBetweenCrates);
+                if (colliders.Length != 0)
+                    continue;
+                
+                SpawnAndPlaceCrate(resultPosition);
+                break;
+            }
         }
 
         if (tickResult <= _spawnData.VaseSpawnChance)
@@ -87,13 +127,25 @@ public class SpawnHandler : MonoBehaviour
 
         for (int i = 0; i < _spawnData.VaseCratesMinMaxCount.y; i++)
         {
-            Vector3 randomOffset = new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
-            Vector3 cratePosition = freeVase.transform.CalculatePointOnCircle(_spawnData.VaseRadiusThreshold);
+            int iter = 0;
+            while (true)
+            {
+                Vector3 randomOffset = new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
+                Vector3 cratePosition = freeVase.transform.CalculatePointOnCircle(_spawnData.VaseRadiusThreshold);
+                Vector3 resultPosition = cratePosition + randomOffset;
 
-            Crate freeCrate = _cratePool.ObjectGetFreeOrCreate();
-            freeCrate.transform.position = cratePosition + randomOffset;
-            freeCrate.OnDeath += () => _vaseHandler.RemoveCrateFrom(freeVase, freeCrate);
-            _vaseHandler.AddCrateTo(freeVase, freeCrate);
+                if (++iter == 500)
+                    break;
+                Collider[] colliders = Physics.OverlapSphere(resultPosition, _spawnData.MinRangeBetweenCrates);
+                if (colliders.Length != 0)
+                    continue;
+                
+                Crate freeCrate = _cratePool.ObjectGetFreeOrCreate();
+                freeCrate.transform.position = resultPosition;
+                freeCrate.OnDeath += () => _vaseHandler.RemoveCrateFrom(freeVase, freeCrate);
+                _vaseHandler.AddCrateTo(freeVase, freeCrate);
+                break;
+            }
         }
     }
 }

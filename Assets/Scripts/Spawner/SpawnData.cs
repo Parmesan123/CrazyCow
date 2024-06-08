@@ -5,6 +5,7 @@ public class SpawnData : ScriptableObject
 {
     [field: Header("Crate Info")]
     [field: SerializeField, Range(0, 1)] public float CrateSpawnChance { get; private set; }
+    [field: SerializeField] public float MinRangeBetweenCrates { get; private set; }
     [field: SerializeField] public int InitialCrateCount { get; private set; }
     
     [field: Header("Vase Info")]
