@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdabfcbdceb04b0bb5818b1b19d54de8, type: 3}
   m_Name: JoyStickData
   m_EditorClassIdentifier: 
-  <JoyStickRadius>k__BackingField: 0
-  <DeadZone>k__BackingField: 0
+  <JoyStickRadius>k__BackingField: 300
+  <DeadZone>k__BackingField: 50
