@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using InteractableObject;
+using UnityEngine;
 using Zenject;
 
 public class VaseFactory : MonoFactory<Vase>
 {
-    private const string VASE_PATH = "Prefabs/Vase";
+    private const string VASE_PATH = "Prefabs/Vase/Vase";
 
     private readonly Vase _vasePrefab;
     private readonly VaseHandler _vaseHandler;
@@ -31,7 +32,7 @@ public class VaseFactory : MonoFactory<Vase>
             Collider[] colliders = Physics.OverlapSphere(vaseInstance.transform.position, _vaseHandler.Data.SeekingRadius);
             foreach (Collider col in colliders)
             {
-                if (!col.TryGetComponent(out Crate crate)) 
+                if (!col.TryGetComponent(out Box crate)) 
                     continue;
 
                 Debug.Log($"Added crate {crate.transform.position} to vase {vaseInstance.transform.position}");

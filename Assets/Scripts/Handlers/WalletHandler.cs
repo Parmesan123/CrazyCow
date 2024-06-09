@@ -5,12 +5,12 @@ using UnityEngine;
 
 namespace Handlers
 {
-	public class CoinHandler
+	public class WalletHandler
 	{
 		private TextMeshProUGUI _text;
 		private int _wallet;
 
-		public CoinHandler(TextMeshProUGUI text)
+		public WalletHandler(TextMeshProUGUI text)
 		{
 			_text = text;
 			_text.text = _wallet.ToString();

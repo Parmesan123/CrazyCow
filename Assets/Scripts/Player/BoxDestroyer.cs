@@ -9,9 +9,9 @@ namespace Player
 	{
 		[SerializeField] private PlayerData _playerData;
 
-		private readonly List<Destroyable> _destroyables = new List<Destroyable>();
+		private readonly List<DestroyBehaviour> _destroyables = new List<DestroyBehaviour>();
 
-		private Destroyable _currentDestroyable;
+		private DestroyBehaviour _currentDestroyBehaviour;
 		
 		private void Awake()
 		{
@@ -22,7 +22,7 @@ namespace Player
 
 		private void OnTriggerEnter(Collider other)
 		{
-			if (!other.TryGetComponent(out Destroyable destroyable))
+			if (!other.TryGetComponent(out DestroyBehaviour destroyable))
 				return;
 			
 			Register(destroyable);
@@ -30,40 +30,40 @@ namespace Player
 
 		private void OnTriggerExit(Collider other)
 		{
-			if (!other.TryGetComponent(out Destroyable destroyable))
+			if (!other.TryGetComponent(out DestroyBehaviour destroyable))
 				return;
 			
 			UnRegister(destroyable);
 		}
 
-		private void Register(Destroyable destroyable)
+		private void Register(DestroyBehaviour destroyBehaviour)
 		{
-			_destroyables.Add(destroyable);
-			destroyable.OnDestroyEvent += DestroyBoxListener;
+			_destroyables.Add(destroyBehaviour);
+			destroyBehaviour.OnDestroy += DestroyBoxListener;
 
-			if (_currentDestroyable != null) 
+			if (_currentDestroyBehaviour != null) 
 				return;
 			
-			_currentDestroyable = destroyable;
-			_currentDestroyable.StartDestroy();
+			_currentDestroyBehaviour = destroyBehaviour;
+			_currentDestroyBehaviour.StartDestroy();
 		}
 
-		private void UnRegister(Destroyable destroyable)
+		private void UnRegister(DestroyBehaviour destroyBehaviour)
 		{
-			_destroyables.Remove(destroyable);
-			destroyable.OnDestroyEvent -= DestroyBoxListener;
+			_destroyables.Remove(destroyBehaviour);
+			destroyBehaviour.OnDestroy -= DestroyBoxListener;
 
-			if (_currentDestroyable != destroyable) 
+			if (_currentDestroyBehaviour != destroyBehaviour) 
 				return;
 			
-			_currentDestroyable.StopDestroy();
+			_currentDestroyBehaviour.StopDestroy();
 			SetNextCurrentDestroyable();
 		}
 
-		private void DestroyBoxListener(Destroyable destroyable)
+		private void DestroyBoxListener(DestroyBehaviour destroyBehaviour)
 		{
-			_destroyables.Remove(destroyable);
-			destroyable.OnDestroyEvent -= DestroyBoxListener;
+			_destroyables.Remove(destroyBehaviour);
+			destroyBehaviour.OnDestroy -= DestroyBoxListener;
 			
 			SetNextCurrentDestroyable();
 		}
@@ -72,12 +72,12 @@ namespace Player
 		{
 			if (_destroyables.IsEmpty())
 			{
-				_currentDestroyable = null;
+				_currentDestroyBehaviour = null;
 				return;
 			}
 			
-			_currentDestroyable = _destroyables[0];
-			_currentDestroyable.StartDestroy();
+			_currentDestroyBehaviour = _destroyables[0];
+			_currentDestroyBehaviour.StartDestroy();
 		}
 	}
 }

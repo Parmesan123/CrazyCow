@@ -17,7 +17,7 @@ namespace InteractableObject
 		[SerializeField] private GameObject _model;
 		[SerializeField] private Material _crossSectionMaterial;
 
-		private Destroyable _destroyable;
+		private DestroyBehaviour _destroyBehaviour;
 		private readonly List<ParticleData> _modelParticles = new List<ParticleData>();
 		
 		private class ParticleData
@@ -34,23 +34,23 @@ namespace InteractableObject
 		
 		private void Awake()
 		{
-			_destroyable = GetComponent<Destroyable>();
+			_destroyBehaviour = GetComponent<DestroyBehaviour>();
 
-			if (_destroyable == null)
+			if (_destroyBehaviour == null)
 				throw new NullReferenceException("Destroyable component not found");
 		}
 
 		private void OnEnable()
 		{
-			_destroyable.OnDestroyEvent += Animation;
+			_destroyBehaviour.OnDestroy += Animation;
 		}
 
 		private void OnDisable()
 		{
-			_destroyable.OnDestroyEvent -= Animation;
+			_destroyBehaviour.OnDestroy -= Animation;
 		}
 
-		private void Animation(Destroyable _)
+		private void Animation(DestroyBehaviour _)
 		{
 			List<GameObject> particles = CreateParticle();
 			AddToList(particles);

@@ -1,24 +1,26 @@
-﻿using UnityEngine;
+﻿using InteractableObject;
+using UI;
+using UnityEngine;
 using Zenject;
 
-public class CrateFactory : MonoFactory<Crate>
+public class BoxFactory : MonoFactory<Box>
 {
-    private const string CRATE_PATH = "Prefabs/Crate";
+    private const string BOX_PATH = "Prefabs/Box/Box";
 
-    private readonly Crate _cratePrefab;
+    private readonly Box _cratePrefab;
     private readonly VaseHandler _vaseHandler;
     
     [Inject]
-    public CrateFactory(DiContainer container, VaseHandler vaseHandler) : base(container)
+    public BoxFactory(DiContainer container, VaseHandler vaseHandler) : base(container)
     {
-        _cratePrefab = Resources.Load<Crate>(CRATE_PATH);
+        _cratePrefab = Resources.Load<Box>(BOX_PATH);
 
         _vaseHandler = vaseHandler;
     }
 
-    public override Crate CreateObject()
+    public override Box CreateObject()
     {
-        Crate crateInstance = _container.InstantiatePrefabForComponent<Crate>(_cratePrefab);
+        Box crateInstance = _container.InstantiatePrefabForComponent<Box>(_cratePrefab);
         crateInstance.gameObject.SetActive(false);
         crateInstance.OnSpawn += OnCrateSpawn;
 
@@ -39,7 +41,7 @@ public class CrateFactory : MonoFactory<Crate>
             }
         }
 
-        void OnCrateDespawn()
+        void OnCrateDespawn(DestroyBehaviour destroyInstance)
         {
             _vaseHandler.RemoveCrate(crateInstance);
             crateInstance.OnDestroy -= OnCrateDespawn;

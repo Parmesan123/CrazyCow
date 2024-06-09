@@ -1,7 +1,6 @@
 using Handlers;
 using InteractableObject;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
@@ -16,23 +15,19 @@ namespace UI
 		[SerializeField] private float _angleOffSet;
 		[SerializeField] private Canvas _canvas;
 		[SerializeField] private Transform _finalPoint;
-
-		[Header("Test")]
-		[SerializeField] private Box _coinGiver;
 		
 		private Coin _coinPrefab;
-		private CoinHandler _coinHandler;
+		private WalletHandler _walletHandler;
 
 		[Inject]
-		private void Construct(CoinHandler coinHandler)
+		private void Construct(WalletHandler walletHandler)
 		{
-			_coinHandler = coinHandler;
+			_walletHandler = walletHandler;
 		}
-		
+
 		private void Awake()
 		{
 			_coinPrefab = Resources.Load<Coin>(COIN_PATH);
-			Register(_coinGiver);
 		}
 
 		public void Register(ICoinGiver destroyable)
@@ -42,7 +37,7 @@ namespace UI
 
 		public void UnRegister(ICoinGiver coinGiver)
 		{
-			//coinGiver.OnGiveCoinEvent -= UnRegister;
+			coinGiver.OnGiveCoinEvent -= UnRegister;
 			Vector3 screenPoint = UnityEngine.Camera.main.WorldToScreenPoint(coinGiver.Transform.position);
 			Spawn(coinGiver, screenPoint);
 		}
@@ -72,7 +67,7 @@ namespace UI
 				newCoin.transform.localPosition = randomPoint;
 				newCoin.transform.Rotate(new Vector3(0, Random.Range(-_angleOffSet, _angleOffSet), 0));
 
-				_coinHandler.Register(newCoin);
+				_walletHandler.Register(newCoin);
 				
 				coins.Add(newCoin);
 			}

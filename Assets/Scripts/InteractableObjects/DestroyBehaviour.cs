@@ -4,9 +4,11 @@ using UnityEngine;
 
 namespace InteractableObject
 {
-	public abstract class Destroyable : MonoBehaviour
+	[SelectionBase]
+	public abstract class DestroyBehaviour : MonoBehaviour, IDestroyable, ISpawnable
 	{
-		public event Action<Destroyable> OnDestroyEvent; 
+		public event Action<DestroyBehaviour> OnDestroy;
+		public event Action OnSpawn;
         
 		[SerializeField] protected DestroyableData _data;
 
@@ -42,10 +44,16 @@ namespace InteractableObject
 			_isStopDestroy = true;
 		}
 
-		protected virtual void Destroy()
+		public virtual void Destroy()
 		{
-			OnDestroyEvent.Invoke(this);
+			OnDestroy?.Invoke(this);
 			gameObject.SetActive(false);
+		}
+
+		public virtual void Spawn()
+		{
+			OnSpawn?.Invoke();
+			gameObject.SetActive(true);
 		}
 	}
 }

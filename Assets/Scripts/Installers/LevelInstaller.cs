@@ -1,19 +1,23 @@
-﻿using UnityEngine;
+﻿using Player;
+using UI;
+using UnityEngine;
 using Zenject;
 
 public class LevelInstaller : MonoInstaller
 {
-    private const string PLAYER_PATH = "Prefabs/Player";
+    private const string PLAYER_PATH = "Prefabs/Player/Player";
     
     [SerializeField] private Transform _playerSpawnPosition;
     [SerializeField] private LevelBehaviour _mainLevel;
+    [SerializeField] private CoinSpawner _coinSpawner;
     
     public override void InstallBindings()
     {
         BindGameElements();
+        BindCoinSpawner();
         BindFactories();
         BindPlayer();
-        BindSpawner();
+        BindLevelSpawner();
         BindLevel();
         FinishBindings();
     }
@@ -25,11 +29,19 @@ public class LevelInstaller : MonoInstaller
             .FromNew()
             .AsSingle();
     }
+
+    private void BindCoinSpawner()
+    {
+        Container
+            .Bind<CoinSpawner>()
+            .FromInstance(_coinSpawner)
+            .AsSingle();
+    }
     
     private void BindFactories()
     {
         Container
-            .BindInterfacesAndSelfTo<CrateFactory>()
+            .BindInterfacesAndSelfTo<BoxFactory>()
             .FromNew()
             .AsSingle();
 
@@ -41,18 +53,18 @@ public class LevelInstaller : MonoInstaller
     
     private void BindPlayer()
     {
-        PlayerTest playerPrefab = Resources.Load<PlayerTest>(PLAYER_PATH);
-        PlayerTest playerInstance = Container.InstantiatePrefabForComponent<PlayerTest>(playerPrefab);
+        PlayerMovement playerPrefab = Resources.Load<PlayerMovement>(PLAYER_PATH);
+        PlayerMovement playerInstance = Container.InstantiatePrefabForComponent<PlayerMovement>(playerPrefab);
         playerInstance.transform.position = _playerSpawnPosition.position;
 
         Container
-            .Bind<PlayerTest>()
+            .Bind<PlayerMovement>()
             .FromInstance(playerInstance)
             .AsSingle()
             .NonLazy();
     }
 
-    private void BindSpawner()
+    private void BindLevelSpawner()
     {
         Container
             .Bind<SpawnHandler>()

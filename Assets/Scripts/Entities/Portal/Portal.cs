@@ -1,3 +1,5 @@
-﻿public class Portal : PoolableBehaviour
+﻿using InteractableObject;
+
+public class Portal : DestroyBehaviour
 {
 }

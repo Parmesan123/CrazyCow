@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Pool<T> where T: MonoBehaviour
 {
-    private readonly List<IPoolable> _objects;
+    private readonly List<T> _objects;
     private readonly IMonoFactory<T> _monoFactory;
     private readonly Transform _parent;
     
     public Pool(int initialSize, IMonoFactory<T> monoFactory, Transform parent)
     {
+        _objects = new List<T>();
         _parent = parent;
-        _objects = new List<IPoolable>();
         
         _monoFactory = monoFactory;
         for (int i = 0; i < initialSize; i++)
@@ -23,11 +24,9 @@ public class Pool<T> where T: MonoBehaviour
     
     public T ObjectGetFreeOrCreate()
     {
-        foreach (IPoolable @object in _objects)
-        {
-            if (@object.TryGetObject() is T tObject)
-                return tObject;
-        }
+        T firstObject = _objects.FirstOrDefault(o => o.gameObject.activeSelf == false);
+        if (firstObject is not null)
+            return firstObject;
 
         T newInstance = _monoFactory.CreateObject();
         newInstance.transform.parent = _parent;
@@ -38,7 +37,6 @@ public class Pool<T> where T: MonoBehaviour
 
     private void ObjectAdd(T newObject)
     {
-        IPoolable poolable = newObject as IPoolable;
-        _objects.Add(poolable);
+        _objects.Add(newObject);
     }
 }

@@ -1,4 +1,7 @@
 ﻿using System.Linq;
+using InteractableObject;
+using Player;
+using UI;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
@@ -9,32 +12,36 @@ public class SpawnHandler
     
     private SpawnHandlerData _spawnHandlerData;
     private Transform _playerTransform;
-
-    private Pool<Crate> _cratePool;
+    private CoinSpawner _coinSpawner;
+    
+    private Pool<Box> _cratePool;
     private Pool<Vase> _vasePool;
     
     [Inject]
-    public void Construct(CrateFactory crateFactory, VaseFactory vaseFactory, SpawnHandlerData spawnHandlerData, PlayerTest playerTest)
+    public void Construct(BoxFactory boxFactory, VaseFactory vaseFactory, SpawnHandlerData spawnHandlerData, 
+        PlayerMovement playerTest, CoinSpawner coinSpawner)
     {
-        GameObject crateParent = new GameObject("Crates");
-        _cratePool = new Pool<Crate>(INITIAL_POOL_SIZE, crateFactory, crateParent.transform);
+        GameObject crateParent = new GameObject("Boxes");
+        _cratePool = new Pool<Box>(INITIAL_POOL_SIZE, boxFactory, crateParent.transform);
 
         GameObject vaseParent = new GameObject("Vases");
         _vasePool = new Pool<Vase>(INITIAL_POOL_SIZE, vaseFactory, vaseParent.transform);
-        
+
+        _coinSpawner = coinSpawner;
         _playerTransform = playerTest.transform;
         _spawnHandlerData = spawnHandlerData;
     }
 
-    public T TrySpawnAndPlaceEntity<T>(BoxCollider levelCollider) where T : PoolableBehaviour
+    public T TrySpawnAndPlaceEntity<T>(BoxCollider levelCollider) where T : DestroyBehaviour
     {
         Vector3 randomPoint = CalculateValidPoint(_playerTransform, levelCollider, _spawnHandlerData.SpawnRadiusThreshold, 10);
         
-        Crate crate = _cratePool.ObjectGetFreeOrCreate();
+        Box crate = _cratePool.ObjectGetFreeOrCreate();
         if (crate is T convertableCrate)
         {
             convertableCrate.transform.position = randomPoint;
-            convertableCrate.Enable();
+            convertableCrate.Spawn();
+            _coinSpawner.Register(crate);
             return convertableCrate;
         }
 
@@ -42,16 +49,18 @@ public class SpawnHandler
         if (vase is T convertableVase)
         {
             convertableVase.transform.position = randomPoint;
-            convertableVase.Enable();
+            convertableVase.Spawn();
+            _coinSpawner.Register(vase);
             
             int i = Random.Range(_spawnHandlerData.VaseCratesMinMaxCount.x, _spawnHandlerData.VaseCratesMinMaxCount.y);
             for (; i < _spawnHandlerData.VaseCratesMinMaxCount.y; i++)
             {
-                Crate freeCrate = _cratePool.ObjectGetFreeOrCreate();
+                Box freeCrate = _cratePool.ObjectGetFreeOrCreate();
         
                 Vector3 cratePosition = CalculateValidPoint(convertableVase.transform, levelCollider, _spawnHandlerData.VaseRadiusThreshold, 0);
                 freeCrate.transform.position = cratePosition;
-                freeCrate.Enable();
+                freeCrate.Spawn();
+                _coinSpawner.Register(freeCrate);
             }
             
             return convertableVase;
@@ -62,9 +71,20 @@ public class SpawnHandler
         return null;
     }
     
-    public bool InColliderBounds(BoxCollider boxCollider, Vector3 position)
+    private bool InColliderBounds(BoxCollider boxCollider, Vector3 position)
     {
-        return boxCollider.bounds.Contains(position);
+        Vector2 minBounds = new Vector2(boxCollider.bounds.min.x, boxCollider.bounds.min.z);
+        Vector2 maxBounds = new Vector2(boxCollider.bounds.max.x, boxCollider.bounds.max.z);
+
+        Vector2 convertPosition = new Vector2(position.x, position.z);
+
+        if (convertPosition.x < minBounds.x || convertPosition.x > maxBounds.x)
+            return false;
+
+        if (convertPosition.y < minBounds.y || convertPosition.y > maxBounds.y)
+            return false;
+        
+        return true;
     }
 
     private Vector3 CalculateValidPoint(Transform center, BoxCollider levelCollider, float radius, float offset)
@@ -75,7 +95,7 @@ public class SpawnHandler
             Vector3 resultPosition = center.GetRandomPointOnCircle(radius) + randomOffset;
             
             Collider[] colliders = Physics.OverlapSphere(resultPosition, _spawnHandlerData.MinRangeBetweenObjects);
-            if (colliders.Any(c => c.TryGetComponent(out PoolableBehaviour _)))
+            if (colliders.Any(c => c.TryGetComponent(out DestroyBehaviour _)))
                 continue;
 
             if (!InColliderBounds(levelCollider, resultPosition)) 

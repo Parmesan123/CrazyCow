@@ -11,13 +11,13 @@ namespace Installers
 		
 		public override void InstallBindings()
 		{
-			BindCoinHandler();
+			BindWalletHandler();
 		}
 
-		private void BindCoinHandler()
+		private void BindWalletHandler()
 		{
 			Container
-				.Bind<CoinHandler>()
+				.Bind<WalletHandler>()
 				.FromNew()
 				.AsSingle()
 				.WithArguments(_text);
