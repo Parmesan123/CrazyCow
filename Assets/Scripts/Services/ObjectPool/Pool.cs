@@ -16,7 +16,6 @@ public class Pool<T> where T: MonoBehaviour
         for (int i = 0; i < initialSize; i++)
         {
             T newInstance = _monoFactory.CreateObject();
-            newInstance.gameObject.SetActive(false);
             newInstance.transform.parent = parent;
             ObjectAdd(newInstance);
         }
@@ -27,10 +26,7 @@ public class Pool<T> where T: MonoBehaviour
         foreach (IPoolable @object in _objects)
         {
             if (@object.TryGetObject() is T tObject)
-            {
-                tObject.gameObject.SetActive(true);
                 return tObject;
-            }
         }
 
         T newInstance = _monoFactory.CreateObject();

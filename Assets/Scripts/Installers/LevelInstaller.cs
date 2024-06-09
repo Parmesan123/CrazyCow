@@ -9,24 +9,21 @@ public class LevelInstaller : MonoInstaller
     
     public override void InstallBindings()
     {
-        BindPlayer();
+        BindGameElements();
         BindFactories();
+        BindPlayer();
         BindSpawner();
         FinishBindings();
     }
 
-    private void BindPlayer()
+    private void BindGameElements()
     {
-        PlayerTest playerPrefab = Resources.Load<PlayerTest>(PLAYER_PATH);
-        PlayerTest playerInstance = Container.InstantiatePrefabForComponent<PlayerTest>(playerPrefab);
-
         Container
-            .Bind<PlayerTest>()
-            .FromInstance(playerInstance)
-            .AsSingle()
-            .NonLazy();
+            .Bind<VaseHandler>()
+            .FromNew()
+            .AsSingle();
     }
-
+    
     private void BindFactories()
     {
         Container
@@ -38,6 +35,18 @@ public class LevelInstaller : MonoInstaller
             .BindInterfacesAndSelfTo<VaseFactory>()
             .FromNew()
             .AsSingle();
+    }
+    
+    private void BindPlayer()
+    {
+        PlayerTest playerPrefab = Resources.Load<PlayerTest>(PLAYER_PATH);
+        PlayerTest playerInstance = Container.InstantiatePrefabForComponent<PlayerTest>(playerPrefab);
+
+        Container
+            .Bind<PlayerTest>()
+            .FromInstance(playerInstance)
+            .AsSingle()
+            .NonLazy();
     }
 
     private void BindSpawner()
