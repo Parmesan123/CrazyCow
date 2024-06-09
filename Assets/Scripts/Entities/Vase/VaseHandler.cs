@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using Zenject;
 
 public class VaseHandler
@@ -7,6 +6,8 @@ public class VaseHandler
     public readonly VaseHandlerData Data;
     
     private readonly Dictionary<Vase, List<Crate>> _activeVases;
+
+    private int _currentVasesOnField;
 
     [Inject]
     public VaseHandler(VaseHandlerData vaseData)
@@ -31,13 +32,14 @@ public class VaseHandler
         foreach (Vase vase in _activeVases.Keys)
         {
             List<Crate> crates = _activeVases[vase];
-            
             if (!crates.Contains(crate))
                 continue;
             
             crates.Remove(crate);
-            if (crates.Count == 0)
-                vase.Disable();
+            if (crates.Count != 0) 
+                continue;
+            
+            vase.Disable();
         }
     }
 }

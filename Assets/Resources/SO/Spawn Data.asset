@@ -12,13 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcfb6fdf2ec84af09ba5aff18d6899f5, type: 3}
   m_Name: Spawn Data
   m_EditorClassIdentifier: 
-  <CrateSpawnChance>k__BackingField: 0.3
-  <CrateInitialCount>k__BackingField: 20
-  <VaseSpawnChance>k__BackingField: 0.05
-  <VaseRadiusThreshold>k__BackingField: 2
-  <VaseHandlerRadius>k__BackingField: 5
-  <CratesMinMaxCount>k__BackingField: {x: 1, y: 3}
-  <VaseInitialCount>k__BackingField: 2
   <SpawnRadiusThreshold>k__BackingField: 20
-  <SpawnTime>k__BackingField: 2
   <MinRangeBetweenObjects>k__BackingField: 0.7
+  <VaseCratesMinMaxCount>k__BackingField: {x: 1, y: 3}
+  <VaseRadiusThreshold>k__BackingField: 2

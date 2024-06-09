@@ -6,6 +6,7 @@ public class LevelInstaller : MonoInstaller
     private const string PLAYER_PATH = "Prefabs/Player";
     
     [SerializeField] private Transform _playerSpawnPosition;
+    [SerializeField] private LevelBehaviour _mainLevel;
     
     public override void InstallBindings()
     {
@@ -13,6 +14,7 @@ public class LevelInstaller : MonoInstaller
         BindFactories();
         BindPlayer();
         BindSpawner();
+        BindLevel();
         FinishBindings();
     }
 
@@ -41,6 +43,7 @@ public class LevelInstaller : MonoInstaller
     {
         PlayerTest playerPrefab = Resources.Load<PlayerTest>(PLAYER_PATH);
         PlayerTest playerInstance = Container.InstantiatePrefabForComponent<PlayerTest>(playerPrefab);
+        playerInstance.transform.position = _playerSpawnPosition.position;
 
         Container
             .Bind<PlayerTest>()
@@ -51,9 +54,18 @@ public class LevelInstaller : MonoInstaller
 
     private void BindSpawner()
     {
-        GameObject spawnHandler = new GameObject("SpawnHandler");
+        Container
+            .Bind<SpawnHandler>()
+            .FromNew()
+            .AsSingle();
+    }
 
-        Container.InstantiateComponent<SpawnHandler>(spawnHandler);
+    private void BindLevel()
+    {
+        Container
+            .Bind<LevelBehaviour>()
+            .FromInstance(_mainLevel)
+            .AsSingle();
     }
 
     private void FinishBindings()
