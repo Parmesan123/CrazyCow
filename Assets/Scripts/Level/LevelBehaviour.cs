@@ -46,7 +46,7 @@ public class LevelBehaviour : MonoBehaviour
 
     private void NextSpawnRequest()
     {
-        if (_objectsOnLevel.Count < _levelData.ObjectsMaxCount)
+        if (_objectsOnLevel.Count > _levelData.ObjectsMaxCount)
             return;
         
         float tickResult = Random.Range(0f, 1f);

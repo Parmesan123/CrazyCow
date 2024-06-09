@@ -69,7 +69,7 @@ public class SpawnHandler
 
     private Vector3 CalculateValidPoint(Transform center, BoxCollider levelCollider, float radius, float offset)
     {
-        for (int i = 0; i < 200; i++)
+        for (int i = 0; i < 800; i++)
         {
             Vector3 randomOffset = new Vector3(Random.Range(-offset, offset), 0, Random.Range(-offset, offset));
             Vector3 resultPosition = center.GetRandomPointOnCircle(radius) + randomOffset;
