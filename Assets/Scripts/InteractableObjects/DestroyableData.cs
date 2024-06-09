@@ -1,3 +1,4 @@
+using NaughtyAttributes;
 using UnityEngine;
 
 namespace InteractableObject
@@ -6,6 +7,8 @@ namespace InteractableObject
 	public class DestroyableData : ScriptableObject
 	{
 		[field: SerializeField] public float TimeToDestroy { get; private set; }
-		[field: SerializeField] public int AmountGivenCoin { get; private set; }
+		[SerializeField, MinMaxSlider(1, 15)] private Vector2Int _amountGivenCoin;
+
+		public int AmountCoin => Random.Range(_amountGivenCoin.x, _amountGivenCoin.y);
 	}
 }

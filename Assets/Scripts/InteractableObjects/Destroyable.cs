@@ -8,10 +8,10 @@ namespace InteractableObject
 	{
 		public event Action<Destroyable> OnDestroyEvent; 
         
-		[SerializeField] private DestroyableData _data;
+		[SerializeField] protected DestroyableData _data;
 
 		private bool _isStopDestroy;
-        
+		
 		public void StartDestroy()
 		{
 			StartCoroutine(Routine());
@@ -42,7 +42,7 @@ namespace InteractableObject
 			_isStopDestroy = true;
 		}
 
-		private void Destroy()
+		protected virtual void Destroy()
 		{
 			OnDestroyEvent.Invoke(this);
 			gameObject.SetActive(false);
