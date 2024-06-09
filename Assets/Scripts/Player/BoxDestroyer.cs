@@ -9,9 +9,9 @@ namespace Player
 	{
 		[SerializeField] private PlayerData _playerData;
 
-		private readonly List<IDestroyable> _destroyables = new List<IDestroyable>();
+		private readonly List<Destroyable> _destroyables = new List<Destroyable>();
 
-		private IDestroyable _currentDestroyable;
+		private Destroyable _currentDestroyable;
 		
 		private void Awake()
 		{
@@ -22,7 +22,7 @@ namespace Player
 
 		private void OnTriggerEnter(Collider other)
 		{
-			if (!other.TryGetComponent(out IDestroyable destroyable))
+			if (!other.TryGetComponent(out Destroyable destroyable))
 				return;
 			
 			Register(destroyable);
@@ -30,13 +30,13 @@ namespace Player
 
 		private void OnTriggerExit(Collider other)
 		{
-			if (!other.TryGetComponent(out IDestroyable destroyable))
+			if (!other.TryGetComponent(out Destroyable destroyable))
 				return;
 			
 			UnRegister(destroyable);
 		}
 
-		private void Register(IDestroyable destroyable)
+		private void Register(Destroyable destroyable)
 		{
 			_destroyables.Add(destroyable);
 			destroyable.OnDestroyEvent += DestroyBoxListener;
@@ -48,7 +48,7 @@ namespace Player
 			_currentDestroyable.StartDestroy();
 		}
 
-		private void UnRegister(IDestroyable destroyable)
+		private void UnRegister(Destroyable destroyable)
 		{
 			_destroyables.Remove(destroyable);
 			destroyable.OnDestroyEvent -= DestroyBoxListener;
@@ -60,7 +60,7 @@ namespace Player
 			SetNextCurrentDestroyable();
 		}
 
-		private void DestroyBoxListener(IDestroyable destroyable)
+		private void DestroyBoxListener(Destroyable destroyable)
 		{
 			_destroyables.Remove(destroyable);
 			destroyable.OnDestroyEvent -= DestroyBoxListener;

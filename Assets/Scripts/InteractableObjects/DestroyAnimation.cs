@@ -3,22 +3,26 @@ using UnityEngine;
 using EzySlice;
 using ModestTree;
 using NaughtyAttributes;
+using System;
 using System.Collections;
+using System.Threading.Tasks;
 using Random = UnityEngine.Random;
 
 namespace InteractableObject
 {
-	public class BoxDestroyAnimation : MonoBehaviour
+	public class DestroyAnimation : MonoBehaviour
 	{
 		[SerializeField, Min(0)] private float _minLifeTime;
 		[SerializeField, Min(0)] private float _maxLifeTime;
 		[SerializeField] private GameObject _model;
 		[SerializeField] private Material _crossSectionMaterial;
+
+		private Destroyable _destroyable;
 		private readonly List<ParticleData> _modelParticles = new List<ParticleData>();
 		
 		private class ParticleData
 		{
-			public GameObject Particle { get; private set; }
+			public GameObject Particle { get; }
 			public float LifeTime;
 
 			public ParticleData(GameObject particle, float lifeTime)
@@ -30,25 +34,42 @@ namespace InteractableObject
 		
 		private void Awake()
 		{
+			_destroyable = GetComponent<Destroyable>();
+
+			if (_destroyable == null)
+				throw new NullReferenceException("Destroyable component not found");
 		}
 
-		[Button]
-		private void DestroyAnimation()
+		private void OnEnable()
 		{
-			_model.gameObject.SetActive(false);
+			_destroyable.OnDestroyEvent += Animation;
+		}
+
+		private void OnDisable()
+		{
+			_destroyable.OnDestroyEvent -= Animation;
+		}
+
+		private void Animation(Destroyable _)
+		{
 			List<GameObject> particles = CreateParticle();
 			AddToList(particles);
-			StartCoroutine(DestroyParticle());
+			DestroyParticle();
 		}
-
+		
 		private List<GameObject> CreateParticle()
 		{
 			List<GameObject> finalParticle = new List<GameObject>();
 			List<GameObject> temp = new List<GameObject>();
 
-			GameObject parent = new GameObject("AnimationParent");
-			parent.transform.position = _model.transform.position;
-			parent.transform.rotation = _model.transform.rotation;
+			GameObject parent = new GameObject("AnimationParent")
+			{
+				transform =
+				{
+					position = _model.transform.position,
+					rotation = _model.transform.rotation
+				}
+			};
 			GameObject copyModel = Instantiate(_model, parent.transform);
 
 			finalParticle.Add(copyModel);
@@ -101,10 +122,9 @@ namespace InteractableObject
 			}
 		}
 
-		private IEnumerator DestroyParticle()
+		private async void DestroyParticle()
 		{
 			GameObject parent = _modelParticles[0].Particle.transform.parent.gameObject;
-			WaitForFixedUpdate wait = new WaitForFixedUpdate();
 			List<ParticleData> keysMarkedToDestroy = new List<ParticleData>();
 			
 			for (int i = 0; i < 500; ++i)
@@ -127,7 +147,7 @@ namespace InteractableObject
 				if (_modelParticles.IsEmpty())
 					break;
 				
-				yield return wait;
+				await Task.Delay(TimeSpan.FromSeconds(Time.fixedDeltaTime));
 			}
 			
 			Destroy(parent);
