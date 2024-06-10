@@ -1,4 +1,7 @@
-﻿public interface IMonoFactory<out T> 
+﻿namespace Services
 {
-    public T CreateObject();
+    public interface IMonoFactory<out T> 
+    {
+        public T CreateObject();
+    }
 }

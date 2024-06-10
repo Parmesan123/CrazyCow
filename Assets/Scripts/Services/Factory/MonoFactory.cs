@@ -1,14 +1,17 @@
 ﻿using UnityEngine;
 using Zenject;
 
-public abstract class MonoFactory<T>: IMonoFactory<T> where T: MonoBehaviour
+namespace Services
 {
-    protected DiContainer _container;
-    
-    protected MonoFactory(DiContainer container)
+    public abstract class MonoFactory<T>: IMonoFactory<T> where T: MonoBehaviour
     {
-        _container = container;
-    }
+        protected DiContainer _container;
+    
+        protected MonoFactory(DiContainer container)
+        {
+            _container = container;
+        }
 
-    public abstract T CreateObject();
+        public abstract T CreateObject();
+    }
 }

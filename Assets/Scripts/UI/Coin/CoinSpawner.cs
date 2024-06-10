@@ -38,7 +38,7 @@ namespace UI
 		public void UnRegister(ICoinGiver coinGiver)
 		{
 			coinGiver.OnGiveCoinEvent -= UnRegister;
-			Vector3 screenPoint = UnityEngine.Camera.main.WorldToScreenPoint(coinGiver.Transform.position);
+			Vector3 screenPoint = Camera.main.WorldToScreenPoint(coinGiver.Transform.position);
 			Spawn(coinGiver, screenPoint);
 		}
 

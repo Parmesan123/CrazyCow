@@ -1,4 +1,6 @@
-﻿using NaughtyAttributes;
+﻿using InteractableObject;
+using NaughtyAttributes;
+using Spawner;
 using UnityEngine;
 using Zenject;
 

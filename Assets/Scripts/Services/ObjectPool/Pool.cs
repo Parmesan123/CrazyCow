@@ -2,41 +2,44 @@
 using System.Linq;
 using UnityEngine;
 
-public class Pool<T> where T: MonoBehaviour
+namespace Services
 {
-    private readonly List<T> _objects;
-    private readonly IMonoFactory<T> _monoFactory;
-    private readonly Transform _parent;
-    
-    public Pool(int initialSize, IMonoFactory<T> monoFactory, Transform parent)
+    public class Pool<T> where T: MonoBehaviour
     {
-        _objects = new List<T>();
-        _parent = parent;
-        
-        _monoFactory = monoFactory;
-        for (int i = 0; i < initialSize; i++)
+        private readonly List<T> _objects;
+        private readonly IMonoFactory<T> _monoFactory;
+        private readonly Transform _parent;
+    
+        public Pool(int initialSize, IMonoFactory<T> monoFactory, Transform parent)
         {
-            T newInstance = _monoFactory.CreateObject();
-            newInstance.transform.parent = parent;
-            ObjectAdd(newInstance);
-        }
-    }
-    
-    public T ObjectGetFreeOrCreate()
-    {
-        T firstObject = _objects.FirstOrDefault(o => o.gameObject.activeSelf == false);
-        if (firstObject is not null)
-            return firstObject;
-
-        T newInstance = _monoFactory.CreateObject();
-        newInstance.transform.parent = _parent;
-        ObjectAdd(newInstance);
+            _objects = new List<T>();
+            _parent = parent;
         
-        return newInstance;
-    }
+            _monoFactory = monoFactory;
+            for (int i = 0; i < initialSize; i++)
+            {
+                T newInstance = _monoFactory.CreateObject();
+                newInstance.transform.parent = parent;
+                ObjectAdd(newInstance);
+            }
+        }
+    
+        public T ObjectGetFreeOrCreate()
+        {
+            T firstObject = _objects.FirstOrDefault(o => o.gameObject.activeSelf == false);
+            if (firstObject is not null)
+                return firstObject;
 
-    private void ObjectAdd(T newObject)
-    {
-        _objects.Add(newObject);
+            T newInstance = _monoFactory.CreateObject();
+            newInstance.transform.parent = _parent;
+            ObjectAdd(newInstance);
+        
+            return newInstance;
+        }
+
+        private void ObjectAdd(T newObject)
+        {
+            _objects.Add(newObject);
+        }
     }
 }

@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using EzySlice;
 using ModestTree;
-using NaughtyAttributes;
 using System;
-using System.Collections;
 using System.Threading.Tasks;
 using Random = UnityEngine.Random;
 
