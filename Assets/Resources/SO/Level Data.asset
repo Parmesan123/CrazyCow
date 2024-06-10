@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 659cc3236f2b4ce2bdb596a5206aa4fc, type: 3}
   m_Name: Level Data
   m_EditorClassIdentifier: 
-  <CrateSpawnChance>k__BackingField: 0.3
-  <CrateInitialCount>k__BackingField: 20
+  <BoxSpawnChance>k__BackingField: 0.8
+  <BoxInitialCount>k__BackingField: 20
   <VaseSpawnChance>k__BackingField: 0.05
   <VaseInitialCount>k__BackingField: 2
-  <PortalSpawnChance>k__BackingField: 0.01
+  _portalSpawnTime: {x: 20, y: 40}
   <ObjectsMaxCount>k__BackingField: 25
   <SpawnContinuously>k__BackingField: 1
   <SpawnTime>k__BackingField: 1
