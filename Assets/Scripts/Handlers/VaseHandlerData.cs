@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace InteractableObject
+namespace Handlers
 {
     [CreateAssetMenu(fileName = "VaseData", menuName = "ScriptableObjects/Data/VaseData")]
     public class VaseHandlerData : ScriptableObject

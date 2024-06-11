@@ -1,28 +1,46 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Handlers;
 using InteractableObject;
-using Spawner;
+using Player;
+using Services;
 using UnityEngine;
 using Zenject;
+using Random = UnityEngine.Random;
 
 namespace Level
 {
-    public class LevelBehaviour : MonoBehaviour
+    public class LevelBehaviour : MonoBehaviour, ISignalReceiver<DestroyEntitySignal>
     {
         [SerializeField] private LevelData _levelData;
         [SerializeField] private BoxCollider _boxCollider;
 
         private SpawnHandler _spawnHandler;
-        private List<DestroyBehaviour> _objectsOnLevel;
-
+        private SignalBus _signalBus;
+        private float _currentPortalSpawnTime;
+        private List<ISpawnable> _objectsOnLevel;
+        private PlayerMovement _playerMovement;
+        
         [Inject]
-        public void Build(SpawnHandler spawnHandler)
+        public void Build(SpawnHandler spawnHandler, SignalBus signalBus, PlayerMovement playerMovement)
         {
             _spawnHandler = spawnHandler;
-
-            _objectsOnLevel = new List<DestroyBehaviour>();
+            _signalBus = signalBus;
+            _playerMovement = playerMovement;
+            
+            _objectsOnLevel = new List<ISpawnable>();
 
             StartLevel();
+        }
+
+        private void OnEnable()
+        {
+            _signalBus.Register<DestroyEntitySignal>(this);
+        }
+
+        private void OnDisable()
+        {
+            _signalBus.Unregister<DestroyEntitySignal>(this);
         }
 
         private void StartLevel()
@@ -33,13 +51,21 @@ namespace Level
             for (int i = 0; i < _levelData.VaseInitialCount; i++)
                 OnEntitySpawnRequested<Vase>();
 
+            _currentPortalSpawnTime = _levelData.PortalSpawnTime;
+
             StartCoroutine(NextSpawnTick());
         }
 
+        public void Receive(DestroyEntitySignal signal)
+        {
+            _objectsOnLevel.Remove(signal.Spawnable);
+        }
+        
         private IEnumerator NextSpawnTick()
         {
             yield return new WaitForSeconds(_levelData.SpawnTime);
 
+            _currentPortalSpawnTime -= _levelData.PortalSpawnTime;
             NextSpawnRequest();
 
             if (!_levelData.SpawnContinuously)
@@ -51,7 +77,10 @@ namespace Level
         private void NextSpawnRequest()
         {
             if (_objectsOnLevel.Count > _levelData.ObjectsMaxCount)
+            {
+                Debug.Log("Current objects exceeded maximum spawn number");
                 return;
+            }
 
             float tickResult = Random.Range(0f, 1f);
             if (tickResult <= _levelData.BoxSpawnChance)
@@ -60,21 +89,23 @@ namespace Level
             if (tickResult <= _levelData.VaseSpawnChance)
                 OnEntitySpawnRequested<Vase>();
 
-            //if (tickResult <= _levelData.PortalSpawnChance)
-            //OnEntitySpawnRequested<Portal>();
+            if (_currentPortalSpawnTime <= 0)
+            {
+                OnEntitySpawnRequested<Portal>();
+                _currentPortalSpawnTime = _levelData.PortalSpawnTime;
+            }
         }
 
-        private void OnEntitySpawnRequested<T>() where T : DestroyBehaviour
+        private void OnEntitySpawnRequested<T>() where T : ISpawnable
         {
-            T entityInstance = _spawnHandler.TrySpawnAndPlaceEntity<T>(_boxCollider);
-            _objectsOnLevel.Add(entityInstance);
-            entityInstance.OnDestroy += OnEntityDestroyed;
+            T entityInstance = _spawnHandler.TrySpawnAndPlaceEntity<T>(_boxCollider, _playerMovement.transform);
+            if (entityInstance is IDestroyable _)
+                _objectsOnLevel.Add(entityInstance);    
+        }
 
-            void OnEntityDestroyed(DestroyBehaviour _)
-            {
-                _objectsOnLevel.Remove(entityInstance);
-                entityInstance.OnDestroy -= OnEntityDestroyed;
-            }
+        private void OnPortalSpawned()
+        {
+            
         }
     }
 }

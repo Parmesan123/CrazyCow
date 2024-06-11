@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 761a4908c21f4e8fa4a783f8fb856d7c, type: 3}
   m_Name: DestroyableData
   m_EditorClassIdentifier: 
+  <CrossSectionMaterial>k__BackingField: {fileID: 2100000, guid: c3592e52a0bdd83488ec444afdc8e2f4, type: 2}
   <TimeToDestroy>k__BackingField: 2
+  _lifetime: {x: 1, y: 2}
   _amountGivenCoin: {x: 3, y: 7}

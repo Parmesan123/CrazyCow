@@ -4,19 +4,18 @@ using EzySlice;
 using ModestTree;
 using System;
 using System.Threading.Tasks;
+using Services;
+using Signals;
+using Zenject;
 using Random = UnityEngine.Random;
 
-namespace InteractableObject
+namespace Handlers
 {
-	public class DestroyAnimation : MonoBehaviour
+	public class DestroyHandler : MonoBehaviour, ISignalReceiver<DestroyAnimationSignal>
 	{
-		[SerializeField, Min(0)] private float _minLifeTime;
-		[SerializeField, Min(0)] private float _maxLifeTime;
-		[SerializeField] private GameObject _model;
-		[SerializeField] private Material _crossSectionMaterial;
-
-		private DestroyBehaviour _destroyBehaviour;
 		private readonly List<ParticleData> _modelParticles = new List<ParticleData>();
+
+		private SignalBus _signalBus;
 		
 		private class ParticleData
 		{
@@ -30,32 +29,30 @@ namespace InteractableObject
 			}
 		}
 		
-		private void Awake()
+		[Inject]
+		private void Construct(SignalBus signalBus)
 		{
-			_destroyBehaviour = GetComponent<DestroyBehaviour>();
-
-			if (_destroyBehaviour == null)
-				throw new NullReferenceException("Destroyable component not found");
+			_signalBus = signalBus;
 		}
 
 		private void OnEnable()
 		{
-			_destroyBehaviour.OnDestroy += Animation;
+			_signalBus.Register<DestroyAnimationSignal>(this);
 		}
 
 		private void OnDisable()
 		{
-			_destroyBehaviour.OnDestroy -= Animation;
-		}
-
-		private void Animation(DestroyBehaviour _)
-		{
-			List<GameObject> particles = CreateParticle();
-			AddToList(particles);
-			DestroyParticle();
+			_signalBus.Unregister<DestroyAnimationSignal>(this);
 		}
 		
-		private List<GameObject> CreateParticle()
+		public void Receive(DestroyAnimationSignal signal)
+		{
+			List<GameObject> particles = CreateParticle(signal.Model, signal.Data.CrossSectionMaterial);
+			AddToList(particles, signal.Data.Lifetime);
+			DestroyParticle();
+		}
+
+		private List<GameObject> CreateParticle(GameObject model, Material crossSection)
 		{
 			List<GameObject> finalParticle = new List<GameObject>();
 			List<GameObject> temp = new List<GameObject>();
@@ -64,22 +61,24 @@ namespace InteractableObject
 			{
 				transform =
 				{
-					position = _model.transform.position,
-					rotation = _model.transform.rotation
+					position = model.transform.position,
+					rotation = model.transform.rotation
 				}
 			};
-			GameObject copyModel = Instantiate(_model, parent.transform);
+			GameObject copyModel = Instantiate(model, parent.transform);
 
 			finalParticle.Add(copyModel);
 
 			for (int i = 0; i < 4; ++i)
 			{
-				Vector3 position = transform.position + new Vector3(Random.Range(-0.2f, 0.2f), Random.Range(-0.2f, 0.2f), Random.Range(-0.2f, 0.2f));
+				Vector3 randomOffset = new Vector3(Random.Range(-0.2f, 0.2f), Random.Range(-0.2f, 0.2f),
+					Random.Range(-0.2f, 0.2f));
+				Vector3 position = model.transform.position + randomOffset;
 				Vector3 direction = Quaternion.Euler(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)) * Vector3.left;
 
 				foreach (GameObject piece in finalParticle)
 				{
-					GameObject[] pieces = piece.SliceInstantiate(position, direction, _crossSectionMaterial);
+					GameObject[] pieces = piece.SliceInstantiate(position, direction, crossSection);
 
 					if (pieces == null)
 					{
@@ -112,11 +111,11 @@ namespace InteractableObject
 			return finalParticle;
 		}
 
-		private void AddToList(List<GameObject> particles)
+		private void AddToList(List<GameObject> particles, float lifetime)
 		{
 			foreach (GameObject particle in particles)
 			{
-				_modelParticles.Add(new ParticleData(particle, Random.Range(_minLifeTime, _maxLifeTime)));
+				_modelParticles.Add(new ParticleData(particle, lifetime));
 			}
 		}
 

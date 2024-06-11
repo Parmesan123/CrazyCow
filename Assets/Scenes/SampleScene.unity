@@ -326,6 +326,7 @@ GameObject:
   - component: {fileID: 548265545}
   - component: {fileID: 548265546}
   - component: {fileID: 548265547}
+  - component: {fileID: 548265548}
   m_Layer: 0
   m_Name: SceneContext
   m_TagString: Untagged
@@ -348,6 +349,7 @@ MonoBehaviour:
   _scriptableObjectInstallers:
   - {fileID: 11400000, guid: 9fb11c5e52e25534d99731a6460bf638, type: 2}
   _monoInstallers:
+  - {fileID: 548265548}
   - {fileID: 548265545}
   - {fileID: 548265547}
   - {fileID: 548265546}
@@ -423,6 +425,18 @@ MonoBehaviour:
   _playerSpawnPosition: {fileID: 1991022062}
   _mainLevel: {fileID: 610860836}
   _coinSpawner: {fileID: 306661063}
+--- !u!114 &548265548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 548265542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f43aa6c8230948f28879aa4a1d5c126f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &596749202
 GameObject:
   m_ObjectHideFlags: 0

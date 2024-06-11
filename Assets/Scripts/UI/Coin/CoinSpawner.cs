@@ -1,13 +1,15 @@
+using System;
 using Handlers;
 using InteractableObject;
 using System.Collections.Generic;
+using Services;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
 
 namespace UI
 {
-	public class CoinSpawner : MonoBehaviour
+	public class CoinSpawner : MonoBehaviour, ISignalReceiver<CoinGiveSignal>
 	{
 		private const string COIN_PATH = "Prefabs/UI/Coin";
 
@@ -18,11 +20,13 @@ namespace UI
 		
 		private Coin _coinPrefab;
 		private WalletHandler _walletHandler;
+		private SignalBus _signalBus;
 
 		[Inject]
-		private void Construct(WalletHandler walletHandler)
+		private void Construct(WalletHandler walletHandler, SignalBus signalBus)
 		{
 			_walletHandler = walletHandler;
+			_signalBus = signalBus;
 		}
 
 		private void Awake()
@@ -30,28 +34,28 @@ namespace UI
 			_coinPrefab = Resources.Load<Coin>(COIN_PATH);
 		}
 
-		public void Register(ICoinGiver destroyable)
+		private void OnEnable()
 		{
-			destroyable.OnGiveCoinEvent += UnRegister;
+			_signalBus.Register<CoinGiveSignal>(this);
 		}
 
-		public void UnRegister(ICoinGiver coinGiver)
+		private void OnDisable()
 		{
-			coinGiver.OnGiveCoinEvent -= UnRegister;
-			Vector3 screenPoint = Camera.main.WorldToScreenPoint(coinGiver.Transform.position);
-			Spawn(coinGiver, screenPoint);
+			_signalBus.Unregister<CoinGiveSignal>(this);
 		}
-
-		private void Spawn(ICoinGiver coinGiver, Vector3 screenPosition)
+		
+		public void Receive(CoinGiveSignal signal)
 		{
-			int amountCoin = coinGiver.AmountCoin;
+			int amountCoin = signal.AmountCoin;
+			Vector3 screenPoint = Camera.main.WorldToScreenPoint(signal.Transform.position);
+			
 			List<Coin> coins = new List<Coin>();
 
 			GameObject parent = new GameObject("CoinCluster")
 			{
 				transform =
 				{
-					position = screenPosition,
+					position = screenPoint,
 					parent = _canvas.transform,
 				}
 			};

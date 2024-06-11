@@ -1,7 +1,7 @@
-﻿using InteractableObject;
+﻿using Handlers;
+using InteractableObject;
 using Level;
 using Player;
-using Spawner;
 using UI;
 using UnityEngine;
 using Zenject;
@@ -16,21 +16,12 @@ public class LevelInstaller : MonoInstaller
     
     public override void InstallBindings()
     {
-        BindGameElements();
         BindCoinSpawner();
         BindFactories();
         BindPlayer();
-        BindLevelSpawner();
+        BindSpawnHandler();
         BindLevel();
         FinishBindings();
-    }
-
-    private void BindGameElements()
-    {
-        Container
-            .Bind<VaseHandler>()
-            .FromNew()
-            .AsSingle();
     }
 
     private void BindCoinSpawner()
@@ -67,7 +58,7 @@ public class LevelInstaller : MonoInstaller
             .NonLazy();
     }
 
-    private void BindLevelSpawner()
+    private void BindSpawnHandler()
     {
         Container
             .Bind<SpawnHandler>()

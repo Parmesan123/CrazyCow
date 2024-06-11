@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Level
 {
-    [CreateAssetMenu(fileName = "Level Data", menuName = "SO/Level Data", order = 0)]
+    [CreateAssetMenu(fileName = "LevelData", menuName = "ScriptableObjects/Data/LevelData", order = 0)]
     public class LevelData : ScriptableObject
     {
         [field: Header("Crate Info")]
@@ -18,6 +18,10 @@ namespace Level
         [SerializeField, MinMaxSlider(20f, 40f)] private Vector2 _portalSpawnTime;
         public float PortalSpawnTime => Random.Range(_portalSpawnTime.x, _portalSpawnTime.y);
     
+        [field: Header("Additional Level Info")]
+        [field: SerializeField] public int AddLevelBoxCount { get; private set; }
+        [field: SerializeField] public int AddLevelVaseCount { get; private set; }
+        
         [field: Header("Base Info")]
         [field: SerializeField] public int ObjectsMaxCount { get; private set; }
         [field: SerializeField] public bool SpawnContinuously { get; private set; }

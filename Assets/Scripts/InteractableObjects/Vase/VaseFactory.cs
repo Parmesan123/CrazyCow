@@ -1,4 +1,5 @@
-﻿using Services;
+﻿using Handlers;
+using Services;
 using UnityEngine;
 using Zenject;
 
@@ -23,25 +24,10 @@ namespace InteractableObject
         {
             Vase vaseInstance = _container.InstantiatePrefabForComponent<Vase>(_vasePrefab);
             vaseInstance.gameObject.SetActive(false);
-            vaseInstance.OnSpawn += OnVaseSpawn;
         
             _vaseHandler.AddVase(vaseInstance);
         
             return vaseInstance;
-
-            void OnVaseSpawn()
-            {
-                Collider[] colliders = Physics.OverlapSphere(vaseInstance.transform.position, _vaseHandler.Data.SeekingRadius);
-                foreach (Collider col in colliders)
-                {
-                    if (!col.TryGetComponent(out Box crate)) 
-                        continue;
-
-                    Debug.Log($"Added crate {crate.transform.position} to vase {vaseInstance.transform.position}");
-                
-                    _vaseHandler.AddCrate(vaseInstance, crate);
-                }
-            }
         }
     }
 }

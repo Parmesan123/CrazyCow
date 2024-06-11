@@ -1,29 +1,29 @@
-using System;
-using UnityEngine;
+using Services;
+using Signals;
 
 namespace InteractableObject
 {
     public class Box : DestroyBehaviour, ICoinGiver
     {
-        public event Action<ICoinGiver> OnGiveCoinEvent;
-        
-        public Transform Transform { get; private set; }
         public int AmountCoin { get; private set; }
-
-        private void Awake()
-        {
-            Transform = transform;
-        }
 
         private void OnEnable()
         {
             AmountCoin = _data.AmountCoin;
         }
+        
+        public override void Spawn()
+        {
+            SignalBus.Invoke(new SpawnBoxAroundVaseSignal(this));
+            base.Spawn();
+        }
 
         public override void Destroy()
         {
+            SignalBus.Invoke(new DestroyRemoveSignal(this));
+            SignalBus.Invoke(new CoinGiveSignal(transform, AmountCoin));
+            SignalBus.Invoke(new DestroyBoxAroundVaseSignal(this));
             base.Destroy();
-            OnGiveCoinEvent.Invoke(this);
         }
     }
 }

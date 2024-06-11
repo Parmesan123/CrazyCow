@@ -1,23 +1,45 @@
+using System;
 using InteractableObject;
 using ModestTree;
 using System.Collections.Generic;
+using Services;
+using Signals;
 using UnityEngine;
+using Zenject;
 
 namespace Player
 {
-	public class BoxDestroyer : MonoBehaviour
+	public class BoxDestroyer : MonoBehaviour, ISignalReceiver<DestroyRemoveSignal>
 	{
 		[SerializeField] private PlayerData _playerData;
 
 		private readonly List<DestroyBehaviour> _destroyables = new List<DestroyBehaviour>();
 
 		private DestroyBehaviour _currentDestroyBehaviour;
+
+		private SignalBus _signalBus;
+		
+		[Inject]
+		private void Construct(SignalBus signalBus)
+		{
+			_signalBus = signalBus;
+		}
 		
 		private void Awake()
 		{
 			SphereCollider sphereCollider = gameObject.AddComponent<SphereCollider>();
 			sphereCollider.isTrigger = true;
 			sphereCollider.radius = _playerData.DestroyRange;
+		}
+
+		private void OnEnable()
+		{
+			_signalBus.Register<DestroyRemoveSignal>(this);
+		}
+
+		private void OnDisable()
+		{
+			_signalBus.Unregister<DestroyRemoveSignal>(this);
 		}
 
 		private void OnTriggerEnter(Collider other)
@@ -35,11 +57,17 @@ namespace Player
 			
 			UnRegister(destroyable);
 		}
+		
+		public void Receive(DestroyRemoveSignal signal)
+		{
+			_destroyables.Remove(signal.Destroyable);
+			
+			SetNextCurrentDestroyable();
+		}
 
 		private void Register(DestroyBehaviour destroyBehaviour)
 		{
 			_destroyables.Add(destroyBehaviour);
-			destroyBehaviour.OnDestroy += DestroyBoxListener;
 
 			if (_currentDestroyBehaviour != null) 
 				return;
@@ -51,20 +79,11 @@ namespace Player
 		private void UnRegister(DestroyBehaviour destroyBehaviour)
 		{
 			_destroyables.Remove(destroyBehaviour);
-			destroyBehaviour.OnDestroy -= DestroyBoxListener;
 
 			if (_currentDestroyBehaviour != destroyBehaviour) 
 				return;
 			
 			_currentDestroyBehaviour.StopDestroy();
-			SetNextCurrentDestroyable();
-		}
-
-		private void DestroyBoxListener(DestroyBehaviour destroyBehaviour)
-		{
-			_destroyables.Remove(destroyBehaviour);
-			destroyBehaviour.OnDestroy -= DestroyBoxListener;
-			
 			SetNextCurrentDestroyable();
 		}
 

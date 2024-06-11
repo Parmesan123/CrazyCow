@@ -15,5 +15,11 @@ namespace InteractableObject
 			Transform = transform;
 			AmountCoin = _data.AmountCoin;
 		}
+
+		public override void Spawn()
+		{
+			SignalBus.Invoke(new SpawnVaseAroundCrateSignal(this));
+			base.Spawn();
+		}
 	}
 }

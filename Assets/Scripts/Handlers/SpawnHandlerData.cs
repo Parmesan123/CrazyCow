@@ -1,7 +1,7 @@
 ﻿using NaughtyAttributes;
 using UnityEngine;
 
-namespace Spawner
+namespace Handlers
 {
     [CreateAssetMenu(fileName = "SpawnData", menuName = "ScriptableObjects/Data/SpawnData")]
     public class SpawnHandlerData : ScriptableObject

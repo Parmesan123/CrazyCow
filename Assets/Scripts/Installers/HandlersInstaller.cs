@@ -12,6 +12,8 @@ namespace Installers
 		public override void InstallBindings()
 		{
 			BindWalletHandler();
+			BindDestroyHandler();
+			BindVaseHandler();
 		}
 
 		private void BindWalletHandler()
@@ -21,6 +23,21 @@ namespace Installers
 				.FromNew()
 				.AsSingle()
 				.WithArguments(_text);
+		}
+
+		private void BindDestroyHandler()
+		{
+			GameObject destroyHandler = new GameObject("DestroyHandler");
+
+			Container.InstantiateComponent<DestroyHandler>(destroyHandler);
+		}
+		
+		private void BindVaseHandler()
+		{
+			Container
+				.Bind<VaseHandler>()
+				.FromNew()
+				.AsSingle();
 		}
 	}
 }
