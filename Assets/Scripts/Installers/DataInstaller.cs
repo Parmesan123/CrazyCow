@@ -3,7 +3,7 @@ using NaughtyAttributes;
 using UnityEngine;
 using Zenject;
 
-[CreateAssetMenu(fileName = "Data Installer", menuName = "SO/Data Installer", order = 0)]
+[CreateAssetMenu(fileName = "DataInstaller", menuName = "ScriptableObjects/DataInstaller", order = 0)]
 public class DataInstaller : ScriptableObjectInstaller<DataInstaller>
 {
     [SerializeField, Expandable] private SpawnHandlerData _spawnHandlerData;

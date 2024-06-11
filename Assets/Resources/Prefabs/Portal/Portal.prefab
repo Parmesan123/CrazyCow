@@ -130,7 +130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3b2855e9ad041f1b96760eabbb4042b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interactableData: {fileID: 11400000, guid: f68952ee6dafef045a2c5a61ff9ed3c8, type: 2}
+  _interactableData: {fileID: 11400000, guid: b2d46fa34f1a1c74e9cd66d369339e78, type: 2}
 --- !u!65 &5729939619009485626
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 659cc3236f2b4ce2bdb596a5206aa4fc, type: 3}
-  m_Name: Level Data
+  m_Name: LevelData
   m_EditorClassIdentifier: 
   <BoxSpawnChance>k__BackingField: 0.8
   <BoxInitialCount>k__BackingField: 20

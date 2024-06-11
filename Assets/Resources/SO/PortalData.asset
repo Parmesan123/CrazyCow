@@ -9,10 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fcfb6fdf2ec84af09ba5aff18d6899f5, type: 3}
-  m_Name: Spawn Data
+  m_Script: {fileID: 11500000, guid: 308a49a81d0c45d5946687ebf01f31b2, type: 3}
+  m_Name: PortalData
   m_EditorClassIdentifier: 
-  _boxesWithVaseCount: {x: 1, y: 3}
-  <SpawnRadiusThreshold>k__BackingField: 20
-  <MinRangeBetweenObjects>k__BackingField: 0.7
-  <VaseRadiusThreshold>k__BackingField: 2
+  <InteractTime>k__BackingField: 2
+  _timeUntilDespawn: {x: 5, y: 10}

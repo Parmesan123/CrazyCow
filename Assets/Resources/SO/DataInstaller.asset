@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f93861dfa8ab4f3e95406a6da057eb3b, type: 3}
-  m_Name: Data Installer
+  m_Name: DataInstaller
   m_EditorClassIdentifier: 
   _spawnHandlerData: {fileID: 11400000, guid: e8742866637331b4c850a0d2defb0078, type: 2}
   _vaseHandlerData: {fileID: 11400000, guid: 96532602da87c1e4da801b2595ebb07a, type: 2}

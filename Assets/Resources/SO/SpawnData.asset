@@ -9,7 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd44f65d21e447948adea16d487b8ab8, type: 3}
-  m_Name: Vase Data
+  m_Script: {fileID: 11500000, guid: fcfb6fdf2ec84af09ba5aff18d6899f5, type: 3}
+  m_Name: SpawnData
   m_EditorClassIdentifier: 
-  <SeekingRadius>k__BackingField: 3
+  _boxesWithVaseCount: {x: 1, y: 3}
+  <SpawnRadiusThreshold>k__BackingField: 20
+  <MinRangeBetweenObjects>k__BackingField: 0.7
+  <VaseRadiusThreshold>k__BackingField: 2

@@ -17,10 +17,6 @@ namespace Level
         [field: Header("Portal Info")]
         [SerializeField, MinMaxSlider(20f, 40f)] private Vector2 _portalSpawnTime;
         public float PortalSpawnTime => Random.Range(_portalSpawnTime.x, _portalSpawnTime.y);
-    
-        [field: Header("Additional Level Info")]
-        [field: SerializeField] public int AddLevelBoxCount { get; private set; }
-        [field: SerializeField] public int AddLevelVaseCount { get; private set; }
         
         [field: Header("Base Info")]
         [field: SerializeField] public int ObjectsMaxCount { get; private set; }

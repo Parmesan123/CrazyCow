@@ -1,20 +1,32 @@
-using System;
+using System.Collections;
 using UnityEngine;
 
 namespace InteractableObject
 {
 	public class Portal : Interactable, ISpawnable
 	{
-		public event Action OnSpawn;
+		private new PortalData _interactableData;
+
+		private void Awake()
+		{
+			_interactableData = base._interactableData as PortalData;
+		}
+
+		public void Spawn()
+		{
+			StartCoroutine(TimerUntilDespawn());
+		}
 		
 		protected override void Interact()
 		{
 			Debug.Log("Interact with portal");
 		}
 
-		public void Spawn()
+		private IEnumerator TimerUntilDespawn()
 		{
-			throw new NotImplementedException();
+			yield return new WaitForSeconds(_interactableData.TimeUntilDespawn);
+			
+			gameObject.SetActive(false);
 		}
 	}
 }

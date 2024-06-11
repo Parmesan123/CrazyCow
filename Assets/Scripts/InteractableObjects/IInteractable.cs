@@ -1,13 +1,13 @@
-using System;
 using Player;
 using System.Collections;
+using NaughtyAttributes;
 using UnityEngine;
 
 namespace InteractableObject
 {
 	public abstract class Interactable : MonoBehaviour
 	{
-		[SerializeField] private InteractableData _interactableData;
+		[SerializeField, Expandable] protected InteractableData _interactableData;
 
 		private Coroutine _timerCoroutine;
 		
