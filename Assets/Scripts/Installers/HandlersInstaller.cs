@@ -11,9 +11,18 @@ namespace Installers
 		
 		public override void InstallBindings()
 		{
+			BindPauseHandler();
 			BindWalletHandler();
 			BindDestroyHandler();
 			BindVaseHandler();
+		}
+
+		private void BindPauseHandler()
+		{
+			Container
+				.Bind<PauseHandler>()
+				.FromNew()
+				.AsSingle();
 		}
 
 		private void BindWalletHandler()

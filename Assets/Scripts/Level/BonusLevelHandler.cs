@@ -1,80 +1,72 @@
-﻿using Handlers;
+﻿using System;
+using System.Collections.Generic;
+using Handlers;
 using InteractableObject;
+using Level;
+using ModestTree;
 using NaughtyAttributes;
 using Player;
 using Services;
 using UnityEngine;
 using Zenject;
 
-public class BonusLevelHandler : MonoBehaviour, ISignalReceiver<VaseDestroyedByBotSignal>, ISignalReceiver<VaseDestroyedByPlayerSignal>
+public class BonusLevelHandler : BaseLevelHandler, ISignalReceiver<VaseDestroyedByBotSignal>, ISignalReceiver<VaseDestroyedByPlayerSignal>
 {
     [SerializeField, Expandable] private BonusLevelData _levelData;
     [SerializeField] private Transform _playerSpawnPoint;
     [SerializeField] private Transform _botSpawnPoint;
     [SerializeField] private BoxCollider _levelBounds;
 
-    private SignalBus _signalBus;
-    private PlayerMovement _playerMovement;
-    private SpawnHandler _spawnHandler;
-
+    private List<Vase> _vasesOnField;
     private int _currentBotPoints;
     private int _currentPlayerPoints;
-    private int _currentVaseCount;
     
     [Inject]
-    private void Construct(SignalBus signalBus, PlayerMovement playerMovement, SpawnHandler spawnHandler)
+    protected override void Construct(SpawnHandler spawnHandler, PlayerMovement player, SignalBus signalBus, PauseHandler pauseHandler)
     {
-        _signalBus = signalBus;
-        _playerMovement = playerMovement;
-        _spawnHandler = spawnHandler;
+        base.Construct(spawnHandler, player, signalBus, pauseHandler);
+
+        _vasesOnField = new List<Vase>();
     }
 
-    private void OnEnable()
+    public override void Unpause()
     {
         _signalBus.Register<VaseDestroyedByBotSignal>(this);
         _signalBus.Register<VaseDestroyedByPlayerSignal>(this);
-        
-        StartNewBonusLevel();
     }
 
-    private void OnDisable()
+    public override void Pause()
     {
         _signalBus.Unregister<VaseDestroyedByBotSignal>(this);
         _signalBus.Unregister<VaseDestroyedByPlayerSignal>(this);
     }
 
-    private void StartNewBonusLevel()
+    public void StartNewBonusLevel()
     {
         //TODO: add bot spawn
         _currentBotPoints = 0;
         
-        _playerMovement.transform.position = _playerSpawnPoint.position;
+        _player.transform.position = _playerSpawnPoint.position;
         _currentPlayerPoints = 0;
 
         int generatedBoxCount = _levelData.BoxCount;
         for (int i = 0; i < generatedBoxCount; i++)
             _spawnHandler.TrySpawnAndPlaceEntity<Box>(_levelBounds);
-        
-        _currentVaseCount = _levelData.VaseCount;
-        for (int i = 0; i < _currentVaseCount; i++)
-            _spawnHandler.TrySpawnAndPlaceEntity<Vase>(_levelBounds);
-    }
 
-    private void CalculateWin()
-    {
-        if (_currentVaseCount != 0)
-            return;
-        
-        if (_currentBotPoints > _currentPlayerPoints)
-            Debug.Log("Bot win");
-        else
-            Debug.Log("Player win");
+        for (int i = 0; i < _levelData.VaseCount; i++)
+        {
+            Vase newVase = _spawnHandler.TrySpawnAndPlaceEntity<Vase>(_levelBounds);
+            _vasesOnField.Add(newVase);
+        }
     }
-
+    
     public void Receive(VaseDestroyedByBotSignal signal)
     {
         _currentBotPoints++;
-        _currentVaseCount--;
+
+        if (!_vasesOnField.Contains(signal.Vase))
+            throw new Exception("Can't process vase destroy signal");
+        _vasesOnField.Remove(signal.Vase);
         
         CalculateWin();
     }
@@ -82,8 +74,22 @@ public class BonusLevelHandler : MonoBehaviour, ISignalReceiver<VaseDestroyedByB
     public void Receive(VaseDestroyedByPlayerSignal signal)
     {
         _currentPlayerPoints++;
-        _currentVaseCount--;
+        
+        if (!_vasesOnField.Contains(signal.Vase))
+            throw new Exception("Can't process vase destroy signal");
+        _vasesOnField.Remove(signal.Vase);
         
         CalculateWin();
+    }
+
+    private void CalculateWin()
+    {
+        if (!_vasesOnField.IsEmpty())
+            return;
+        
+        if (_currentBotPoints > _currentPlayerPoints)
+            Debug.Log("Bot win");
+        else
+            Debug.Log("Player win");
     }
 }

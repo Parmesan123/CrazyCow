@@ -9,7 +9,7 @@ using Zenject;
 
 namespace Player
 {
-	public class BoxDestroyer : MonoBehaviour, ISignalReceiver<DestroyRemoveSignal>
+	public class BoxDestroyer : MonoBehaviour, IPausable, ISignalReceiver<DestroyRemoveSignal>
 	{
 		[SerializeField] private PlayerData _playerData;
 
@@ -18,11 +18,14 @@ namespace Player
 		private DestroyBehaviour _currentDestroyBehaviour;
 
 		private SignalBus _signalBus;
+		private PauseHandler _pauseHandler;
 		
 		[Inject]
-		private void Construct(SignalBus signalBus)
+		private void Construct(SignalBus signalBus, PauseHandler pauseHandler)
 		{
 			_signalBus = signalBus;
+			
+			_pauseHandler.Register(this);
 		}
 		
 		private void Awake()
@@ -30,16 +33,6 @@ namespace Player
 			SphereCollider sphereCollider = gameObject.AddComponent<SphereCollider>();
 			sphereCollider.isTrigger = true;
 			sphereCollider.radius = _playerData.DestroyRange;
-		}
-
-		private void OnEnable()
-		{
-			_signalBus.Register<DestroyRemoveSignal>(this);
-		}
-
-		private void OnDisable()
-		{
-			_signalBus.Unregister<DestroyRemoveSignal>(this);
 		}
 
 		private void OnTriggerEnter(Collider other)
@@ -57,7 +50,22 @@ namespace Player
 			
 			UnRegister(destroyable);
 		}
+
+		private void OnDestroy()
+		{
+			_pauseHandler.Unregister(this);
+		}
 		
+		public void Unpause()
+		{
+			_signalBus.Register<DestroyRemoveSignal>(this);
+		}
+
+		public void Pause()
+		{
+			_signalBus.Unregister<DestroyRemoveSignal>(this);
+		}
+
 		public void Receive(DestroyRemoveSignal signal)
 		{
 			_destroyables.Remove(signal.Destroyable);

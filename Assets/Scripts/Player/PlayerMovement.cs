@@ -6,18 +6,22 @@ using Zenject;
 
 namespace Player
 {
-	public class PlayerMovement : MonoBehaviour
+	public class PlayerMovement : MonoBehaviour, IPausable
 	{
 		[SerializeField] private PlayerData _playerData;
 		
 		private Rigidbody _rigidbody;
 		private JoyStickInput _input;
+		private PauseHandler _pauseHandler;
+		
 		private float Speed => _playerData.PlayerSpeed;
 		
 		[Inject]
-		private void Construct(InputProvider inputProvider)
+		private void Construct(InputProvider inputProvider, PauseHandler pauseHandler)
 		{
 			_input = inputProvider.GetProfile(typeof(JoyStickInput)) as JoyStickInput;
+			
+			_pauseHandler.Register(this);
 		}
 
 		private void Awake()
@@ -28,14 +32,19 @@ namespace Player
 				throw new NullReferenceException("Rigidbody component not found");
 		}
 
-		private void OnEnable()
+		private void OnDestroy()
 		{
-			_input.OnMoveEvent += Move;
+			_pauseHandler.Unregister(this);
 		}
 
-		private void OnDisable()
+		public void Pause()
 		{
 			_input.OnMoveEvent -= Move;
+		}
+
+		public void Unpause()
+		{
+			_input.OnMoveEvent += Move;
 		}
 
 		private void Move(Vector2 direction)

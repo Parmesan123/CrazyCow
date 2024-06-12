@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Handlers;
 using InteractableObject;
@@ -10,37 +11,45 @@ using Random = UnityEngine.Random;
 
 namespace Level
 {
-    public class LevelBehaviour : MonoBehaviour, ISignalReceiver<DestroyEntitySignal>
+    public class LevelBehaviour : BaseLevelHandler, ISignalReceiver<DestroyEntitySignal>
     {
         [SerializeField] private LevelData _levelData;
         [SerializeField] private BoxCollider _boxCollider;
-
-        private SpawnHandler _spawnHandler;
-        private SignalBus _signalBus;
+        
         private float _currentPortalSpawnTime;
         private List<ISpawnable> _objectsOnLevel;
         private PlayerMovement _playerMovement;
         
         [Inject]
-        public void Build(SpawnHandler spawnHandler, SignalBus signalBus, PlayerMovement playerMovement)
+        protected override void Construct(SpawnHandler spawnHandler, PlayerMovement player, SignalBus signalBus, PauseHandler pauseHandler)
         {
-            _spawnHandler = spawnHandler;
-            _signalBus = signalBus;
-            _playerMovement = playerMovement;
-            
-            _objectsOnLevel = new List<ISpawnable>();
+            base.Construct(spawnHandler, player, signalBus, pauseHandler);
 
+            _objectsOnLevel = new List<ISpawnable>();
+        }
+
+        private void Awake()
+        {
             StartLevel();
         }
 
-        private void OnEnable()
+        public override void Unpause()
         {
             _signalBus.Register<DestroyEntitySignal>(this);
+
+            StartCoroutine(NextSpawnTick());
         }
 
-        private void OnDisable()
+        public override void Pause()
         {
             _signalBus.Unregister<DestroyEntitySignal>(this);
+            
+            StopCoroutine(NextSpawnTick());
+        }
+        
+        public void Receive(DestroyEntitySignal signal)
+        {
+            _objectsOnLevel.Remove(signal.Spawnable);
         }
 
         private void StartLevel()
@@ -54,11 +63,6 @@ namespace Level
             _currentPortalSpawnTime = _levelData.PortalSpawnTime;
 
             StartCoroutine(NextSpawnTick());
-        }
-
-        public void Receive(DestroyEntitySignal signal)
-        {
-            _objectsOnLevel.Remove(signal.Spawnable);
         }
         
         private IEnumerator NextSpawnTick()

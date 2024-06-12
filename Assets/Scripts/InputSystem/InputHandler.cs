@@ -16,6 +16,7 @@ namespace InputSystem
 		private void Construct(InputProvider inputProvider)
 		{
 			_inputProvider = inputProvider;
+			
 			ChangeInputProfile();
 		}
 		
@@ -28,18 +29,18 @@ namespace InputSystem
 		{
 			_fixedUpdatable?.FixedUpdate();
 		}
-
+		
 		private void ChangeInputProfile(Type inputType = null)
 		{
 			InputProfile newProfile = _inputProvider.GetProfile(inputType);
 
 			if (_currentProfile != null)
 				_currentProfile.OnChangeInputEvent -= ChangeInputProfile;
-
+			
 			_currentProfile = newProfile;
 			_currentProfile.OnChangeInputEvent += ChangeInputProfile;
-			_fixedUpdatable = _currentProfile as IFixedUpdatable;
 			_updatable = _currentProfile as IUpdatable;
+			_fixedUpdatable = _currentProfile as IFixedUpdatable;
 		}
 	}
 }

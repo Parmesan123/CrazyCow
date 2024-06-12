@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 
 namespace Handlers
 {
-    public class SpawnHandler
+    public class SpawnHandler : MonoBehaviour
     {
         private const int BASE_POOL_SIZE = 30;
 
