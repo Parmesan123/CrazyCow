@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Level
 {
     [CreateAssetMenu(fileName = "LevelData", menuName = "ScriptableObjects/Data/LevelData", order = 0)]
-    public class LevelData : ScriptableObject
+    public class MainLevelData : ScriptableObject
     {
         [field: Header("Crate Info")]
         [field: SerializeField, Range(0, 1)] public float BoxSpawnChance { get; private set; }

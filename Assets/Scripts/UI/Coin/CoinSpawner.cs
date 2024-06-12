@@ -1,6 +1,4 @@
-using System;
 using Handlers;
-using InteractableObject;
 using System.Collections.Generic;
 using Services;
 using UnityEngine;
@@ -36,7 +34,7 @@ namespace UI
 
 		private void OnEnable()
 		{
-			_signalBus.Register<CoinGiveSignal>(this);
+			_signalBus.RegisterUnique<CoinGiveSignal>(this);
 		}
 
 		private void OnDisable()

@@ -2,6 +2,7 @@ using InputSystem.InputProfiles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Services;
 
 namespace InputSystem
 {
@@ -10,8 +11,13 @@ namespace InputSystem
 		private readonly List<InputProfile> _inputProfiles;
 		private readonly Type _defaultInput = typeof(JoyStickInput); 
 		
-		public InputProvider(List<InputProfile> inputProfiles)
+		public InputProvider(SignalBus signalBus)
 		{
+			List<InputProfile> inputProfiles = new List<InputProfile>
+			{
+				new JoyStickInput(signalBus),
+			};
+			
 			_inputProfiles = inputProfiles;
 		}
 

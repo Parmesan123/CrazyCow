@@ -1,5 +1,6 @@
 using Properties;
 using System;
+using Services;
 using UnityEngine;
 
 namespace InputSystem.InputProfiles
@@ -7,13 +8,17 @@ namespace InputSystem.InputProfiles
 	public class JoyStickInput : InputProfile, IFixedUpdatable
 	{
 		private const string DATA_PATH = "Data/JoyStickData";
-		
-		public event Action<Vector2> OnMoveEvent;
-		public event Action<bool, Vector2> OnTouchPerformedEvent; 
 
+		private readonly SignalBus _signalBus;
+		
 		private readonly JoyStickData _joyStickData = Resources.Load<JoyStickData>(DATA_PATH);
 		private Vector2? _touchPosition;
 		private bool _isTouch;
+
+		public JoyStickInput(SignalBus signalBus)
+		{
+			_signalBus = signalBus;
+		}
 		
 		public void FixedUpdate()
 		{
@@ -22,7 +27,7 @@ namespace InputSystem.InputProfiles
 			if(_touchPosition == null)
 				return;
 			
-			OnMoveEvent.Invoke(GetMoveVector());
+			_signalBus.Invoke(new MoveSignal(GetMoveVector()));
 		}
 
 		private void CheckTouch()
@@ -34,7 +39,7 @@ namespace InputSystem.InputProfiles
 				if (_isTouch)
 				{
 					_isTouch = false;
-					OnTouchPerformedEvent.Invoke(false, Vector2.zero);
+					_signalBus.Invoke(new TouchPerformedSignal(false, Vector2.zero));
 				}
 				
 				_touchPosition = null;
@@ -42,13 +47,11 @@ namespace InputSystem.InputProfiles
 			}
 
 			if (_touchPosition != null)
-			{
 				return;
-			}
 			
 			_touchPosition = Input.GetTouch(0).position;
 			_isTouch = true;
-			OnTouchPerformedEvent.Invoke(true, (Vector2)_touchPosition);
+			_signalBus.Invoke(new TouchPerformedSignal(true, (Vector2)_touchPosition));
 		}
 
 		private Vector2 GetMoveVector()

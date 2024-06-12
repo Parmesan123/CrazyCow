@@ -36,9 +36,10 @@ namespace Installers
 
 		private void BindDestroyHandler()
 		{
-			GameObject destroyHandler = new GameObject("DestroyHandler");
-
-			Container.InstantiateComponent<DestroyHandler>(destroyHandler);
+			Container
+				.Bind<DestroyHandler>()
+				.FromNew()
+				.AsSingle();
 		}
 		
 		private void BindVaseHandler()

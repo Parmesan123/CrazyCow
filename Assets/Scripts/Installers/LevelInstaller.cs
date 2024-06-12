@@ -11,7 +11,8 @@ public class LevelInstaller : MonoInstaller
     private const string PLAYER_PATH = "Prefabs/Player/Player";
     
     [SerializeField] private Transform _playerSpawnPosition;
-    [SerializeField] private LevelBehaviour _mainLevel;
+    [SerializeField] private Transform _cameraHandlerParent;
+    [SerializeField] private MainLevelHandler _mainLevel;
     [SerializeField] private CoinSpawner _coinSpawner;
     
     public override void InstallBindings()
@@ -20,7 +21,6 @@ public class LevelInstaller : MonoInstaller
         BindFactories();
         BindPlayer();
         BindSpawnHandler();
-        BindLevel();
         FinishBindings();
     }
 
@@ -43,6 +43,11 @@ public class LevelInstaller : MonoInstaller
             .BindInterfacesAndSelfTo<VaseFactory>()
             .FromNew()
             .AsSingle();
+
+        Container
+            .BindInterfacesAndSelfTo<PortalFactory>()
+            .FromNew()
+            .AsSingle();
     }
     
     private void BindPlayer()
@@ -63,14 +68,6 @@ public class LevelInstaller : MonoInstaller
         Container
             .Bind<SpawnHandler>()
             .FromNew()
-            .AsSingle();
-    }
-
-    private void BindLevel()
-    {
-        Container
-            .Bind<LevelBehaviour>()
-            .FromInstance(_mainLevel)
             .AsSingle();
     }
 

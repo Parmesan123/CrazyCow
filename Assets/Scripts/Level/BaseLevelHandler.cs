@@ -11,9 +11,8 @@ namespace Level
         protected SpawnHandler _spawnHandler;
         protected PlayerMovement _player;
         protected SignalBus _signalBus;
-        protected PauseHandler _pauseHandler;
+        private PauseHandler _pauseHandler;
         
-        [Inject]
         protected virtual void Construct(SpawnHandler spawnHandler, PlayerMovement player, SignalBus signalBus, PauseHandler pauseHandler)
         {
             _spawnHandler = spawnHandler;

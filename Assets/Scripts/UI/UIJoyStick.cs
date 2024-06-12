@@ -1,21 +1,24 @@
 using InputSystem;
 using InputSystem.InputProfiles;
+using Services;
 using UnityEngine;
 using Zenject;
 
 namespace UI
 {
-    public class UIJoyStick : MonoBehaviour
+    public class UIJoyStick : MonoBehaviour, ISignalReceiver<MoveSignal>, ISignalReceiver<TouchPerformedSignal>
     {
         [SerializeField] private GameObject _joyStickGameObject;
         [SerializeField] private GameObject _joyStickUI;
         [SerializeField] private JoyStickData _joyStickData;
 
+        private SignalBus _signalBus;
         private JoyStickInput _joyStickInput;
 
         [Inject]
-        private void Construct(InputProvider inputProvider)
+        private void Construct(SignalBus signalBus, InputProvider inputProvider)
         {
+            _signalBus = signalBus;
             _joyStickInput = inputProvider.GetProfile(typeof(JoyStickInput)) as JoyStickInput;
         }
         
@@ -23,8 +26,8 @@ namespace UI
         {
             _joyStickGameObject.SetActive(false);
             
-            _joyStickInput.OnMoveEvent += MoveJoyStick;
-            _joyStickInput.OnTouchPerformedEvent += SetActiveJoyStick;
+            _signalBus.RegisterUnique<MoveSignal>(this);
+            _signalBus.RegisterUnique<TouchPerformedSignal>(this);
         }
         
         private void OnDestroy()
@@ -32,23 +35,25 @@ namespace UI
             if (_joyStickInput == null)
                 return;
             
-            _joyStickInput.OnMoveEvent -= MoveJoyStick;
-            _joyStickInput.OnTouchPerformedEvent -= SetActiveJoyStick;
+            _signalBus.Unregister<MoveSignal>(this);
+            _signalBus.Unregister<TouchPerformedSignal>(this);
         }
-
-        private void MoveJoyStick(Vector2 direction)
+        
+        public void Receive(MoveSignal signal)
         {
+            Vector2 direction = signal.MovementVector;
+            
             Vector3 offSet = new Vector3(direction.x * _joyStickData.JoyStickRadius, 
-                                         direction.y * _joyStickData.JoyStickRadius);
+                direction.y * _joyStickData.JoyStickRadius);
             
             _joyStickUI.transform.position = transform.position + offSet;
         }
-        
-        private void SetActiveJoyStick(bool value, Vector2 startPosition)
+
+        public void Receive(TouchPerformedSignal signal)
         {
-            transform.position = startPosition;
+            transform.position = signal.TouchPosition;
             
-            _joyStickGameObject.SetActive(value);
+            _joyStickGameObject.SetActive(signal.IsTouched);
         }
     }
 }

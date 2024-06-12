@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Services
 {
@@ -11,12 +12,15 @@ namespace Services
             _signalReceivers = new Dictionary<string, List<IBaseSignalReceiver>>();
         }
         
-        public void Register<T>(ISignalReceiver<T> callback) where T: ISignal
+        public void RegisterUnique<T>(ISignalReceiver<T> callback) where T: ISignal
         {
             string callbackKey = typeof(T).Name;
             if (!_signalReceivers.ContainsKey(callbackKey))
                 _signalReceivers[callbackKey] = new List<IBaseSignalReceiver>();
 
+            if (_signalReceivers[callbackKey].Contains(callback))
+                throw new Exception("Can't register signal receiver twice");
+            
             _signalReceivers[callbackKey].Add(callback);
         }
         

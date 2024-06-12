@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
-public class PauseHandler : MonoBehaviour
+public class PauseHandler
 {
     private List<IPausable> _pausables;
     
     public bool IsGamePaused { get; private set; }
 
-    private void Awake()
+    public PauseHandler()
     {
         _pausables = new List<IPausable>();
     }

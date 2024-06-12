@@ -16,16 +16,10 @@ namespace Installers
 
 		private void BindInputProvider()
 		{
-			List<InputProfile> inputProfiles = new List<InputProfile>
-			{
-				new JoyStickInput(),
-			};
-
 			Container
 				.Bind<InputProvider>()
 				.FromNew()
-				.AsSingle()
-				.WithArguments(inputProfiles);
+				.AsSingle();
 		}
 
 		private void BindInputHandler()

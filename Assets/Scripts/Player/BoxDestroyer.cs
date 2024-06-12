@@ -1,4 +1,3 @@
-using System;
 using InteractableObject;
 using ModestTree;
 using System.Collections.Generic;
@@ -24,8 +23,10 @@ namespace Player
 		private void Construct(SignalBus signalBus, PauseHandler pauseHandler)
 		{
 			_signalBus = signalBus;
+			_pauseHandler = pauseHandler;
 			
 			_pauseHandler.Register(this);
+			_signalBus.RegisterUnique<DestroyRemoveSignal>(this);
 		}
 		
 		private void Awake()
@@ -58,7 +59,7 @@ namespace Player
 		
 		public void Unpause()
 		{
-			_signalBus.Register<DestroyRemoveSignal>(this);
+			_signalBus.RegisterUnique<DestroyRemoveSignal>(this);
 		}
 
 		public void Pause()

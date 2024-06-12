@@ -8,18 +8,18 @@ using Random = UnityEngine.Random;
 
 namespace Handlers
 {
-    public class SpawnHandler : MonoBehaviour
+    public class SpawnHandler
     {
         private const int BASE_POOL_SIZE = 30;
 
-        private SpawnHandlerData _spawnHandlerData;
+        private readonly SpawnHandlerData _spawnHandlerData;
 
-        private Pool<Box> _boxPool;
-        private Pool<Vase> _vasePool;
-        private Pool<Portal> _portalPool;
+        private readonly Pool<Box> _boxPool;
+        private readonly Pool<Vase> _vasePool;
+        private readonly Pool<Portal> _portalPool;
 
         [Inject]
-        public void Construct(BoxFactory boxFactory, VaseFactory vaseFactory, PortalFactory portalFactory, SpawnHandlerData spawnHandlerData)
+        public SpawnHandler(BoxFactory boxFactory, VaseFactory vaseFactory, PortalFactory portalFactory, SpawnHandlerData spawnHandlerData)
         {
             GameObject boxParent = new GameObject("Boxes");
             _boxPool = new Pool<Box>(BASE_POOL_SIZE, boxFactory, boxParent.transform);
@@ -54,9 +54,9 @@ namespace Handlers
 
                 for (int i = 0; i < _spawnHandlerData.BoxesWithVaseCount; i++)
                 {
+                    Vector3 cratePosition = GetRandomPointInCircle(_spawnHandlerData.VaseRadiusThreshold, vase.transform);
+                    
                     Box freeCrate = _boxPool.ObjectGetFreeOrCreate();
-
-                    Vector3 cratePosition = GetRandomPointInCircle(levelCollider.bounds, _spawnHandlerData.VaseRadiusThreshold, vase.transform);
                     freeCrate.transform.position = cratePosition;
                     freeCrate.Spawn();
                 }
@@ -76,13 +76,13 @@ namespace Handlers
             throw new Exception("Can't form entity from spawn request");
         }
         
-        private Vector3 GetRandomPointInCircle(Bounds mapBounds, float radius, Transform center)
+        private Vector3 GetRandomPointInCircle(float radius, Transform center)
         {
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < 400; i++)
             {
                 Vector3 randomPointInCircle = center.GetRandomPointOnCircle(radius);
                 
-                Collider[] colliders = Physics.OverlapSphere(randomPointInCircle, radius);
+                Collider[] colliders = Physics.OverlapSphere(randomPointInCircle, _spawnHandlerData.MinRangeBetweenObjects);
                 if (colliders.Any(c => c.TryGetComponent(out ISpawnable _)))
                     continue;
                 
@@ -98,11 +98,15 @@ namespace Handlers
             {
                 Vector3 randomPoint = GetRandomPointInCollider(mapBounds, offset);
 
-                if (avoid != null)
-                    return randomPoint;
-                
-                Collider[] colliders = Physics.OverlapSphere(randomPoint, _spawnHandlerData.SpawnRadiusThreshold);
+                Collider[] colliders = Physics.OverlapSphere(randomPoint, _spawnHandlerData.MinRangeBetweenObjects);
                 if (colliders.Any(c => c.TryGetComponent(out ISpawnable _)))
+                    continue;
+                
+                if (avoid == null)
+                    return randomPoint;
+
+                colliders = Physics.OverlapSphere(randomPoint, _spawnHandlerData.SpawnRadiusThreshold);
+                if (colliders.Any(c => c.gameObject == avoid.gameObject))
                     continue;
                 
                 return randomPoint;

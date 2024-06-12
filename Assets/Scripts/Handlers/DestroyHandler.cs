@@ -7,15 +7,16 @@ using System.Threading.Tasks;
 using Services;
 using Signals;
 using Zenject;
+using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 namespace Handlers
 {
-	public class DestroyHandler : MonoBehaviour, ISignalReceiver<DestroyAnimationSignal>
+	public class DestroyHandler : IDisposable, ISignalReceiver<DestroyAnimationSignal>
 	{
 		private readonly List<ParticleData> _modelParticles = new List<ParticleData>();
 
-		private SignalBus _signalBus;
+		private readonly SignalBus _signalBus;
 		
 		private class ParticleData
 		{
@@ -30,17 +31,14 @@ namespace Handlers
 		}
 		
 		[Inject]
-		private void Construct(SignalBus signalBus)
+		private DestroyHandler(SignalBus signalBus)
 		{
 			_signalBus = signalBus;
+			
+			_signalBus.RegisterUnique<DestroyAnimationSignal>(this);
 		}
-
-		private void OnEnable()
-		{
-			_signalBus.Register<DestroyAnimationSignal>(this);
-		}
-
-		private void OnDisable()
+		
+		public void Dispose()
 		{
 			_signalBus.Unregister<DestroyAnimationSignal>(this);
 		}
@@ -65,7 +63,7 @@ namespace Handlers
 					rotation = model.transform.rotation
 				}
 			};
-			GameObject copyModel = Instantiate(model, parent.transform);
+			GameObject copyModel = Object.Instantiate(model, parent.transform);
 
 			finalParticle.Add(copyModel);
 
@@ -93,7 +91,7 @@ namespace Handlers
 					}
 					
 					temp.AddRange(pieces);
-					Destroy(piece);
+					Object.Destroy(piece);
 				}
 
 				finalParticle.Clear();
@@ -105,7 +103,7 @@ namespace Handlers
 			{
 				Rigidbody rb = piece.AddComponent<Rigidbody>();
 				piece.AddComponent<MeshCollider>().convex = true;
-				rb.AddExplosionForce(200f, transform.position, 2);
+				rb.AddExplosionForce(200f, copyModel.transform.position, 2);
 			}
 			
 			return finalParticle;
@@ -136,7 +134,7 @@ namespace Handlers
 				foreach (ParticleData particleData in keysMarkedToDestroy)
 				{
 					_modelParticles.Remove(particleData);
-					Destroy(particleData.Particle);
+					Object.Destroy(particleData.Particle);
 				}
 				
 				keysMarkedToDestroy.Clear();
@@ -147,7 +145,7 @@ namespace Handlers
 				await Task.Delay(TimeSpan.FromSeconds(Time.fixedDeltaTime));
 			}
 			
-			Destroy(parent);
+			Object.Destroy(parent);
 		}
 	}
 }

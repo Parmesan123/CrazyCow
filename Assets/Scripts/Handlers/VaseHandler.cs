@@ -23,9 +23,9 @@ namespace Handlers
             _data = vaseData;
 
             _signalBus = signalBus;
-            _signalBus.Register<SpawnVaseAroundCrateSignal>(this);
-            _signalBus.Register<SpawnBoxAroundVaseSignal>(this);
-            _signalBus.Register<DestroyBoxAroundVaseSignal>(this);
+            _signalBus.RegisterUnique<SpawnVaseAroundCrateSignal>(this);
+            _signalBus.RegisterUnique<SpawnBoxAroundVaseSignal>(this);
+            _signalBus.RegisterUnique<DestroyBoxAroundVaseSignal>(this);
         }
         
         public void Dispose()
