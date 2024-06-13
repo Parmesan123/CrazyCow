@@ -1,7 +1,6 @@
-using InputSystem;
-using InputSystem.InputProfiles;
 using System;
 using Services;
+using Signals;
 using UnityEngine;
 using Zenject;
 
@@ -12,18 +11,16 @@ namespace Player
 		[SerializeField] private PlayerData _playerData;
 		
 		private Rigidbody _rigidbody;
-		private JoyStickInput _input;
 		private PauseHandler _pauseHandler;
 		private SignalBus _signalBus;
 		
 		private float Speed => _playerData.PlayerSpeed;
 		
 		[Inject]
-		private void Construct(SignalBus signalBus, InputProvider inputProvider, PauseHandler pauseHandler)
+		private void Construct(SignalBus signalBus, PauseHandler pauseHandler)
 		{
 			_signalBus = signalBus;
 			
-			_input = inputProvider.GetProfile(typeof(JoyStickInput)) as JoyStickInput;
 			_pauseHandler = pauseHandler;
 			
 			_pauseHandler.Register(this);

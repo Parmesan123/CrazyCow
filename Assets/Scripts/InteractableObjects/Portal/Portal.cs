@@ -1,5 +1,6 @@
 using System.Collections;
 using Services;
+using Signals;
 using UnityEngine;
 using Zenject;
 
@@ -31,7 +32,6 @@ namespace InteractableObject
 		protected override void Interact()
 		{
 			_signalBus.Invoke(new PortalEnteredSignal(this));
-			Debug.Log("Interact with portal");
 		}
 
 		private IEnumerator TimerUntilDespawn()

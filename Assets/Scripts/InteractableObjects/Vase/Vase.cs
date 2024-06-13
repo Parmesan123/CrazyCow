@@ -1,4 +1,5 @@
 using System;
+using Signals;
 using UnityEngine;
 
 namespace InteractableObject
@@ -18,7 +19,8 @@ namespace InteractableObject
 
 		public override void Spawn()
 		{
-			SignalBus.Invoke(new SpawnVaseAroundCrateSignal(this));
+			SignalBus.Invoke(new VaseSpawnSignal(this));
+			
 			base.Spawn();
 		}
 	}

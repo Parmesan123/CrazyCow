@@ -3,11 +3,11 @@ using Services;
 
 namespace Signals
 {
-    public class DestroyBoxAroundVaseSignal : ISignal
+    public class BoxSpawnSignal : ISignal
     {
         public readonly Box Box;
 
-        public DestroyBoxAroundVaseSignal(Box box)
+        public BoxSpawnSignal(Box box)
         {
             Box = box;
         }

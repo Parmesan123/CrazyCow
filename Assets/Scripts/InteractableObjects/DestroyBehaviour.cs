@@ -10,8 +10,8 @@ namespace InteractableObject
 	public abstract class DestroyBehaviour : MonoBehaviour, ISpawnable, IDestroyable
 	{
 		[SerializeField] private GameObject _model;
-		
 		[SerializeField] protected DestroyableData _data;
+		
 		protected SignalBus SignalBus;
 		
 		private bool _isStopDestroy;
@@ -54,9 +54,8 @@ namespace InteractableObject
 
 		public virtual void Destroy()
 		{
-			SignalBus.Invoke(new DestroyRemoveSignal(this));
-			SignalBus.Invoke(new DestroyAnimationSignal(_data, _model));
 			SignalBus.Invoke(new DestroyEntitySignal(this));
+			SignalBus.Invoke(new DestroyAnimationSignal(_data, _model));
 			gameObject.SetActive(false);
 		}
 

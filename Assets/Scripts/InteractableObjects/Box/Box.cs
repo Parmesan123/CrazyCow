@@ -1,4 +1,3 @@
-using Services;
 using Signals;
 
 namespace InteractableObject
@@ -14,15 +13,14 @@ namespace InteractableObject
         
         public override void Spawn()
         {
-            SignalBus.Invoke(new SpawnBoxAroundVaseSignal(this));
+            SignalBus.Invoke(new BoxSpawnSignal(this));
             base.Spawn();
         }
 
         public override void Destroy()
         {
-            SignalBus.Invoke(new DestroyRemoveSignal(this));
             SignalBus.Invoke(new CoinGiveSignal(transform, AmountCoin));
-            SignalBus.Invoke(new DestroyBoxAroundVaseSignal(this));
+            
             base.Destroy();
         }
     }

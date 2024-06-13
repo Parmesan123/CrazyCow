@@ -1,6 +1,4 @@
 using InputSystem;
-using InputSystem.InputProfiles;
-using System.Collections.Generic;
 using Zenject;
 using UnityEngine;
 

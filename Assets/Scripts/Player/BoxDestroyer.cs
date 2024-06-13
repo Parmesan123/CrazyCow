@@ -8,11 +8,11 @@ using Zenject;
 
 namespace Player
 {
-	public class BoxDestroyer : MonoBehaviour, IPausable, ISignalReceiver<DestroyRemoveSignal>
+	public class BoxDestroyer : MonoBehaviour, IPausable, ISignalReceiver<DestroyEntitySignal>
 	{
 		[SerializeField] private PlayerData _playerData;
 
-		private readonly List<DestroyBehaviour> _destroyables = new List<DestroyBehaviour>();
+		private readonly List<IDestroyable> _destroyables = new List<IDestroyable>();
 
 		private DestroyBehaviour _currentDestroyBehaviour;
 
@@ -26,7 +26,7 @@ namespace Player
 			_pauseHandler = pauseHandler;
 			
 			_pauseHandler.Register(this);
-			_signalBus.RegisterUnique<DestroyRemoveSignal>(this);
+			_signalBus.RegisterUnique<DestroyEntitySignal>(this);
 		}
 		
 		private void Awake()
@@ -59,17 +59,17 @@ namespace Player
 		
 		public void Unpause()
 		{
-			_signalBus.RegisterUnique<DestroyRemoveSignal>(this);
+			_signalBus.RegisterUnique<DestroyEntitySignal>(this);
 		}
 
 		public void Pause()
 		{
-			_signalBus.Unregister<DestroyRemoveSignal>(this);
+			_signalBus.Unregister<DestroyEntitySignal>(this);
 		}
 
-		public void Receive(DestroyRemoveSignal signal)
+		public void Receive(DestroyEntitySignal signal)
 		{
-			_destroyables.Remove(signal.Destroyable);
+			_destroyables.Remove(signal.Entity);
 			
 			SetNextCurrentDestroyable();
 		}
@@ -104,7 +104,7 @@ namespace Player
 				return;
 			}
 			
-			_currentDestroyBehaviour = _destroyables[0];
+			_currentDestroyBehaviour = _destroyables[0] as DestroyBehaviour;
 			_currentDestroyBehaviour.StartDestroy();
 		}
 	}

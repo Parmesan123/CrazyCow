@@ -1,12 +1,15 @@
 ﻿using InteractableObject;
 using Services;
 
-public class PortalEnteredSignal : ISignal
+namespace Signals
 {
-    public readonly Portal Portal;
-
-    public PortalEnteredSignal(Portal portal)
+    public class PortalEnteredSignal : ISignal
     {
-        Portal = portal;
+        public readonly Portal Portal;
+
+        public PortalEnteredSignal(Portal portal)
+        {
+            Portal = portal;
+        }
     }
 }

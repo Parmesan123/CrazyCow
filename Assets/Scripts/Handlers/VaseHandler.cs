@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using InteractableObject;
 using ModestTree;
 using Services;
+using Signals;
 using UnityEngine;
 using Zenject;
 
 namespace Handlers
 {
-    public class VaseHandler : IDisposable, ISignalReceiver<SpawnVaseAroundCrateSignal>, ISignalReceiver<SpawnBoxAroundVaseSignal>, ISignalReceiver<DestroyBoxAroundVaseSignal>
+    public class VaseHandler : IDisposable, ISignalReceiver<VaseSpawnSignal>, ISignalReceiver<BoxSpawnSignal>, ISignalReceiver<DestroyBoxAroundVaseSignal>
     {
         private readonly Dictionary<Vase, List<Box>> _activeVases;
         private readonly VaseHandlerData _data;
@@ -23,15 +24,15 @@ namespace Handlers
             _data = vaseData;
 
             _signalBus = signalBus;
-            _signalBus.RegisterUnique<SpawnVaseAroundCrateSignal>(this);
-            _signalBus.RegisterUnique<SpawnBoxAroundVaseSignal>(this);
+            _signalBus.RegisterUnique<VaseSpawnSignal>(this);
+            _signalBus.RegisterUnique<BoxSpawnSignal>(this);
             _signalBus.RegisterUnique<DestroyBoxAroundVaseSignal>(this);
         }
         
         public void Dispose()
         {
-            _signalBus.Unregister<SpawnVaseAroundCrateSignal>(this);
-            _signalBus.Unregister<SpawnBoxAroundVaseSignal>(this);
+            _signalBus.Unregister<VaseSpawnSignal>(this);
+            _signalBus.Unregister<BoxSpawnSignal>(this);
             _signalBus.Unregister<DestroyBoxAroundVaseSignal>(this);
         }
 
@@ -40,7 +41,7 @@ namespace Handlers
             _activeVases.Add(vase, new List<Box>());
         }
         
-        public void Receive(SpawnVaseAroundCrateSignal signal)
+        public void Receive(VaseSpawnSignal signal)
         {
             Vase vase = signal.Vase;
             
@@ -56,7 +57,7 @@ namespace Handlers
             }
         }
 
-        public void Receive(SpawnBoxAroundVaseSignal signal)
+        public void Receive(BoxSpawnSignal signal)
         {
             Box box = signal.Box;
             

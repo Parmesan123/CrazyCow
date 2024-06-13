@@ -4,6 +4,7 @@ using Handlers;
 using InteractableObject;
 using Player;
 using Services;
+using Signals;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
@@ -16,14 +17,14 @@ namespace Level
         [SerializeField] private BoxCollider _boxCollider;
         
         private float _currentPortalSpawnTime;
-        private List<ISpawnable> _objectsOnLevel;
+        private List<IDestroyable> _objectsOnLevel;
         
         [Inject]
         protected override void Construct(SpawnHandler spawnHandler, PlayerMovement player, SignalBus signalBus, PauseHandler pauseHandler)
         {
             base.Construct(spawnHandler, player, signalBus, pauseHandler);
 
-            _objectsOnLevel = new List<ISpawnable>();
+            _objectsOnLevel = new List<IDestroyable>();
             
             _signalBus.RegisterUnique<DestroyEntitySignal>(this);
             _signalBus.RegisterUnique<PortalEnteredSignal>(this);
@@ -52,7 +53,7 @@ namespace Level
         
         public void Receive(DestroyEntitySignal signal)
         {
-            _objectsOnLevel.Remove(signal.Spawnable);
+            _objectsOnLevel.Remove(signal.Entity);
         }
         
         public void Receive(PortalEnteredSignal signal)
@@ -111,8 +112,8 @@ namespace Level
         private void OnEntitySpawnRequested<T>() where T : ISpawnable
         {
             T entityInstance = _spawnHandler.TrySpawnAndPlaceEntity<T>(_boxCollider, _player.transform);
-            if (entityInstance is IDestroyable _)
-                _objectsOnLevel.Add(entityInstance);    
+            if (entityInstance is IDestroyable convertable)
+                _objectsOnLevel.Add(convertable);    
         }
     }
 }

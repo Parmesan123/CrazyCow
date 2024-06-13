@@ -1,12 +1,15 @@
 ﻿using InteractableObject;
 using Services;
 
-public class VaseDestroyedByPlayerSignal : ISignal
+namespace Signals
 {
-    public readonly Vase Vase;
-
-    public VaseDestroyedByPlayerSignal(Vase vase)
+    public class VaseDestroyedByPlayerSignal : ISignal
     {
-        Vase = vase;
+        public readonly Vase Vase;
+
+        public VaseDestroyedByPlayerSignal(Vase vase)
+        {
+            Vase = vase;
+        }
     }
 }

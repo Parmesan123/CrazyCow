@@ -1,12 +1,15 @@
 ﻿using Services;
 using UnityEngine;
 
-public class MoveSignal : ISignal
+namespace Signals
 {
-    public readonly Vector2 MovementVector;
-
-    public MoveSignal(Vector2 movementVector)
+    public class MoveSignal : ISignal
     {
-        MovementVector = movementVector;
+        public readonly Vector2 MovementVector;
+
+        public MoveSignal(Vector2 movementVector)
+        {
+            MovementVector = movementVector;
+        }
     }
 }

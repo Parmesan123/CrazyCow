@@ -1,9 +1,9 @@
 using Properties;
-using System;
 using Services;
+using Signals;
 using UnityEngine;
 
-namespace InputSystem.InputProfiles
+namespace InputSystem
 {
 	public class JoyStickInput : InputProfile, IFixedUpdatable
 	{
