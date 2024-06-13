@@ -118,5 +118,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b0df82beed040109c82214328fea375, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _model: {fileID: 0}
-  _data: {fileID: 11400000, guid: 24a6f02e79a720a43aeb13303c6c84fe, type: 2}
+  <Model>k__BackingField: {fileID: 919132149155446097, guid: 2b663d7e64ae5eb4e977e752050c05a5, type: 3}
+  <Data>k__BackingField: {fileID: 11400000, guid: 24a6f02e79a720a43aeb13303c6c84fe, type: 2}

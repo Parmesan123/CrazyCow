@@ -1,30 +1,28 @@
 using System;
-using Services;
-using Signals;
+using InputSystem;
 using UnityEngine;
 using Zenject;
 
 namespace Player
 {
-	public class PlayerMovement : MonoBehaviour, IPausable, ISignalReceiver<MoveSignal>
+	public class PlayerMovement : MonoBehaviour, IPausable
 	{
 		[SerializeField] private PlayerData _playerData;
 		
 		private Rigidbody _rigidbody;
+		private JoyStickInput _input;
 		private PauseHandler _pauseHandler;
-		private SignalBus _signalBus;
 		
 		private float Speed => _playerData.PlayerSpeed;
 		
 		[Inject]
-		private void Construct(SignalBus signalBus, PauseHandler pauseHandler)
+		private void Construct(PauseHandler pauseHandler, InputProvider inputProvider)
 		{
-			_signalBus = signalBus;
-			
 			_pauseHandler = pauseHandler;
-			
 			_pauseHandler.Register(this);
-			_signalBus.RegisterUnique<MoveSignal>(this);
+			
+			_input = inputProvider.GetProfile(typeof(JoyStickInput)) as JoyStickInput;
+			_input.OnMove += Move;
 		}
 
 		private void Awake()
@@ -38,22 +36,24 @@ namespace Player
 		private void OnDestroy()
 		{
 			_pauseHandler.Unregister(this);
-		}
 
+			_input.OnMove -= Move;
+		}
+		
 		public void Pause()
 		{
-			_signalBus.Unregister<MoveSignal>(this);
+			//TODO: rework
+			_input.OnMove -= Move;
 		}
 
 		public void Unpause()
 		{
-			_signalBus.RegisterUnique<MoveSignal>(this);
+			//TODO: rework
+			_input.OnMove += Move;
 		}
 
-		public void Receive(MoveSignal signal)
+		private void Move(Vector2 direction)
 		{
-			Vector2 direction = signal.MovementVector;
-			
 			Vector3 offSet = new Vector3(direction.x * Time.fixedDeltaTime * Speed, 0,
 				direction.y * Time.fixedDeltaTime * Speed);
 			Vector3 newPosition = transform.position + offSet;

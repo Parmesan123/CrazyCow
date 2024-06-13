@@ -1,8 +1,6 @@
 ﻿using Handlers;
 using Player;
-using Services;
 using UnityEngine;
-using Zenject;
 
 namespace Level
 {
@@ -10,20 +8,19 @@ namespace Level
     {
         protected SpawnHandler _spawnHandler;
         protected PlayerMovement _player;
-        protected SignalBus _signalBus;
         private PauseHandler _pauseHandler;
         
-        protected virtual void Construct(SpawnHandler spawnHandler, PlayerMovement player, SignalBus signalBus, PauseHandler pauseHandler)
+        protected void Construct(PauseHandler pauseHandler, SpawnHandler spawnHandler, PlayerMovement player)
         {
-            _spawnHandler = spawnHandler;
-            _player = player;
-            _signalBus = signalBus;
             _pauseHandler = pauseHandler;
-            
             _pauseHandler.Register(this);
+            
+            _spawnHandler = spawnHandler;
+            
+            _player = player;
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             _pauseHandler.Unregister(this);
         }

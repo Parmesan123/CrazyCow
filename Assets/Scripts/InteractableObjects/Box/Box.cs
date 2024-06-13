@@ -1,25 +1,18 @@
-using Signals;
+using System;
+using UnityEngine;
 
 namespace InteractableObject
 {
     public class Box : DestroyBehaviour, ICoinGiver
     {
-        public int AmountCoin { get; private set; }
+        public event Action<ICoinGiver> OnCoinGive;
 
-        private void OnEnable()
-        {
-            AmountCoin = _data.AmountCoin;
-        }
-        
-        public override void Spawn()
-        {
-            SignalBus.Invoke(new BoxSpawnSignal(this));
-            base.Spawn();
-        }
+        public int AmountCoin => Data.AmountCoin;
+        public Transform Transform => transform;
 
         public override void Destroy()
         {
-            SignalBus.Invoke(new CoinGiveSignal(transform, AmountCoin));
+            OnCoinGive.Invoke(this);
             
             base.Destroy();
         }

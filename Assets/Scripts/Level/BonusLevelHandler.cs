@@ -6,80 +6,87 @@ using Level;
 using ModestTree;
 using NaughtyAttributes;
 using Player;
-using Services;
-using Signals;
 using UnityEngine;
 using Zenject;
 
-public class BonusLevelHandler : BaseLevelHandler, ISignalReceiver<VaseDestroyedByBotSignal>, ISignalReceiver<VaseDestroyedByPlayerSignal>, ISignalReceiver<PortalEnteredSignal>
+public class BonusLevelHandler : BaseLevelHandler
 {
     [SerializeField, Expandable] private BonusLevelData _levelData;
     [SerializeField] private Transform _playerSpawnPoint;
     [SerializeField] private Transform _botSpawnPoint;
     [SerializeField] private BoxCollider _levelBounds;
 
+    private PortalFactory _portalFactory;
     private List<Vase> _vasesOnField;
+    private List<Box> _boxesOnField;
     private int _currentBotPoints;
     private int _currentPlayerPoints;
     
     [Inject]
-    protected override void Construct(SpawnHandler spawnHandler, PlayerMovement player, SignalBus signalBus, PauseHandler pauseHandler)
+    protected void Construct(PauseHandler pauseHandler, SpawnHandler spawnHandler, PlayerMovement player, PortalFactory portalFactory)
     {
-        base.Construct(spawnHandler, player, signalBus, pauseHandler);
+        base.Construct(pauseHandler, spawnHandler, player);
 
         _vasesOnField = new List<Vase>();
+        _boxesOnField = new List<Box>();
+
+        _portalFactory = portalFactory;
+        _portalFactory.OnPortalEnter += PortalEntered;
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
         
-        _signalBus.RegisterUnique<VaseDestroyedByBotSignal>(this);
-        _signalBus.RegisterUnique<VaseDestroyedByPlayerSignal>(this);
-        _signalBus.RegisterUnique<PortalEnteredSignal>(this);
+        _portalFactory.OnPortalEnter -= PortalEntered;
     }
 
     public override void Unpause()
     {
-        _signalBus.RegisterUnique<VaseDestroyedByBotSignal>(this);
-        _signalBus.RegisterUnique<VaseDestroyedByPlayerSignal>(this);
-        _signalBus.RegisterUnique<PortalEnteredSignal>(this);
+        //TODO: rework
+        _portalFactory.OnPortalEnter -= PortalEntered;
     }
 
     public override void Pause()
     {
-        _signalBus.Unregister<VaseDestroyedByBotSignal>(this);
-        _signalBus.Unregister<VaseDestroyedByPlayerSignal>(this);
-        _signalBus.Unregister<PortalEnteredSignal>(this);
+        //TODO: rework
+        _portalFactory.OnPortalEnter -= PortalEntered;
     }
     
-    public void Receive(VaseDestroyedByBotSignal signal)
+    private void VaseDestroyedByBot(Vase vase)
     {
         _currentBotPoints++;
 
-        if (!_vasesOnField.Contains(signal.Vase))
+        if (!_vasesOnField.Contains(vase))
             throw new Exception("Can't process vase destroy signal");
-        _vasesOnField.Remove(signal.Vase);
+        _vasesOnField.Remove(vase);
         
         CalculateWin();
     }
 
-    public void Receive(VaseDestroyedByPlayerSignal signal)
+    private void VaseDestroyedByPlayer(Vase vase)
     {
         _currentPlayerPoints++;
         
-        if (!_vasesOnField.Contains(signal.Vase))
+        if (!_vasesOnField.Contains(vase))
             throw new Exception("Can't process vase destroy signal");
-        _vasesOnField.Remove(signal.Vase);
+        _vasesOnField.Remove(vase);
         
         CalculateWin();
     }
     
-    public void Receive(PortalEnteredSignal signal)
+    private void PortalEntered()
     {
         _currentBotPoints = 0;
         
         _player.transform.position = _playerSpawnPoint.position;
         _currentPlayerPoints = 0;
 
-        int generatedBoxCount = _levelData.BoxCount;
-        for (int i = 0; i < generatedBoxCount; i++)
-            _spawnHandler.TrySpawnAndPlaceEntity<Box>(_levelBounds);
+        for (int i = 0; i < _levelData.BoxCount; i++)
+        {
+            Box newBox = _spawnHandler.TrySpawnAndPlaceEntity<Box>(_levelBounds);
+            _boxesOnField.Add(newBox);
+        }
 
         for (int i = 0; i < _levelData.VaseCount; i++)
         {

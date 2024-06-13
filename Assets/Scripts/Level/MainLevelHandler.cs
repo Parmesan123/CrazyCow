@@ -3,60 +3,74 @@ using System.Collections.Generic;
 using Handlers;
 using InteractableObject;
 using Player;
-using Services;
-using Signals;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
 
 namespace Level
 {
-    public class MainLevelHandler : BaseLevelHandler, ISignalReceiver<DestroyEntitySignal>, ISignalReceiver<PortalEnteredSignal>
+    public class MainLevelHandler : BaseLevelHandler
     {
         [SerializeField] private MainLevelData _mainLevelData;
         [SerializeField] private BoxCollider _boxCollider;
-        
+
+        private BoxFactory _boxFactory;
+        private VaseFactory _vaseFactory;
+        private PortalFactory _portalFactory;
         private float _currentPortalSpawnTime;
         private List<IDestroyable> _objectsOnLevel;
         
         [Inject]
-        protected override void Construct(SpawnHandler spawnHandler, PlayerMovement player, SignalBus signalBus, PauseHandler pauseHandler)
+        protected void Construct(PauseHandler pauseHandler, SpawnHandler spawnHandler, PlayerMovement player, BoxFactory boxFactory, VaseFactory vaseFactory, PortalFactory portalFactory)
         {
-            base.Construct(spawnHandler, player, signalBus, pauseHandler);
+            base.Construct(pauseHandler, spawnHandler, player);
 
             _objectsOnLevel = new List<IDestroyable>();
-            
-            _signalBus.RegisterUnique<DestroyEntitySignal>(this);
-            _signalBus.RegisterUnique<PortalEnteredSignal>(this);
+
+            _portalFactory = portalFactory;
+            _portalFactory.OnPortalEnter += PortalEntered;
+
+            _boxFactory = boxFactory;
+            _boxFactory.OnDestroyBox += DestroyEntity;
+
+            _vaseFactory = vaseFactory;
+            _vaseFactory.OnDestroyVase += DestroyEntity;
         }
 
         private void Awake()
         {
             StartLevel();
         }
+        
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            
+            _portalFactory.OnPortalEnter -= PortalEntered;
+
+            _boxFactory.OnDestroyBox -= DestroyEntity;
+
+            _vaseFactory.OnDestroyVase -= DestroyEntity;
+        }
 
         public override void Unpause()
         {
-            _signalBus.RegisterUnique<DestroyEntitySignal>(this);
-            _signalBus.RegisterUnique<PortalEnteredSignal>(this);
-
+            //TODO: rework
             StartCoroutine(NextSpawnTick());
         }
 
         public override void Pause()
         {
-            _signalBus.Unregister<DestroyEntitySignal>(this);
-            _signalBus.Unregister<PortalEnteredSignal>(this);
-            
+            //TODO: rework
             StopCoroutine(NextSpawnTick());
         }
         
-        public void Receive(DestroyEntitySignal signal)
+        private void DestroyEntity(IDestroyable destroyable)
         {
-            _objectsOnLevel.Remove(signal.Entity);
+            _objectsOnLevel.Remove(destroyable);
         }
         
-        public void Receive(PortalEnteredSignal signal)
+        private void PortalEntered()
         {
             Pause();
         }

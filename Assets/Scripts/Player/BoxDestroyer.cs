@@ -1,32 +1,33 @@
 using InteractableObject;
 using ModestTree;
 using System.Collections.Generic;
-using Services;
-using Signals;
 using UnityEngine;
 using Zenject;
 
 namespace Player
 {
-	public class BoxDestroyer : MonoBehaviour, IPausable, ISignalReceiver<DestroyEntitySignal>
+	public class BoxDestroyer : MonoBehaviour, IPausable
 	{
 		[SerializeField] private PlayerData _playerData;
 
 		private readonly List<IDestroyable> _destroyables = new List<IDestroyable>();
-
 		private DestroyBehaviour _currentDestroyBehaviour;
-
-		private SignalBus _signalBus;
+		
 		private PauseHandler _pauseHandler;
+		private BoxFactory _boxFactory;
+		private VaseFactory _vaseFactory;
 		
 		[Inject]
-		private void Construct(SignalBus signalBus, PauseHandler pauseHandler)
+		private void Construct(PauseHandler pauseHandler, BoxFactory boxFactory, VaseFactory vaseFactory)
 		{
-			_signalBus = signalBus;
 			_pauseHandler = pauseHandler;
-			
 			_pauseHandler.Register(this);
-			_signalBus.RegisterUnique<DestroyEntitySignal>(this);
+
+			_boxFactory = boxFactory;
+			_boxFactory.OnDestroyBox += DestroyEntity;
+			
+			_vaseFactory = vaseFactory;
+			_vaseFactory.OnDestroyVase += DestroyEntity;
 		}
 		
 		private void Awake()
@@ -55,21 +56,31 @@ namespace Player
 		private void OnDestroy()
 		{
 			_pauseHandler.Unregister(this);
+			
+			_boxFactory.OnDestroyBox -= DestroyEntity;
+			
+			_vaseFactory.OnDestroyVase -= DestroyEntity;
 		}
 		
 		public void Unpause()
 		{
-			_signalBus.RegisterUnique<DestroyEntitySignal>(this);
+			//TODO: rework
+			_boxFactory.OnDestroyBox += DestroyEntity;
+			
+			_vaseFactory.OnDestroyVase += DestroyEntity;
 		}
 
 		public void Pause()
 		{
-			_signalBus.Unregister<DestroyEntitySignal>(this);
+			//TODO: rework
+			_boxFactory.OnDestroyBox -= DestroyEntity;
+			
+			_vaseFactory.OnDestroyVase -= DestroyEntity;
 		}
 
-		public void Receive(DestroyEntitySignal signal)
+		private void DestroyEntity(IDestroyable destroyable)
 		{
-			_destroyables.Remove(signal.Entity);
+			_destroyables.Remove(destroyable);
 			
 			SetNextCurrentDestroyable();
 		}

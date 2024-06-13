@@ -1,37 +1,32 @@
+using System;
 using System.Collections;
-using Services;
-using Signals;
 using UnityEngine;
-using Zenject;
 
 namespace InteractableObject
 {
 	public class Portal : Interactable, ISpawnable
 	{
 		private new PortalData _interactableData;
-
-		private SignalBus _signalBus;
 		
-		[Inject]
-		private void Construct(SignalBus signalBus)
-		{
-			_signalBus = signalBus;
-		}
+		public event Action<ISpawnable> OnSpawn;
+		public event Action OnEnter;
 		
 		private void Awake()
 		{
 			_interactableData = base._interactableData as PortalData;
 		}
-
+		
 		public void Spawn()
 		{
+			OnSpawn?.Invoke(this);
+			
 			gameObject.SetActive(true);
 			StartCoroutine(TimerUntilDespawn());
 		}
 		
 		protected override void Interact()
 		{
-			_signalBus.Invoke(new PortalEnteredSignal(this));
+			OnEnter.Invoke();
 		}
 
 		private IEnumerator TimerUntilDespawn()

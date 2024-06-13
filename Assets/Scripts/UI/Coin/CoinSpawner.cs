@@ -1,14 +1,14 @@
+using System;
 using Handlers;
 using System.Collections.Generic;
-using Services;
-using Signals;
+using InteractableObject;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
 
 namespace UI
 {
-	public class CoinSpawner : MonoBehaviour, ISignalReceiver<CoinGiveSignal>
+	public class CoinSpawner : MonoBehaviour
 	{
 		private const string COIN_PATH = "Prefabs/UI/Coin";
 
@@ -19,13 +19,19 @@ namespace UI
 		
 		private Coin _coinPrefab;
 		private WalletHandler _walletHandler;
-		private SignalBus _signalBus;
+		private BoxFactory _boxFactory;
+		private VaseFactory _vaseFactory;
 
 		[Inject]
-		private void Construct(WalletHandler walletHandler, SignalBus signalBus)
+		private void Construct(WalletHandler walletHandler, BoxFactory boxFactory, VaseFactory vaseFactory)
 		{
 			_walletHandler = walletHandler;
-			_signalBus = signalBus;
+
+			_boxFactory = boxFactory;
+			_boxFactory.OnSpawnBox += Register;
+
+			_vaseFactory = vaseFactory;
+			_vaseFactory.OnSpawnVase += Register;
 		}
 
 		private void Awake()
@@ -33,23 +39,31 @@ namespace UI
 			_coinPrefab = Resources.Load<Coin>(COIN_PATH);
 		}
 
-		private void OnEnable()
+		private void OnDestroy()
 		{
-			_signalBus.RegisterUnique<CoinGiveSignal>(this);
+			_boxFactory.OnSpawnBox -= Register;
+
+			_vaseFactory.OnSpawnVase -= Register;
 		}
 
-		private void OnDisable()
+		private void Register(ISpawnable spawnable)
 		{
-			_signalBus.Unregister<CoinGiveSignal>(this);
+			if (spawnable is not ICoinGiver coinGiver)
+				throw new Exception("Can't process registration on coin spawner");
+			
+			coinGiver.OnCoinGive += UnRegister;
+		}
+
+		private void UnRegister(ICoinGiver coinGiver)
+		{
+			coinGiver.OnCoinGive -= UnRegister;
+			Vector3 screenPoint = Camera.main.WorldToScreenPoint(coinGiver.Transform.position);
+			Spawn(coinGiver, screenPoint);
 		}
 		
-		public void Receive(CoinGiveSignal signal)
+		private void Spawn(ICoinGiver coinGiver, Vector3 screenPoint)
 		{
-			int amountCoin = signal.AmountCoin;
-			Vector3 screenPoint = Camera.main.WorldToScreenPoint(signal.Transform.position);
-			
 			List<Coin> coins = new List<Coin>();
-
 			GameObject parent = new GameObject("CoinCluster")
 			{
 				transform =
@@ -61,6 +75,7 @@ namespace UI
 
 			CoinCluster coinCluster = parent.AddComponent<CoinCluster>();
 			
+			int amountCoin = coinGiver.AmountCoin;
 			for (; amountCoin > 0; --amountCoin)
 			{
 				Vector2 randomPoint = Random.insideUnitCircle * _spawnRadius;

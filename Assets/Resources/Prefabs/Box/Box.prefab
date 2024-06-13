@@ -47,8 +47,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 339aea5c4cb32174caf660ee2f5e9dea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _model: {fileID: 3021168221099065772}
-  _data: {fileID: 11400000, guid: 24a6f02e79a720a43aeb13303c6c84fe, type: 2}
+  <Model>k__BackingField: {fileID: 919132149155446097, guid: 2b663d7e64ae5eb4e977e752050c05a5, type: 3}
+  <Data>k__BackingField: {fileID: 11400000, guid: 24a6f02e79a720a43aeb13303c6c84fe, type: 2}
 --- !u!65 &1910312626245113014
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -173,10 +173,5 @@ PrefabInstance:
 --- !u!4 &2496833475122780950 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2b663d7e64ae5eb4e977e752050c05a5, type: 3}
-  m_PrefabInstance: {fileID: 2678570494881578237}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &3021168221099065772 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 2b663d7e64ae5eb4e977e752050c05a5, type: 3}
   m_PrefabInstance: {fileID: 2678570494881578237}
   m_PrefabAsset: {fileID: 0}

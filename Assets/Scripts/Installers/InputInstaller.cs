@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using InputSystem;
 using Zenject;
 using UnityEngine;
@@ -14,10 +15,16 @@ namespace Installers
 
 		private void BindInputProvider()
 		{
+			List<InputProfile> inputProfiles = new List<InputProfile>
+			{
+				new JoyStickInput(),
+			};
+			
 			Container
 				.Bind<InputProvider>()
 				.FromNew()
-				.AsSingle();
+				.AsSingle()
+				.WithArguments(inputProfiles);
 		}
 
 		private void BindInputHandler()

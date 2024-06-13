@@ -1,33 +1,48 @@
-﻿using Handlers;
+﻿using System;
+using System.Collections.Generic;
 using Services;
 using UnityEngine;
 using Zenject;
 
 namespace InteractableObject
 {
-    public class VaseFactory : MonoFactory<Vase>
+    public class VaseFactory : MonoFactory<Vase>, IDisposable
     {
         private const string VASE_PATH = "Prefabs/Vase/Vase";
 
+        public event Action<ISpawnable> OnSpawnVase;
+        public event Action<IDestroyable> OnDestroyVase;
+        
         private readonly Vase _vasePrefab;
-        private readonly VaseHandler _vaseHandler;
+        private readonly List<Vase> _spawnedVases;
     
         [Inject]
-        public VaseFactory(DiContainer container, VaseHandler vaseHandler) : base(container)
+        public VaseFactory(DiContainer container) : base(container)
         {
             _vasePrefab = Resources.Load<Vase>(VASE_PATH);
 
-            _vaseHandler = vaseHandler;
+            _spawnedVases = new List<Vase>();
         }
 
         public override Vase CreateObject()
         {
             Vase vaseInstance = _container.InstantiatePrefabForComponent<Vase>(_vasePrefab);
             vaseInstance.gameObject.SetActive(false);
+
+            vaseInstance.OnSpawn += OnSpawnVase;
+            vaseInstance.OnDestroy += OnDestroyVase;
         
-            _vaseHandler.AddVase(vaseInstance);
-        
+            _spawnedVases.Add(vaseInstance);
             return vaseInstance;
+        }
+
+        public void Dispose()
+        {
+            foreach (Vase spawnedVase in _spawnedVases)
+            {
+                spawnedVase.OnSpawn -= OnSpawnVase;
+                spawnedVase.OnDestroy -= OnDestroyVase;
+            }
         }
     }
 }

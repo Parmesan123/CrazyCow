@@ -1,27 +1,20 @@
 using System;
-using Signals;
 using UnityEngine;
 
 namespace InteractableObject
 {
 	public class Vase : DestroyBehaviour, ICoinGiver
 	{
-		public event Action<ICoinGiver> OnGiveCoinEvent;
+		public event Action<ICoinGiver> OnCoinGive;
+
+		public int AmountCoin => Data.AmountCoin;
+		public Transform Transform => transform;
 		
-		public Transform Transform { get; private set; }
-		public int AmountCoin { get; private set; }
-
-		private void Awake()
+		public override void Destroy()
 		{
-			Transform = transform;
-			AmountCoin = _data.AmountCoin;
-		}
-
-		public override void Spawn()
-		{
-			SignalBus.Invoke(new VaseSpawnSignal(this));
+			OnCoinGive.Invoke(this);
 			
-			base.Spawn();
+			base.Destroy();
 		}
 	}
 }

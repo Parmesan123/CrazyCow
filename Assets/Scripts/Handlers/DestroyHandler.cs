@@ -4,20 +4,20 @@ using EzySlice;
 using ModestTree;
 using System;
 using System.Threading.Tasks;
-using Services;
-using Signals;
+using InteractableObject;
 using Zenject;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 namespace Handlers
 {
-	public class DestroyHandler : IDisposable, ISignalReceiver<DestroyAnimationSignal>
+	public class DestroyHandler : IDisposable
 	{
 		private readonly List<ParticleData> _modelParticles = new List<ParticleData>();
 
-		private readonly SignalBus _signalBus;
-		
+		private BoxFactory _boxFactory;
+		private VaseFactory _vaseFactory;
+
 		private class ParticleData
 		{
 			public GameObject Particle { get; }
@@ -31,22 +31,29 @@ namespace Handlers
 		}
 		
 		[Inject]
-		private DestroyHandler(SignalBus signalBus)
+		private DestroyHandler(BoxFactory boxFactory, VaseFactory vaseFactory)
 		{
-			_signalBus = signalBus;
-			
-			_signalBus.RegisterUnique<DestroyAnimationSignal>(this);
+			_boxFactory = boxFactory;
+			_boxFactory.OnDestroyBox += DestroyAnimation;
+
+			_vaseFactory = vaseFactory;
+			_vaseFactory.OnDestroyVase += DestroyAnimation;
 		}
 		
 		public void Dispose()
 		{
-			_signalBus.Unregister<DestroyAnimationSignal>(this);
+			_boxFactory.OnDestroyBox -= DestroyAnimation;
+
+			_vaseFactory.OnDestroyVase -= DestroyAnimation;
 		}
 		
-		public void Receive(DestroyAnimationSignal signal)
+		private void DestroyAnimation(IDestroyable destroyable)
 		{
-			List<GameObject> particles = CreateParticle(signal.Model, signal.Data.CrossSectionMaterial);
-			AddToList(particles, signal.Data.Lifetime);
+			if (destroyable is not DestroyBehaviour convertableDestroyable)
+				throw new Exception("Destroy request can't be processed in destroy handler");
+			
+			List<GameObject> particles = CreateParticle(convertableDestroyable.Model, convertableDestroyable.Data.CrossSectionMaterial);
+			AddToList(particles, convertableDestroyable.Data.Lifetime);
 			DestroyParticle();
 		}
 

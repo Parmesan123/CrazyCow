@@ -1,26 +1,19 @@
+using System;
 using System.Collections;
-using Services;
-using Signals;
 using UnityEngine;
-using Zenject;
 
 namespace InteractableObject
 {
 	[SelectionBase]
 	public abstract class DestroyBehaviour : MonoBehaviour, ISpawnable, IDestroyable
 	{
-		[SerializeField] private GameObject _model;
-		[SerializeField] protected DestroyableData _data;
-		
-		protected SignalBus SignalBus;
+		[field: SerializeField] public GameObject Model { get; protected set; }
+		[field: SerializeField] public DestroyableData Data { get; protected set; }
+
+		public event Action<ISpawnable> OnSpawn;
+		public event Action<IDestroyable> OnDestroy;
 		
 		private bool _isStopDestroy;
-
-		[Inject]
-		public void Construct(SignalBus signalBus)
-		{
-			SignalBus = signalBus;
-		}
 		
 		public void StartDestroy()
 		{
@@ -29,7 +22,7 @@ namespace InteractableObject
 
 			IEnumerator Routine()
 			{
-				float timer = _data.TimeToDestroy;
+				float timer = Data.TimeToDestroy;
 				WaitForFixedUpdate wait = new WaitForFixedUpdate();
 				_isStopDestroy = false;
                 
@@ -51,17 +44,17 @@ namespace InteractableObject
 		{
 			_isStopDestroy = true;
 		}
+		
+		public virtual void Spawn()
+		{
+			OnSpawn?.Invoke(this);
+			gameObject.SetActive(true);
+		}
 
 		public virtual void Destroy()
 		{
-			SignalBus.Invoke(new DestroyEntitySignal(this));
-			SignalBus.Invoke(new DestroyAnimationSignal(_data, _model));
+			OnDestroy.Invoke(this);
 			gameObject.SetActive(false);
-		}
-
-		public virtual void Spawn()
-		{
-			gameObject.SetActive(true);
 		}
 	}
 }

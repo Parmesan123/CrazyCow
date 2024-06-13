@@ -1,6 +1,5 @@
+using System;
 using Properties;
-using Services;
-using Signals;
 using UnityEngine;
 
 namespace InputSystem
@@ -9,16 +8,12 @@ namespace InputSystem
 	{
 		private const string DATA_PATH = "Data/JoyStickData";
 
-		private readonly SignalBus _signalBus;
+		public event Action<Vector2> OnMove;
+		public event Action<bool, Vector2> OnTouchPerformed;
 		
 		private readonly JoyStickData _joyStickData = Resources.Load<JoyStickData>(DATA_PATH);
 		private Vector2? _touchPosition;
 		private bool _isTouch;
-
-		public JoyStickInput(SignalBus signalBus)
-		{
-			_signalBus = signalBus;
-		}
 		
 		public void FixedUpdate()
 		{
@@ -27,7 +22,7 @@ namespace InputSystem
 			if(_touchPosition == null)
 				return;
 			
-			_signalBus.Invoke(new MoveSignal(GetMoveVector()));
+			OnMove.Invoke(GetMoveVector());
 		}
 
 		private void CheckTouch()
@@ -39,7 +34,7 @@ namespace InputSystem
 				if (_isTouch)
 				{
 					_isTouch = false;
-					_signalBus.Invoke(new TouchPerformedSignal(false, Vector2.zero));
+					OnTouchPerformed.Invoke(false, Vector2.zero);
 				}
 				
 				_touchPosition = null;
@@ -51,7 +46,7 @@ namespace InputSystem
 			
 			_touchPosition = Input.GetTouch(0).position;
 			_isTouch = true;
-			_signalBus.Invoke(new TouchPerformedSignal(true, (Vector2)_touchPosition));
+			OnTouchPerformed.Invoke(true, (Vector2)_touchPosition);
 		}
 
 		private Vector2 GetMoveVector()
