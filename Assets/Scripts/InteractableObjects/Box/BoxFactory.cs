@@ -9,10 +9,12 @@ namespace InteractableObject
     public class BoxFactory : MonoFactory<Box>, IDisposable
     {
         private const string BOX_PATH = "Prefabs/Box/Box";
-
+        
         public event Action<ISpawnable> OnSpawnBox;
         public event Action<IDestroyable> OnDestroyBox;
 
+        public IEnumerable<Box> SpawnedBoxes => _spawnedBoxes;
+            
         private readonly Box _boxPrefab;
         private readonly List<Box> _spawnedBoxes;
 

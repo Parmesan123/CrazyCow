@@ -10,6 +10,8 @@ namespace Handlers
 {
     public class SpawnHandler
     {
+        private const int BASE_POOL_SIZE = 30;
+
         private readonly SpawnHandlerData _spawnHandlerData;
 
         private readonly Pool<Box> _boxPool;
@@ -19,15 +21,14 @@ namespace Handlers
         [Inject]
         private SpawnHandler(BoxFactory boxFactory, VaseFactory vaseFactory, PortalFactory portalFactory, SpawnHandlerData spawnHandlerData)
         {
-            //TODO : make initial size for pools
             GameObject boxParent = new GameObject("Boxes");
-            _boxPool = new Pool<Box>(0, boxFactory, boxParent.transform);
+            _boxPool = new Pool<Box>(BASE_POOL_SIZE, boxFactory, boxParent.transform);
 
             GameObject vaseParent = new GameObject("Vases");
-            _vasePool = new Pool<Vase>(0, vaseFactory, vaseParent.transform);
+            _vasePool = new Pool<Vase>(BASE_POOL_SIZE / 3, vaseFactory, vaseParent.transform);
 
             GameObject portalParent = new GameObject("Portals");
-            _portalPool = new Pool<Portal>(0, portalFactory, portalParent.transform);
+            _portalPool = new Pool<Portal>(BASE_POOL_SIZE / 10, portalFactory, portalParent.transform);
                 
             _spawnHandlerData = spawnHandlerData;
         }

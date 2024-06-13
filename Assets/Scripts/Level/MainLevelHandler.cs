@@ -31,12 +31,18 @@ namespace Level
 
             _portalFactory = portalFactory;
             _portalFactory.OnPortalEnter += PortalEntered;
+            foreach (Portal spawnedPortal in _portalFactory.SpawnedPortals)
+                spawnedPortal.OnEnter += PortalEntered;
 
             _boxFactory = boxFactory;
             _boxFactory.OnDestroyBox += DestroyEntity;
+            foreach (Box spawnedBox in _boxFactory.SpawnedBoxes)
+                spawnedBox.OnDestroy += DestroyEntity;
 
             _vaseFactory = vaseFactory;
             _vaseFactory.OnDestroyVase += DestroyEntity;
+            foreach (Vase spawnedVase in _vaseFactory.SpawnedVases)
+                spawnedVase.OnDestroy += DestroyEntity;
         }
 
         private void Awake()

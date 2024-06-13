@@ -35,9 +35,13 @@ namespace Handlers
 		{
 			_boxFactory = boxFactory;
 			_boxFactory.OnDestroyBox += DestroyAnimation;
+			foreach (Box spawnedBox in _boxFactory.SpawnedBoxes)
+				spawnedBox.OnDestroy += DestroyAnimation;
 
 			_vaseFactory = vaseFactory;
 			_vaseFactory.OnDestroyVase += DestroyAnimation;
+			foreach (Vase spawnedVase in _vaseFactory.SpawnedVases)
+				spawnedVase.OnDestroy += DestroyAnimation;
 		}
 		
 		public void Dispose()

@@ -12,6 +12,8 @@ namespace InteractableObject
 
         public event Action<ISpawnable> OnSpawnVase;
         public event Action<IDestroyable> OnDestroyVase;
+
+        public IEnumerable<Vase> SpawnedVases => _spawnedVases;
         
         private readonly Vase _vasePrefab;
         private readonly List<Vase> _spawnedVases;

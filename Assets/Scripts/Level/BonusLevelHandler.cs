@@ -32,6 +32,8 @@ public class BonusLevelHandler : BaseLevelHandler
 
         _portalFactory = portalFactory;
         _portalFactory.OnPortalEnter += PortalEntered;
+        foreach (Portal spawnedPortal in _portalFactory.SpawnedPortals)
+            spawnedPortal.OnEnter += PortalEntered;
     }
 
     protected override void OnDestroy()

@@ -11,6 +11,8 @@ public class PortalFactory : MonoFactory<Portal>, IDisposable
 
     public event Action OnPortalEnter;
     
+    public IEnumerable<Portal> SpawnedPortals => _spawnedPortals;
+    
     private readonly Portal _portalPrefab;
     private readonly List<Portal> _spawnedPortals;
     
@@ -35,8 +37,6 @@ public class PortalFactory : MonoFactory<Portal>, IDisposable
     public void Dispose()
     {
         foreach (Portal spawnedPortal in _spawnedPortals)
-        {
             spawnedPortal.OnEnter -= OnPortalEnter;
-        }
     }
 }

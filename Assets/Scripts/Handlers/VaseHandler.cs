@@ -26,9 +26,16 @@ namespace Handlers
             _boxFactory = boxFactory;
             _boxFactory.OnSpawnBox += BoxSpawned;
             _boxFactory.OnDestroyBox += BoxRemoved;
+            foreach (Box spawnedBox in _boxFactory.SpawnedBoxes)
+            {
+                spawnedBox.OnSpawn += BoxSpawned;
+                spawnedBox.OnDestroy += BoxRemoved;
+            }
 
             _vaseFactory = vaseFactory;
             _vaseFactory.OnSpawnVase += VaseSpawned;
+            foreach (Vase spawnedVase in _vaseFactory.SpawnedVases)
+                spawnedVase.OnSpawn += VaseSpawned;
         }
         
         public void Dispose()
