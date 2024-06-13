@@ -18,7 +18,7 @@ namespace Handlers
         private int _currentVasesOnField;
 
         [Inject]
-        public VaseHandler(VaseHandlerData vaseData, BoxFactory boxFactory, VaseFactory vaseFactory)
+        private VaseHandler(VaseHandlerData vaseData, BoxFactory boxFactory, VaseFactory vaseFactory)
         {
             _activeVases = new Dictionary<Vase, List<Box>>();
             _data = vaseData;

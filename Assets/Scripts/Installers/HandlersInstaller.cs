@@ -37,7 +37,7 @@ namespace Installers
 		private void BindDestroyHandler()
 		{
 			Container
-				.Bind<DestroyHandler>()
+				.BindInterfacesAndSelfTo<DestroyHandler>()
 				.FromNew()
 				.AsSingle();
 		}
@@ -45,7 +45,7 @@ namespace Installers
 		private void BindVaseHandler()
 		{
 			Container
-				.Bind<VaseHandler>()
+				.BindInterfacesAndSelfTo<VaseHandler>()
 				.FromNew()
 				.AsSingle();
 		}

@@ -19,6 +19,8 @@ namespace Level
         private PortalFactory _portalFactory;
         private float _currentPortalSpawnTime;
         private List<IDestroyable> _objectsOnLevel;
+
+        private Coroutine _spawnRoutine;
         
         [Inject]
         protected void Construct(PauseHandler pauseHandler, SpawnHandler spawnHandler, PlayerMovement player, BoxFactory boxFactory, VaseFactory vaseFactory, PortalFactory portalFactory)
@@ -56,13 +58,13 @@ namespace Level
         public override void Unpause()
         {
             //TODO: rework
-            StartCoroutine(NextSpawnTick());
+            _spawnRoutine = StartCoroutine(NextSpawnTick());
         }
 
         public override void Pause()
         {
             //TODO: rework
-            StopCoroutine(NextSpawnTick());
+            StopCoroutine(_spawnRoutine);
         }
         
         private void DestroyEntity(IDestroyable destroyable)
@@ -85,7 +87,7 @@ namespace Level
 
             _currentPortalSpawnTime = _mainLevelData.PortalSpawnTime;
 
-            StartCoroutine(NextSpawnTick());
+            _spawnRoutine = StartCoroutine(NextSpawnTick());
         }
         
         private IEnumerator NextSpawnTick()

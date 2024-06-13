@@ -17,7 +17,7 @@ namespace Handlers
         private readonly Pool<Portal> _portalPool;
 
         [Inject]
-        public SpawnHandler(BoxFactory boxFactory, VaseFactory vaseFactory, PortalFactory portalFactory, SpawnHandlerData spawnHandlerData)
+        private SpawnHandler(BoxFactory boxFactory, VaseFactory vaseFactory, PortalFactory portalFactory, SpawnHandlerData spawnHandlerData)
         {
             //TODO : make initial size for pools
             GameObject boxParent = new GameObject("Boxes");

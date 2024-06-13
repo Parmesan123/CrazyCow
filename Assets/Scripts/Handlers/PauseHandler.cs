@@ -2,7 +2,7 @@
 
 public class PauseHandler
 {
-    private List<IPausable> _pausables;
+    private readonly List<IPausable> _pausables;
     
     public bool IsGamePaused { get; private set; }
 
