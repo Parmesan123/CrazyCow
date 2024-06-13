@@ -29,9 +29,13 @@ namespace UI
 
 			_boxFactory = boxFactory;
 			_boxFactory.OnSpawnBox += Register;
+			foreach (Box spawnedBox in _boxFactory.SpawnedBoxes)
+				spawnedBox.OnSpawn += Register;
 
 			_vaseFactory = vaseFactory;
 			_vaseFactory.OnSpawnVase += Register;
+			foreach (Vase spawnedVase in _vaseFactory.SpawnedVases)
+				spawnedVase.OnSpawn += Register;
 		}
 
 		private void Awake()
