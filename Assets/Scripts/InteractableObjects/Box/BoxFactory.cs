@@ -10,8 +10,8 @@ namespace InteractableObject
     {
         private const string BOX_PATH = "Prefabs/Box/Box";
         
-        public event Action<ISpawnable> OnSpawnBox;
-        public event Action<IDestroyable> OnDestroyBox;
+        public event Action<ISpawnable> OnSpawnBoxEvent;
+        public event Action<IDestroyable> OnDestroyBoxEvent;
 
         public IEnumerable<Box> SpawnedBoxes => _spawnedBoxes;
             
@@ -31,8 +31,8 @@ namespace InteractableObject
             Box boxInstance = _container.InstantiatePrefabForComponent<Box>(_boxPrefab);
             boxInstance.gameObject.SetActive(false);
             
-            boxInstance.OnSpawn += OnSpawnBox;
-            boxInstance.OnDestroy += OnDestroyBox;
+            boxInstance.OnSpawnEvent += OnSpawnBoxEvent;
+            boxInstance.OnDestroyEvent += OnDestroyBoxEvent;
 
             _spawnedBoxes.Add(boxInstance);
             return boxInstance;
@@ -42,8 +42,8 @@ namespace InteractableObject
         {
             foreach (Box spawnedBox in _spawnedBoxes)
             {
-                spawnedBox.OnSpawn -= OnSpawnBox;
-                spawnedBox.OnDestroy -= OnDestroyBox;
+                spawnedBox.OnSpawnEvent -= OnSpawnBoxEvent;
+                spawnedBox.OnDestroyEvent -= OnDestroyBoxEvent;
             }
         }
     }

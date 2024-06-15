@@ -30,19 +30,19 @@ namespace Level
             _objectsOnLevel = new List<IDestroyable>();
 
             _portalFactory = portalFactory;
-            _portalFactory.OnPortalEnter += PortalEntered;
+            _portalFactory.OnPortalEnterEvent += PortalEntered;
             foreach (Portal spawnedPortal in _portalFactory.SpawnedPortals)
                 spawnedPortal.OnEnter += PortalEntered;
 
             _boxFactory = boxFactory;
-            _boxFactory.OnDestroyBox += DestroyEntity;
+            _boxFactory.OnDestroyBoxEvent += DestroyEventEntity;
             foreach (Box spawnedBox in _boxFactory.SpawnedBoxes)
-                spawnedBox.OnDestroy += DestroyEntity;
+                spawnedBox.OnDestroyEvent += DestroyEventEntity;
 
             _vaseFactory = vaseFactory;
-            _vaseFactory.OnDestroyVase += DestroyEntity;
+            _vaseFactory.OnDestroyVaseEvent += DestroyEventEntity;
             foreach (Vase spawnedVase in _vaseFactory.SpawnedVases)
-                spawnedVase.OnDestroy += DestroyEntity;
+                spawnedVase.OnDestroyEvent += DestroyEventEntity;
         }
 
         private void Awake()
@@ -54,11 +54,11 @@ namespace Level
         {
             base.OnDestroy();
             
-            _portalFactory.OnPortalEnter -= PortalEntered;
+            _portalFactory.OnPortalEnterEvent -= PortalEntered;
 
-            _boxFactory.OnDestroyBox -= DestroyEntity;
+            _boxFactory.OnDestroyBoxEvent -= DestroyEventEntity;
 
-            _vaseFactory.OnDestroyVase -= DestroyEntity;
+            _vaseFactory.OnDestroyVaseEvent -= DestroyEventEntity;
         }
 
         public override void Unpause()
@@ -73,7 +73,7 @@ namespace Level
             StopCoroutine(_spawnRoutine);
         }
         
-        private void DestroyEntity(IDestroyable destroyable)
+        private void DestroyEventEntity(IDestroyable destroyable)
         {
             _objectsOnLevel.Remove(destroyable);
         }

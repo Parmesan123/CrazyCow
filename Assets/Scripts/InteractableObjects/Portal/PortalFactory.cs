@@ -9,7 +9,7 @@ public class PortalFactory : MonoFactory<Portal>, IDisposable
 {
     private const string PORTAL_PREFAB_PATH = "Prefabs/Portal/Portal";
 
-    public event Action OnPortalEnter;
+    public event Action OnPortalEnterEvent;
     
     public IEnumerable<Portal> SpawnedPortals => _spawnedPortals;
     
@@ -28,7 +28,7 @@ public class PortalFactory : MonoFactory<Portal>, IDisposable
         Portal portalInstance = _container.InstantiatePrefabForComponent<Portal>(_portalPrefab);
         portalInstance.gameObject.SetActive(false);
 
-        portalInstance.OnEnter += OnPortalEnter;
+        portalInstance.OnEnter += OnPortalEnterEvent;
 
         _spawnedPortals.Add(portalInstance);
         return portalInstance;
@@ -37,6 +37,6 @@ public class PortalFactory : MonoFactory<Portal>, IDisposable
     public void Dispose()
     {
         foreach (Portal spawnedPortal in _spawnedPortals)
-            spawnedPortal.OnEnter -= OnPortalEnter;
+            spawnedPortal.OnEnter -= OnPortalEnterEvent;
     }
 }

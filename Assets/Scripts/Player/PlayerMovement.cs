@@ -22,7 +22,7 @@ namespace Player
 			_pauseHandler.Register(this);
 			
 			_input = inputProvider.GetProfile(typeof(JoyStickInput)) as JoyStickInput;
-			_input.OnMove += Move;
+			_input.OnMoveEvent += MoveEvent;
 		}
 
 		private void Awake()
@@ -37,22 +37,22 @@ namespace Player
 		{
 			_pauseHandler.Unregister(this);
 
-			_input.OnMove -= Move;
+			_input.OnMoveEvent -= MoveEvent;
 		}
 		
 		public void Pause()
 		{
 			//TODO: rework
-			_input.OnMove -= Move;
+			_input.OnMoveEvent -= MoveEvent;
 		}
 
 		public void Unpause()
 		{
 			//TODO: rework
-			_input.OnMove += Move;
+			_input.OnMoveEvent += MoveEvent;
 		}
 
-		private void Move(Vector2 direction)
+		private void MoveEvent(Vector2 direction)
 		{
 			Vector3 offSet = new Vector3(direction.x * Time.fixedDeltaTime * Speed, 0,
 				direction.y * Time.fixedDeltaTime * Speed);

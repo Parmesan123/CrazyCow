@@ -34,24 +34,24 @@ namespace Handlers
 		private DestroyHandler(BoxFactory boxFactory, VaseFactory vaseFactory)
 		{
 			_boxFactory = boxFactory;
-			_boxFactory.OnDestroyBox += DestroyAnimation;
+			_boxFactory.OnDestroyBoxEvent += DestroyEventAnimation;
 			foreach (Box spawnedBox in _boxFactory.SpawnedBoxes)
-				spawnedBox.OnDestroy += DestroyAnimation;
+				spawnedBox.OnDestroyEvent += DestroyEventAnimation;
 
 			_vaseFactory = vaseFactory;
-			_vaseFactory.OnDestroyVase += DestroyAnimation;
+			_vaseFactory.OnDestroyVaseEvent += DestroyEventAnimation;
 			foreach (Vase spawnedVase in _vaseFactory.SpawnedVases)
-				spawnedVase.OnDestroy += DestroyAnimation;
+				spawnedVase.OnDestroyEvent += DestroyEventAnimation;
 		}
 		
 		public void Dispose()
 		{
-			_boxFactory.OnDestroyBox -= DestroyAnimation;
+			_boxFactory.OnDestroyBoxEvent -= DestroyEventAnimation;
 
-			_vaseFactory.OnDestroyVase -= DestroyAnimation;
+			_vaseFactory.OnDestroyVaseEvent -= DestroyEventAnimation;
 		}
 		
-		private void DestroyAnimation(IDestroyable destroyable)
+		private void DestroyEventAnimation(IDestroyable destroyable)
 		{
 			if (destroyable is not DestroyBehaviour convertableDestroyable)
 				throw new Exception("Destroy request can't be processed in destroy handler");

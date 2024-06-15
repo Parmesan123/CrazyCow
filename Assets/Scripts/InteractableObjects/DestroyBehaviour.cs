@@ -10,8 +10,8 @@ namespace InteractableObject
 		[field: SerializeField] public GameObject Model { get; protected set; }
 		[field: SerializeField] public DestroyableData Data { get; protected set; }
 
-		public event Action<ISpawnable> OnSpawn;
-		public event Action<IDestroyable> OnDestroy;
+		public event Action<ISpawnable> OnSpawnEvent;
+		public event Action<IDestroyable> OnDestroyEvent;
 		
 		private bool _isStopDestroy;
 		
@@ -47,13 +47,13 @@ namespace InteractableObject
 		
 		public virtual void Spawn()
 		{
-			OnSpawn?.Invoke(this);
+			OnSpawnEvent?.Invoke(this);
 			gameObject.SetActive(true);
 		}
 
 		public virtual void Destroy()
 		{
-			OnDestroy.Invoke(this);
+			OnDestroyEvent.Invoke(this);
 			gameObject.SetActive(false);
 		}
 	}

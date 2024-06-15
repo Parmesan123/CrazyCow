@@ -31,7 +31,7 @@ public class BonusLevelHandler : BaseLevelHandler
         _boxesOnField = new List<Box>();
 
         _portalFactory = portalFactory;
-        _portalFactory.OnPortalEnter += PortalEntered;
+        _portalFactory.OnPortalEnterEvent += PortalEntered;
         foreach (Portal spawnedPortal in _portalFactory.SpawnedPortals)
             spawnedPortal.OnEnter += PortalEntered;
     }
@@ -40,19 +40,19 @@ public class BonusLevelHandler : BaseLevelHandler
     {
         base.OnDestroy();
         
-        _portalFactory.OnPortalEnter -= PortalEntered;
+        _portalFactory.OnPortalEnterEvent -= PortalEntered;
     }
 
     public override void Unpause()
     {
         //TODO: rework
-        _portalFactory.OnPortalEnter -= PortalEntered;
+        _portalFactory.OnPortalEnterEvent -= PortalEntered;
     }
 
     public override void Pause()
     {
         //TODO: rework
-        _portalFactory.OnPortalEnter -= PortalEntered;
+        _portalFactory.OnPortalEnterEvent -= PortalEntered;
     }
     
     private void VaseDestroyedByBot(Vase vase)

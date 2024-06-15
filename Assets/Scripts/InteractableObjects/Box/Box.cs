@@ -5,14 +5,14 @@ namespace InteractableObject
 {
     public class Box : DestroyBehaviour, ICoinGiver
     {
-        public event Action<ICoinGiver> OnCoinGive;
+        public event Action<ICoinGiver> OnCoinGiveEvent;
 
         public int AmountCoin => Data.AmountCoin;
         public Transform Transform => transform;
 
         public override void Destroy()
         {
-            OnCoinGive.Invoke(this);
+            OnCoinGiveEvent.Invoke(this);
             
             base.Destroy();
         }

@@ -22,8 +22,8 @@ namespace UI
         {
             _joyStickGameObject.SetActive(false);
 
-            _joyStickInput.OnMove += Move;
-            _joyStickInput.OnTouchPerformed += SetActiveJoyStick;
+            _joyStickInput.OnMoveEvent += MoveEvent;
+            _joyStickInput.OnTouchPerformedEvent += SetActiveJoyStick;
         }
         
         private void OnDestroy()
@@ -31,11 +31,11 @@ namespace UI
             if (_joyStickInput == null)
                 return;
 
-            _joyStickInput.OnMove -= Move;
-            _joyStickInput.OnTouchPerformed -= SetActiveJoyStick;
+            _joyStickInput.OnMoveEvent -= MoveEvent;
+            _joyStickInput.OnTouchPerformedEvent -= SetActiveJoyStick;
         }
         
-        private void Move(Vector2 direction)
+        private void MoveEvent(Vector2 direction)
         {
             Vector3 offSet = new Vector3(direction.x * _joyStickData.JoyStickRadius, 
                 direction.y * _joyStickData.JoyStickRadius);

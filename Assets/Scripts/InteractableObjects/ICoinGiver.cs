@@ -5,7 +5,7 @@ namespace InteractableObject
 {
 	public interface ICoinGiver
 	{
-		public event Action<ICoinGiver> OnCoinGive;
+		public event Action<ICoinGiver> OnCoinGiveEvent;
 		
 		public int AmountCoin { get; }
 		public Transform Transform { get; }

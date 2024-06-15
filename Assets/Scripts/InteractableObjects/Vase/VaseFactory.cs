@@ -10,8 +10,8 @@ namespace InteractableObject
     {
         private const string VASE_PATH = "Prefabs/Vase/Vase";
 
-        public event Action<ISpawnable> OnSpawnVase;
-        public event Action<IDestroyable> OnDestroyVase;
+        public event Action<ISpawnable> OnSpawnVaseEvent;
+        public event Action<IDestroyable> OnDestroyVaseEvent;
 
         public IEnumerable<Vase> SpawnedVases => _spawnedVases;
         
@@ -31,8 +31,8 @@ namespace InteractableObject
             Vase vaseInstance = _container.InstantiatePrefabForComponent<Vase>(_vasePrefab);
             vaseInstance.gameObject.SetActive(false);
 
-            vaseInstance.OnSpawn += OnSpawnVase;
-            vaseInstance.OnDestroy += OnDestroyVase;
+            vaseInstance.OnSpawnEvent += OnSpawnVaseEvent;
+            vaseInstance.OnDestroyEvent += OnDestroyVaseEvent;
         
             _spawnedVases.Add(vaseInstance);
             return vaseInstance;
@@ -42,8 +42,8 @@ namespace InteractableObject
         {
             foreach (Vase spawnedVase in _spawnedVases)
             {
-                spawnedVase.OnSpawn -= OnSpawnVase;
-                spawnedVase.OnDestroy -= OnDestroyVase;
+                spawnedVase.OnSpawnEvent -= OnSpawnVaseEvent;
+                spawnedVase.OnDestroyEvent -= OnDestroyVaseEvent;
             }
         }
     }

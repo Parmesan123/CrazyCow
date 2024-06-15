@@ -8,7 +8,7 @@ namespace InteractableObject
 	{
 		private new PortalData _interactableData;
 		
-		public event Action<ISpawnable> OnSpawn;
+		public event Action<ISpawnable> OnSpawnEvent;
 		public event Action OnEnter;
 		
 		private void Awake()
@@ -18,7 +18,7 @@ namespace InteractableObject
 		
 		public void Spawn()
 		{
-			OnSpawn?.Invoke(this);
+			OnSpawnEvent?.Invoke(this);
 			
 			gameObject.SetActive(true);
 			StartCoroutine(TimerUntilDespawn());

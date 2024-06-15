@@ -8,8 +8,8 @@ namespace InputSystem
 	{
 		private const string DATA_PATH = "Data/JoyStickData";
 
-		public event Action<Vector2> OnMove;
-		public event Action<bool, Vector2> OnTouchPerformed;
+		public event Action<Vector2> OnMoveEvent;
+		public event Action<bool, Vector2> OnTouchPerformedEvent;
 		
 		private readonly JoyStickData _joyStickData = Resources.Load<JoyStickData>(DATA_PATH);
 		private Vector2? _touchPosition;
@@ -22,7 +22,7 @@ namespace InputSystem
 			if(_touchPosition == null)
 				return;
 			
-			OnMove.Invoke(GetMoveVector());
+			OnMoveEvent.Invoke(GetMoveVector());
 		}
 
 		private void CheckTouch()
@@ -34,7 +34,7 @@ namespace InputSystem
 				if (_isTouch)
 				{
 					_isTouch = false;
-					OnTouchPerformed.Invoke(false, Vector2.zero);
+					OnTouchPerformedEvent.Invoke(false, Vector2.zero);
 				}
 				
 				_touchPosition = null;
@@ -46,7 +46,7 @@ namespace InputSystem
 			
 			_touchPosition = Input.GetTouch(0).position;
 			_isTouch = true;
-			OnTouchPerformed.Invoke(true, (Vector2)_touchPosition);
+			OnTouchPerformedEvent.Invoke(true, (Vector2)_touchPosition);
 		}
 
 		private Vector2 GetMoveVector()

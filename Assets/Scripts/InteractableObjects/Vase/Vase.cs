@@ -14,7 +14,7 @@ namespace InteractableObject
 			_boxes = new List<Box>();
 		}
 
-		public event Action<ICoinGiver> OnCoinGive;
+		public event Action<ICoinGiver> OnCoinGiveEvent;
 
 		public int AmountCoin => Data.AmountCoin;
 		public Transform Transform => transform;
@@ -44,7 +44,7 @@ namespace InteractableObject
 		public override void Destroy()
 		{
 			if (_boxes.Count == 0)
-				OnCoinGive?.Invoke(this);
+				OnCoinGiveEvent?.Invoke(this);
 			
 			base.Destroy();
 		}

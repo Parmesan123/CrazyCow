@@ -24,34 +24,34 @@ namespace Handlers
             _data = vaseData;
 
             _boxFactory = boxFactory;
-            _boxFactory.OnSpawnBox += BoxSpawned;
-            _boxFactory.OnDestroyBox += BoxRemoved;
+            _boxFactory.OnSpawnBoxEvent += BoxEventSpawned;
+            _boxFactory.OnDestroyBoxEvent += BoxEventRemoved;
             foreach (Box spawnedBox in _boxFactory.SpawnedBoxes)
             {
-                spawnedBox.OnSpawn += BoxSpawned;
-                spawnedBox.OnDestroy += BoxRemoved;
+                spawnedBox.OnSpawnEvent += BoxEventSpawned;
+                spawnedBox.OnDestroyEvent += BoxEventRemoved;
             }
 
             _vaseFactory = vaseFactory;
-            _vaseFactory.OnSpawnVase += VaseSpawned;
-            _vaseFactory.OnDestroyVase += VaseRemoved;
+            _vaseFactory.OnSpawnVaseEvent += VaseEventSpawned;
+            _vaseFactory.OnDestroyVaseEvent += VaseEventRemoved;
             foreach (Vase spawnedVase in _vaseFactory.SpawnedVases)
             {
-                spawnedVase.OnSpawn += VaseSpawned;
-                spawnedVase.OnDestroy += VaseRemoved;
+                spawnedVase.OnSpawnEvent += VaseEventSpawned;
+                spawnedVase.OnDestroyEvent += VaseEventRemoved;
             }
         }
 
         public void Dispose()
         {
-            _boxFactory.OnSpawnBox -= BoxSpawned;
-            _boxFactory.OnDestroyBox -= BoxRemoved;
+            _boxFactory.OnSpawnBoxEvent -= BoxEventSpawned;
+            _boxFactory.OnDestroyBoxEvent -= BoxEventRemoved;
 
-            _vaseFactory.OnSpawnVase -= VaseSpawned;
-            _vaseFactory.OnDestroyVase -= VaseRemoved;
+            _vaseFactory.OnSpawnVaseEvent -= VaseEventSpawned;
+            _vaseFactory.OnDestroyVaseEvent -= VaseEventRemoved;
         }
         
-        private void VaseSpawned(ISpawnable spawnedVase)
+        private void VaseEventSpawned(ISpawnable spawnedVase)
         {
             if (spawnedVase is not Vase convertableVase)
                 throw new Exception("Can't process callback in vase handler");
@@ -69,7 +69,7 @@ namespace Handlers
             }
         }
         
-        private void VaseRemoved(IDestroyable vase)
+        private void VaseEventRemoved(IDestroyable vase)
         {
             if (vase is not Vase convertableVase)
                 throw new Exception("Remove request can't be processed in vase handler");
@@ -81,7 +81,7 @@ namespace Handlers
             convertableVase.Destroy();
         }
 
-        private void BoxSpawned(ISpawnable spawnedBox)
+        private void BoxEventSpawned(ISpawnable spawnedBox)
         {
             if (spawnedBox is not Box convertableBox)
                 throw new Exception("Can't process callback in vase handler");
@@ -99,7 +99,7 @@ namespace Handlers
             }
         }
         
-        private void BoxRemoved(IDestroyable box)
+        private void BoxEventRemoved(IDestroyable box)
         {
             if (box is not Box convertableBox)
                 throw new Exception("Remove request can't be processed in vase handler");

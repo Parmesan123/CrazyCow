@@ -28,14 +28,14 @@ namespace UI
 			_walletHandler = walletHandler;
 
 			_boxFactory = boxFactory;
-			_boxFactory.OnSpawnBox += Register;
+			_boxFactory.OnSpawnBoxEvent += Register;
 			foreach (Box spawnedBox in _boxFactory.SpawnedBoxes)
-				spawnedBox.OnSpawn += Register;
+				spawnedBox.OnSpawnEvent += Register;
 
 			_vaseFactory = vaseFactory;
-			_vaseFactory.OnSpawnVase += Register;
+			_vaseFactory.OnSpawnVaseEvent += Register;
 			foreach (Vase spawnedVase in _vaseFactory.SpawnedVases)
-				spawnedVase.OnSpawn += Register;
+				spawnedVase.OnSpawnEvent += Register;
 		}
 
 		private void Awake()
@@ -45,9 +45,9 @@ namespace UI
 
 		private void OnDestroy()
 		{
-			_boxFactory.OnSpawnBox -= Register;
+			_boxFactory.OnSpawnBoxEvent -= Register;
 
-			_vaseFactory.OnSpawnVase -= Register;
+			_vaseFactory.OnSpawnVaseEvent -= Register;
 		}
 
 		private void Register(ISpawnable spawnable)
@@ -55,12 +55,12 @@ namespace UI
 			if (spawnable is not ICoinGiver coinGiver)
 				throw new Exception("Can't process registration on coin spawner");
 			
-			coinGiver.OnCoinGive += UnRegister;
+			coinGiver.OnCoinGiveEvent += UnRegister;
 		}
 
 		private void UnRegister(ICoinGiver coinGiver)
 		{
-			coinGiver.OnCoinGive -= UnRegister;
+			coinGiver.OnCoinGiveEvent -= UnRegister;
 			Vector3 screenPoint = Camera.main.WorldToScreenPoint(coinGiver.Transform.position);
 			Spawn(coinGiver, screenPoint);
 		}

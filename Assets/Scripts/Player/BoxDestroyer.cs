@@ -24,10 +24,10 @@ namespace Player
 			_pauseHandler.Register(this);
 
 			_boxFactory = boxFactory;
-			_boxFactory.OnDestroyBox += DestroyEntity;
+			_boxFactory.OnDestroyBoxEvent += DestroyEntity;
 			
 			_vaseFactory = vaseFactory;
-			_vaseFactory.OnDestroyVase += DestroyEntity;
+			_vaseFactory.OnDestroyVaseEvent += DestroyEntity;
 		}
 		
 		private void Awake()
@@ -57,25 +57,25 @@ namespace Player
 		{
 			_pauseHandler.Unregister(this);
 			
-			_boxFactory.OnDestroyBox -= DestroyEntity;
+			_boxFactory.OnDestroyBoxEvent -= DestroyEntity;
 			
-			_vaseFactory.OnDestroyVase -= DestroyEntity;
+			_vaseFactory.OnDestroyVaseEvent -= DestroyEntity;
 		}
 		
 		public void Unpause()
 		{
 			//TODO: rework
-			_boxFactory.OnDestroyBox += DestroyEntity;
+			_boxFactory.OnDestroyBoxEvent += DestroyEntity;
 			
-			_vaseFactory.OnDestroyVase += DestroyEntity;
+			_vaseFactory.OnDestroyVaseEvent += DestroyEntity;
 		}
 
 		public void Pause()
 		{
 			//TODO: rework
-			_boxFactory.OnDestroyBox -= DestroyEntity;
+			_boxFactory.OnDestroyBoxEvent -= DestroyEntity;
 			
-			_vaseFactory.OnDestroyVase -= DestroyEntity;
+			_vaseFactory.OnDestroyVaseEvent -= DestroyEntity;
 		}
 
 		private void DestroyEntity(IDestroyable destroyable)
