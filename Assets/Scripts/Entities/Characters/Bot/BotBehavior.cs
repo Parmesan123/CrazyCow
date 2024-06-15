@@ -2,13 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using InteractableObject;
-using Player;
 using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
-namespace Bot
+namespace Entities
 {
     [SelectionBase, RequireComponent(typeof(NavMeshAgent))]
     public class BotBehavior : MonoBehaviour
@@ -17,7 +15,7 @@ namespace Bot
         [SerializeField] private float _optimalDistance;
 
         private float _destroyDistance;
-        private PlayerData _data;
+        private CharacterData _data;
         private NavMeshAgent _navMeshAgent;
         private Vase _targetVase;
         private Coroutine _selectVaseCoroutine;
@@ -29,7 +27,7 @@ namespace Bot
 
             _data = GetComponent<BoxDestroyer>().Data;
             _destroyDistance = _data.DestroyRange;
-            _navMeshAgent.speed = _data.PlayerSpeed;
+            _navMeshAgent.speed = _data.CharacterSpeed;
         }
 
         public void OnEnable()
@@ -45,11 +43,11 @@ namespace Bot
         private IEnumerator SelectVase()
         {
             WaitForSeconds wait = new WaitForSeconds(1);
-            IReadOnlyList<Vase> vases = _level.Vases;
+            IEnumerable<Vase> vases = _level.Vases;
 
             _targetVase = null;
 
-            for (; vases.Count != 0;)
+            for (; vases.Count() != 0;)
             {
                 Vase vaseClosest = vases.Aggregate((v, next) =>
                     Vector3.Distance(v.transform.position, transform.position) <
@@ -70,8 +68,7 @@ namespace Bot
 
             gameObject.SetActive(false);
             yield break;
-
-
+            
             void SetVase(Vase newVase)
             {
                 if (_targetVase == newVase)

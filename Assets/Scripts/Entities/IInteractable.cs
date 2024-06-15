@@ -1,9 +1,8 @@
-using Player;
 using System.Collections;
 using NaughtyAttributes;
 using UnityEngine;
 
-namespace InteractableObject
+namespace Entities
 {
 	public abstract class Interactable : MonoBehaviour
 	{

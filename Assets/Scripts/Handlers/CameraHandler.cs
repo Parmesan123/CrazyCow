@@ -1,5 +1,5 @@
 ﻿using Cinemachine;
-using Player;
+using Entities;
 using UnityEngine;
 using Zenject;
 

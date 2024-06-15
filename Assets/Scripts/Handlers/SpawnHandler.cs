@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using InteractableObject;
+using Entities;
 using Services;
 using UnityEngine;
 using Zenject;
@@ -35,7 +35,7 @@ namespace Handlers
 
         public T TrySpawnAndPlaceEntity<T>(BoxCollider levelCollider, Transform avoidObject = null) where T : ISpawnable
         {
-            Vector3 randomPoint = CalculateValidPoint(levelCollider.bounds, 10f, avoidObject);
+            Vector3 randomPoint = CalculateValidPoint(levelCollider.bounds, avoidObject);
 
             Box box = _boxPool.ObjectGetFreeOrCreate();
             if (box is T convertableBox)
@@ -92,17 +92,17 @@ namespace Handlers
             throw new Exception("Can't get valid point on circle");
         }
 
-        private Vector3 CalculateValidPoint(Bounds mapBounds, float offset, Transform avoid = null)
+        private Vector3 CalculateValidPoint(Bounds mapBounds, Transform avoid = null)
         {
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < 200; ++i)
             {
-                Vector3 randomPoint = GetRandomPointInCollider(mapBounds, offset);
+                Vector3 randomPoint = GetRandomPointInCollider(mapBounds);
 
                 Collider[] colliders = Physics.OverlapSphere(randomPoint, _spawnHandlerData.MinRangeBetweenObjects);
                 if (colliders.Any(c => c.TryGetComponent(out ISpawnable _)))
                     continue;
                 
-                if (avoid == null)
+                if (avoid is null)
                     return randomPoint;
 
                 colliders = Physics.OverlapSphere(randomPoint, _spawnHandlerData.SpawnRadiusThreshold);
@@ -115,22 +115,19 @@ namespace Handlers
             return Vector3.zero;
         }
 
-        private Vector3 GetRandomPointInCollider(Bounds mapBounds, float offset)
+        private Vector3 GetRandomPointInCollider(Bounds mapBounds)
         {
             for (int i = 0; i < 200; i++)
             {
                 float xComponent = Random.Range(mapBounds.min.x, mapBounds.max.x);
                 float zComponent = Random.Range(mapBounds.min.z, mapBounds.max.z);
                 Vector3 convertPosition = new Vector3(xComponent, 0, zComponent);
-                Vector3 randomOffset = new Vector3(Random.Range(-offset, offset), 0, Random.Range(-offset, offset));
             
-                Vector3 resultPosition = convertPosition + randomOffset;
-
-                Collider[] colliders = Physics.OverlapSphere(resultPosition, _spawnHandlerData.MinRangeBetweenObjects);
+                Collider[] colliders = Physics.OverlapSphere(convertPosition, _spawnHandlerData.MinRangeBetweenObjects);
                 if (colliders.Any(c => c.TryGetComponent(out ISpawnable _)))
                     continue;
 
-                return resultPosition;
+                return convertPosition;
             }
 
             return Vector3.zero;

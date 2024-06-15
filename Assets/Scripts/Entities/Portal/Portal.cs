@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace InteractableObject
+namespace Entities
 {
 	public class Portal : Interactable, ISpawnable
 	{

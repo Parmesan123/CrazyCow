@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace InteractableObject
+namespace Entities
 {
 	public interface ICoinGiver
 	{

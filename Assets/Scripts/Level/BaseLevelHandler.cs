@@ -1,5 +1,5 @@
-﻿using Handlers;
-using Player;
+﻿using Entities;
+using Handlers;
 using UnityEngine;
 
 namespace Level

@@ -4,7 +4,7 @@ using EzySlice;
 using ModestTree;
 using System;
 using System.Threading.Tasks;
-using InteractableObject;
+using Entities;
 using Zenject;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
@@ -53,7 +53,7 @@ namespace Handlers
 		
 		private void DestroyEventAnimation(IDestroyable destroyable)
 		{
-			if (destroyable is not DestroyBehaviour convertableDestroyable)
+			if (destroyable is not DestroyBehavior convertableDestroyable)
 				throw new Exception("Destroy request can't be processed in destroy handler");
 			
 			List<GameObject> particles = CreateParticle(convertableDestroyable.Model, convertableDestroyable.Data.CrossSectionMaterial);

@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using ModestTree;
 using UnityEngine;
 
-namespace InteractableObject
+namespace Entities
 {
-	public class Vase : DestroyBehaviour, ICoinGiver
+	public class Vase : DestroyBehavior, ICoinGiver
 	{
+		public event Action<ICoinGiver> OnCoinGiveEvent;
+		
+		public int AmountCoin => Data.AmountCoin;
+		public Transform Transform => transform;
 		public IEnumerable<Box> Boxes => _boxes; 
 		
 		private List<Box> _boxes;
@@ -15,11 +19,6 @@ namespace InteractableObject
 		{
 			_boxes = new List<Box>();
 		}
-
-		public event Action<ICoinGiver> OnCoinGiveEvent;
-
-		public int AmountCoin => Data.AmountCoin;
-		public Transform Transform => transform;
 		
 		public bool TryAddBox(Box box)
 		{
@@ -37,10 +36,7 @@ namespace InteractableObject
 			
 			_boxes.Remove(box);
 			
-			if (!_boxes.IsEmpty())
-				return false;
-			
-			return true;
+			return _boxes.IsEmpty();
 		}
 		
 		public override void Destroy()

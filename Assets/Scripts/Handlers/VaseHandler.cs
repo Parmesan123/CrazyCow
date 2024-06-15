@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using InteractableObject;
-using ModestTree;
+using System.Linq;
+using Entities;
 using UnityEngine;
 using Zenject;
 
@@ -25,12 +25,8 @@ namespace Handlers
 
             _boxFactory = boxFactory;
             _boxFactory.OnSpawnBoxEvent += BoxEventSpawned;
-            _boxFactory.OnDestroyBoxEvent += BoxEventRemoved;
             foreach (Box spawnedBox in _boxFactory.SpawnedBoxes)
-            {
                 spawnedBox.OnSpawnEvent += BoxEventSpawned;
-                spawnedBox.OnDestroyEvent += BoxEventRemoved;
-            }
 
             _vaseFactory = vaseFactory;
             _vaseFactory.OnSpawnVaseEvent += VaseEventSpawned;
@@ -45,7 +41,6 @@ namespace Handlers
         public void Dispose()
         {
             _boxFactory.OnSpawnBoxEvent -= BoxEventSpawned;
-            _boxFactory.OnDestroyBoxEvent -= BoxEventRemoved;
 
             _vaseFactory.OnSpawnVaseEvent -= VaseEventSpawned;
             _vaseFactory.OnDestroyVaseEvent -= VaseEventRemoved;
@@ -64,8 +59,8 @@ namespace Handlers
                 if (!col.TryGetComponent(out Box box)) 
                     continue;
 
-                Debug.Log($"Added crate {box.transform.position} to vase {convertableVase.transform.position}");
                 convertableVase.TryAddBox(box);
+                box.OnDestroyEvent += BoxEventRemoved;
             }
         }
         
@@ -73,9 +68,6 @@ namespace Handlers
         {
             if (vase is not Vase convertableVase)
                 throw new Exception("Remove request can't be processed in vase handler");
-
-            if (!_activeVases.Contains(convertableVase))
-                return;
             
             _activeVases.Remove(convertableVase);
             convertableVase.Destroy();
@@ -95,30 +87,19 @@ namespace Handlers
                 if (!vase.TryAddBox(convertableBox))
                     continue;
                 
-                Debug.Log($"Added crate {convertableBox.transform.position} to vase {vase.transform.position}");
+                convertableBox.OnDestroyEvent += BoxEventRemoved;
             }
         }
         
         private void BoxEventRemoved(IDestroyable box)
         {
+            box.OnDestroyEvent -= BoxEventRemoved;
             if (box is not Box convertableBox)
                 throw new Exception("Remove request can't be processed in vase handler");
                 
-            List<Vase> removeVaseCollection = new List<Vase>();
-            
-            foreach (Vase vase in _activeVases)
-            {
-                if (!vase.TryRemoveBox(convertableBox))
-                    continue;
-                
-                removeVaseCollection.Add(vase);
-            }
-
+            List<Vase> removeVaseCollection = _activeVases.Where(vase => vase.TryRemoveBox(convertableBox)).ToList();
             foreach (Vase nonActiveVase in removeVaseCollection)
             {
-                if (!_activeVases.Contains(nonActiveVase))
-                    continue;
-                
                 _activeVases.Remove(nonActiveVase);
                 nonActiveVase.Destroy();
             }

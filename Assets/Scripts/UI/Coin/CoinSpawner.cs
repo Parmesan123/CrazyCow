@@ -1,7 +1,7 @@
 using System;
 using Handlers;
 using System.Collections.Generic;
-using InteractableObject;
+using Entities;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;

@@ -1,7 +1,6 @@
-﻿using Handlers;
-using InteractableObject;
+﻿using Entities;
+using Handlers;
 using Level;
-using Player;
 using UI;
 using UnityEngine;
 using Zenject;

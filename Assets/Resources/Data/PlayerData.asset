@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 542e63c73ff54aeabed9c1e2e3c92980, type: 3}
   m_Name: PlayerData
   m_EditorClassIdentifier: 
-  <PlayerSpeed>k__BackingField: 5
+  <CharacterSpeed>k__BackingField: 5
   <DestroyRange>k__BackingField: 3

@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace InteractableObject
+namespace Entities
 {
 	[SelectionBase]
-	public abstract class DestroyBehaviour : MonoBehaviour, ISpawnable, IDestroyable
+	public abstract class DestroyBehavior : MonoBehaviour, ISpawnable, IDestroyable
 	{
 		[field: SerializeField] public GameObject Model { get; protected set; }
 		[field: SerializeField] public DestroyableData Data { get; protected set; }

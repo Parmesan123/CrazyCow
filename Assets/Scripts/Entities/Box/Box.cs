@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 
-namespace InteractableObject
+namespace Entities
 {
-    public class Box : DestroyBehaviour, ICoinGiver
+    public class Box : DestroyBehavior, ICoinGiver
     {
         public event Action<ICoinGiver> OnCoinGiveEvent;
 

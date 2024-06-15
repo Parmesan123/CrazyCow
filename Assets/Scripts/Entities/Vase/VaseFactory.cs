@@ -4,7 +4,7 @@ using Services;
 using UnityEngine;
 using Zenject;
 
-namespace InteractableObject
+namespace Entities
 {
     public class VaseFactory : MonoFactory<Vase>, IDisposable
     {

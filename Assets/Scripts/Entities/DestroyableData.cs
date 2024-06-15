@@ -1,7 +1,7 @@
 using NaughtyAttributes;
 using UnityEngine;
 
-namespace InteractableObject
+namespace Entities
 {
 	[CreateAssetMenu(fileName = "DestroyableData", menuName = "ScriptableObjects/Data/DestroyableData")]
 	public class DestroyableData : ScriptableObject

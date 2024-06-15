@@ -1,19 +1,20 @@
 using System;
 using InputSystem;
+using NaughtyAttributes;
 using UnityEngine;
 using Zenject;
 
-namespace Player
+namespace Entities
 {
 	public class PlayerMovement : MonoBehaviour, IPausable
 	{
-		[SerializeField] private PlayerData _playerData;
+		[SerializeField, Expandable] private CharacterData _characterData;
 		
 		private Rigidbody _rigidbody;
 		private JoyStickInput _input;
 		private PauseHandler _pauseHandler;
 		
-		private float Speed => _playerData.PlayerSpeed;
+		private float Speed => _characterData.CharacterSpeed;
 		
 		[Inject]
 		private void Construct(PauseHandler pauseHandler, InputProvider inputProvider)
