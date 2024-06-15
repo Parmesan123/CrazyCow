@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace InteractableObject
@@ -17,23 +18,23 @@ namespace InteractableObject
 		
 		public void StartDestroy()
 		{
-			StartCoroutine(Routine());
+			Timer();
 			return;
 
-			IEnumerator Routine()
+			async void Timer()
 			{
 				float timer = Data.TimeToDestroy;
-				WaitForFixedUpdate wait = new WaitForFixedUpdate();
+				
 				_isStopDestroy = false;
                 
 				for (; timer >= 0;)
 				{
 					timer -= Time.fixedDeltaTime;
                    
-					yield return wait;
+					await Task.Delay(TimeSpan.FromSeconds(Time.fixedDeltaTime));
                     
 					if (_isStopDestroy)
-						yield break;
+						return;
 				}
                 
 				Destroy();
@@ -47,14 +48,14 @@ namespace InteractableObject
 		
 		public virtual void Spawn()
 		{
-			OnSpawnEvent?.Invoke(this);
 			gameObject.SetActive(true);
+			OnSpawnEvent?.Invoke(this);
 		}
 
 		public virtual void Destroy()
 		{
-			OnDestroyEvent.Invoke(this);
 			gameObject.SetActive(false);
+			OnDestroyEvent.Invoke(this);
 		}
 	}
 }

@@ -72,7 +72,7 @@ namespace Handlers
 				{
 					position = model.transform.position,
 					rotation = model.transform.rotation
-				}
+				},
 			};
 			GameObject copyModel = Object.Instantiate(model, parent.transform);
 

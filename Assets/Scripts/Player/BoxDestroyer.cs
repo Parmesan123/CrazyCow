@@ -8,33 +8,25 @@ namespace Player
 {
 	public class BoxDestroyer : MonoBehaviour, IPausable
 	{
-		[SerializeField] private PlayerData _playerData;
+		[field: SerializeField] public PlayerData Data { get; private set; }
 
 		private readonly List<IDestroyable> _destroyables = new List<IDestroyable>();
 		private DestroyBehaviour _currentDestroyBehaviour;
 		
 		private PauseHandler _pauseHandler;
-		private BoxFactory _boxFactory;
-		private VaseFactory _vaseFactory;
 		
 		[Inject]
-		private void Construct(PauseHandler pauseHandler, BoxFactory boxFactory, VaseFactory vaseFactory)
+		private void Construct(PauseHandler pauseHandler)
 		{
 			_pauseHandler = pauseHandler;
 			_pauseHandler.Register(this);
-
-			_boxFactory = boxFactory;
-			_boxFactory.OnDestroyBoxEvent += DestroyEntity;
-			
-			_vaseFactory = vaseFactory;
-			_vaseFactory.OnDestroyVaseEvent += DestroyEntity;
 		}
 		
 		private void Awake()
 		{
 			SphereCollider sphereCollider = gameObject.AddComponent<SphereCollider>();
 			sphereCollider.isTrigger = true;
-			sphereCollider.radius = _playerData.DestroyRange;
+			sphereCollider.radius = Data.DestroyRange;
 		}
 
 		private void OnTriggerEnter(Collider other)
@@ -56,26 +48,14 @@ namespace Player
 		private void OnDestroy()
 		{
 			_pauseHandler.Unregister(this);
-			
-			_boxFactory.OnDestroyBoxEvent -= DestroyEntity;
-			
-			_vaseFactory.OnDestroyVaseEvent -= DestroyEntity;
 		}
 		
 		public void Unpause()
 		{
-			//TODO: rework
-			_boxFactory.OnDestroyBoxEvent += DestroyEntity;
-			
-			_vaseFactory.OnDestroyVaseEvent += DestroyEntity;
 		}
 
 		public void Pause()
 		{
-			//TODO: rework
-			_boxFactory.OnDestroyBoxEvent -= DestroyEntity;
-			
-			_vaseFactory.OnDestroyVaseEvent -= DestroyEntity;
 		}
 
 		private void DestroyEntity(IDestroyable destroyable)
@@ -88,6 +68,7 @@ namespace Player
 		private void Register(DestroyBehaviour destroyBehaviour)
 		{
 			_destroyables.Add(destroyBehaviour);
+			destroyBehaviour.OnDestroyEvent += DestroyEntity;
 
 			if (_currentDestroyBehaviour != null) 
 				return;
@@ -99,6 +80,7 @@ namespace Player
 		private void UnRegister(DestroyBehaviour destroyBehaviour)
 		{
 			_destroyables.Remove(destroyBehaviour);
+			destroyBehaviour.OnDestroyEvent -= DestroyEntity;
 
 			if (_currentDestroyBehaviour != destroyBehaviour) 
 				return;

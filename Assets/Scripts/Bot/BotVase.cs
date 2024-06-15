@@ -20,7 +20,7 @@ namespace Bot
 			}
 		}
 
-		public void RemoveBox(DestroyBehaviour destroyBehaviour)
+		public void RemoveBox(IDestroyable destroyBehaviour)
 		{
 			BotBox box = destroyBehaviour as BotBox;
 

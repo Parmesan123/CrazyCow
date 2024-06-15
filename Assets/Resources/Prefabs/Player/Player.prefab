@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30a043c7d9f645f1baaa8ebec33671ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerData: {fileID: 11400000, guid: da9e6008ed3887541bff6c330cf94021, type: 2}
+  <Data>k__BackingField: {fileID: 11400000, guid: 4bdf096fcd8c4db41a843619112e4e19, type: 2}
 --- !u!1 &8701788600873248596
 GameObject:
   m_ObjectHideFlags: 0

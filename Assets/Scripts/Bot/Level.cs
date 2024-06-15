@@ -19,7 +19,7 @@ namespace Bot
 			}
 		}
 
-		private void RemoveVase(DestroyBehaviour destroyBehaviour)
+		private void RemoveVase(IDestroyable destroyBehaviour)
 		{
 			BotVase vase = destroyBehaviour as BotVase;
 

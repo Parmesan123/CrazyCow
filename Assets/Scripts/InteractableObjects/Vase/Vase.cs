@@ -7,6 +7,8 @@ namespace InteractableObject
 {
 	public class Vase : DestroyBehaviour, ICoinGiver
 	{
+		public IEnumerable<Box> Boxes => _boxes; 
+		
 		private List<Box> _boxes;
 
 		private void Awake()

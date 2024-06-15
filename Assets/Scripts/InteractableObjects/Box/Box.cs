@@ -12,7 +12,7 @@ namespace InteractableObject
 
         public override void Destroy()
         {
-            OnCoinGiveEvent.Invoke(this);
+            OnCoinGiveEvent?.Invoke(this);
             
             base.Destroy();
         }
