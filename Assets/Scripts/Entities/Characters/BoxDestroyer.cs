@@ -1,6 +1,7 @@
 using System;
-using ModestTree;
+using System.Collections;
 using System.Collections.Generic;
+using Handlers;
 using NaughtyAttributes;
 using UnityEngine;
 using Zenject;
@@ -10,23 +11,28 @@ namespace Entities
 	public class BoxDestroyer : MonoBehaviour, IPausable
 	{
 		[field: SerializeField, Expandable] public CharacterData Data { get; private set; }
-
-		public event Action<Vase> OnDestroyEvent;
 		
-		private List<IDestroyable> _destroyables;
-		private DestroyBehavior _currentDestroyBehavior;
+		public event Action<Vase> OnDestroyEvent;
+
+		private List<DestroyBehavior> _destroyables;
+		private VaseHandler _vaseHandler;
+		private (DestroyBehavior destroyBehavior, Coroutine coroutine) _destroyableCoroutine;
 		private PauseHandler _pauseHandler;
 		
 		[Inject]
-		private void Construct(PauseHandler pauseHandler)
+		private void Construct(PauseHandler pauseHandler, VaseHandler vaseHandler)
 		{
 			_pauseHandler = pauseHandler;
 			_pauseHandler.Register(this);
+			
+			_destroyables = new List<DestroyBehavior>();
+
+			_vaseHandler = vaseHandler;
 		}
 		
 		private void Awake()
 		{
-			_destroyables = new List<IDestroyable>();
+			_vaseHandler.OnVaseDestroyedFromBoxEvent += DestroyVaseWithBox;
 			
 			SphereCollider sphereCollider = gameObject.AddComponent<SphereCollider>();
 			sphereCollider.isTrigger = true;
@@ -38,7 +44,8 @@ namespace Entities
 			if (!other.TryGetComponent(out DestroyBehavior destroyable))
 				return;
 			
-			Register(destroyable);
+			_destroyables.Add(destroyable);
+			destroyable.OnDestroyEvent += OnEntityDestroyed;
 		}
 
 		private void OnTriggerExit(Collider other)
@@ -46,7 +53,8 @@ namespace Entities
 			if (!other.TryGetComponent(out DestroyBehavior destroyable))
 				return;
 			
-			UnRegister(destroyable);
+			_destroyables.Remove(destroyable);
+			destroyable.OnDestroyEvent -= OnEntityDestroyed;
 		}
 
 		private void OnDestroy()
@@ -56,14 +64,6 @@ namespace Entities
 
 		private void OnDisable()
 		{
-			foreach (IDestroyable destroyable in _destroyables)
-			{
-				destroyable.OnDestroyEvent -= DestroyEntity;
-				
-				if (destroyable is DestroyBehavior convertable)
-					convertable.StopDestroy();
-			}
-			
 			_destroyables.Clear();
 		}
 
@@ -75,50 +75,79 @@ namespace Entities
 		{
 		}
 
-		private void DestroyEntity(IDestroyable destroyable)
+		private void FixedUpdate()
 		{
-			UnRegister(destroyable as DestroyBehavior);
-			
-			if (destroyable is Vase vase)
-				OnDestroyEvent?.Invoke(vase);
-			
-			SetNextCurrentDestroyable();
+			ChangeDestroyable(GetClosestEntity());
 		}
-
-		private void Register(DestroyBehavior destroyBehavior)
+		
+		private void ChangeDestroyable(DestroyBehavior destroyable)
 		{
-			_destroyables.Add(destroyBehavior);
-			destroyBehavior.OnDestroyEvent += DestroyEntity;
-
-			if (_currentDestroyBehavior != null) 
+			if (destroyable == _destroyableCoroutine.destroyBehavior)
 				return;
 			
-			_currentDestroyBehavior = destroyBehavior;
-			_currentDestroyBehavior.StartDestroy();
-		}
-
-		private void UnRegister(DestroyBehavior destroyBehavior)
-		{
-			_destroyables.Remove(destroyBehavior);
-			destroyBehavior.OnDestroyEvent -= DestroyEntity;
-
-			if (_currentDestroyBehavior != destroyBehavior) 
-				return;
+			if (_destroyableCoroutine.coroutine is not null)
+				StopCoroutine(_destroyableCoroutine.coroutine);
 			
-			_currentDestroyBehavior.StopDestroy();
-			SetNextCurrentDestroyable();
-		}
+			_destroyableCoroutine.destroyBehavior = destroyable;
 
-		private void SetNextCurrentDestroyable()
+			if (destroyable is null)
+				_destroyableCoroutine.coroutine = null;
+			
+			if (_destroyableCoroutine.destroyBehavior is not null)
+				StartDestroy(_destroyableCoroutine.destroyBehavior);
+		}
+		
+		private void StartDestroy(DestroyBehavior destroyable)
 		{
-			if (_destroyables.IsEmpty())
+			_destroyableCoroutine.coroutine = StartCoroutine(Timer());
+			return;
+
+			IEnumerator Timer()
 			{
-				_currentDestroyBehavior = null;
-				return;
+				float timer = destroyable.Data.TimeToDestroy;
+				
+				for (; timer >= 0;)
+				{
+					timer -= Time.fixedDeltaTime;
+                   
+					yield return new WaitForFixedUpdate();
+				}
+                
+				destroyable.Destroy();
+			}
+		}
+
+		private DestroyBehavior GetClosestEntity()
+		{
+			DestroyBehavior closestDestroyable = null;
+			
+			float minDistance = float.PositiveInfinity;
+			foreach (DestroyBehavior destroyable in _destroyables)
+			{
+				float distance = Vector3.Distance(destroyable.Transform.position, transform.position);
+				if (distance < minDistance)
+				{
+					minDistance = distance;
+					closestDestroyable = destroyable;
+				}
 			}
 			
-			_currentDestroyBehavior = _destroyables[0] as DestroyBehavior;
-			_currentDestroyBehavior.StartDestroy();
+			return closestDestroyable;
+		}
+		
+		private void OnEntityDestroyed(IDestroyable destroyable)
+		{
+			destroyable.OnDestroyEvent -= OnEntityDestroyed;
+			_destroyables.Remove(destroyable as DestroyBehavior);
+			StopCoroutine(_destroyableCoroutine.coroutine);
+		}
+
+		private void DestroyVaseWithBox(Box box, Vase vase)
+		{
+			if (_destroyableCoroutine.destroyBehavior != box)
+				return;
+			
+			OnDestroyEvent?.Invoke(vase);
 		}
 	}
 }

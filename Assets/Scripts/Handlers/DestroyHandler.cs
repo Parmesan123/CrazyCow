@@ -13,10 +13,9 @@ namespace Handlers
 {
 	public class DestroyHandler : IDisposable
 	{
-		private readonly List<ParticleData> _modelParticles = new List<ParticleData>();
-
-		private BoxFactory _boxFactory;
-		private VaseFactory _vaseFactory;
+		private readonly List<ParticleData> _modelParticles;
+		private readonly BoxFactory _boxFactory;
+		private readonly VaseFactory _vaseFactory;
 
 		private class ParticleData
 		{
@@ -33,6 +32,8 @@ namespace Handlers
 		[Inject]
 		private DestroyHandler(BoxFactory boxFactory, VaseFactory vaseFactory)
 		{
+			_modelParticles = new List<ParticleData>();
+			
 			_boxFactory = boxFactory;
 			_boxFactory.OnDestroyBoxEvent += DestroyEventAnimation;
 			foreach (Box spawnedBox in _boxFactory.SpawnedBoxes)

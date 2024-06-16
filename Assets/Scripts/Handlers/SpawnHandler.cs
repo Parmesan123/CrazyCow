@@ -54,7 +54,7 @@ namespace Handlers
 
                 for (int i = 0; i < _spawnHandlerData.BoxesWithVaseCount; i++)
                 {
-                    Vector3 cratePosition = GetRandomPointInCircle(_spawnHandlerData.VaseRadiusThreshold, vase.transform);
+                    Vector3 cratePosition = GetRandomPointInCircle(_spawnHandlerData.VaseRadiusThreshold, vase.transform.position);
                     
                     Box freeCrate = _boxPool.ObjectGetFreeOrCreate();
                     freeCrate.transform.position = cratePosition;
@@ -76,11 +76,12 @@ namespace Handlers
             throw new Exception("Can't form entity from spawn request");
         }
         
-        private Vector3 GetRandomPointInCircle(float radius, Transform center)
+        private Vector3 GetRandomPointInCircle(float radius, Vector3 center)
         {
             for (int i = 0; i < 400; i++)
             {
-                Vector3 randomPointInCircle = center.GetRandomPointOnCircle(radius);
+                Vector2 randomPoint = Random.insideUnitCircle * radius;
+                Vector3 randomPointInCircle = new Vector3(randomPoint.x + center.x, 0, randomPoint.y + center.z);
                 
                 Collider[] colliders = Physics.OverlapSphere(randomPointInCircle, _spawnHandlerData.MinRangeBetweenObjects);
                 if (colliders.Any(c => c.TryGetComponent(out ISpawnable _)))

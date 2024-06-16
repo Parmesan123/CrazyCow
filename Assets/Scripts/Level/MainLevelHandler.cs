@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Entities;
 using Handlers;
+using UI;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
@@ -13,53 +14,33 @@ namespace Level
         [SerializeField] private MainLevelData _mainLevelData;
         [SerializeField] private BoxCollider _boxCollider;
 
-        private BoxFactory _boxFactory;
-        private VaseFactory _vaseFactory;
-        private PortalFactory _portalFactory;
         private float _currentPortalSpawnTime;
+        private BonusLevelHandler _bonusLevelHandler;
+        private CoinSpawner _coinSpawner;
         private List<IDestroyable> _objectsOnLevel;
 
         private Coroutine _spawnRoutine;
         
         [Inject]
-        protected void Construct(PauseHandler pauseHandler, SpawnHandler spawnHandler, PlayerMovement player, BoxFactory boxFactory, VaseFactory vaseFactory, PortalFactory portalFactory)
+        protected void Construct(PauseHandler pauseHandler, SpawnHandler spawnHandler, PlayerMovement player, BonusLevelHandler bonusLevelHandler, CoinSpawner coinSpawner)
         {
             base.Construct(pauseHandler, spawnHandler, player);
 
             _objectsOnLevel = new List<IDestroyable>();
 
-            _portalFactory = portalFactory;
-            _portalFactory.OnPortalEnterEvent += PortalEntered;
-            foreach (Portal spawnedPortal in _portalFactory.SpawnedPortals)
-                spawnedPortal.OnEnter += PortalEntered;
+            _bonusLevelHandler = bonusLevelHandler;
 
-            _boxFactory = boxFactory;
-            _boxFactory.OnDestroyBoxEvent += DestroyEventEntity;
-            foreach (Box spawnedBox in _boxFactory.SpawnedBoxes)
-                spawnedBox.OnDestroyEvent += DestroyEventEntity;
-
-            _vaseFactory = vaseFactory;
-            _vaseFactory.OnDestroyVaseEvent += DestroyEventEntity;
-            foreach (Vase spawnedVase in _vaseFactory.SpawnedVases)
-                spawnedVase.OnDestroyEvent += DestroyEventEntity;
+            _coinSpawner = coinSpawner;
         }
 
         private void Awake()
         {
+            _bonusLevelHandler.OnBonusLevelStarted += Pause;
+            _bonusLevelHandler.OnBonusLevelEnded += Unpause;
+            
             StartLevel();
         }
         
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            
-            _portalFactory.OnPortalEnterEvent -= PortalEntered;
-
-            _boxFactory.OnDestroyBoxEvent -= DestroyEventEntity;
-
-            _vaseFactory.OnDestroyVaseEvent -= DestroyEventEntity;
-        }
-
         public override void Unpause()
         {
             //TODO: rework
@@ -71,22 +52,12 @@ namespace Level
             //TODO: rework
             StopCoroutine(_spawnRoutine);
         }
-        
-        private void DestroyEventEntity(IDestroyable destroyable)
-        {
-            _objectsOnLevel.Remove(destroyable);
-        }
-        
-        private void PortalEntered()
-        {
-            Pause();
-        }
 
         private void StartLevel()
         {
             for (int i = 0; i < _mainLevelData.BoxInitialCount; i++)
                 OnEntitySpawnRequested<Box>();
-
+            
             for (int i = 0; i < _mainLevelData.VaseInitialCount; i++)
                 OnEntitySpawnRequested<Vase>();
 
@@ -110,31 +81,50 @@ namespace Level
 
         private void NextSpawnRequest()
         {
-            if (_objectsOnLevel.Count > _mainLevelData.ObjectsMaxCount)
-            {
-                Debug.Log("Current objects exceeded maximum spawn number");
-                return;
-            }
-
             float tickResult = Random.Range(0f, 1f);
-            if (tickResult <= _mainLevelData.BoxSpawnChance)
-                OnEntitySpawnRequested<Box>();
-
-            if (tickResult <= _mainLevelData.VaseSpawnChance)
-                OnEntitySpawnRequested<Vase>();
-
             if (_currentPortalSpawnTime <= 0)
             {
                 OnEntitySpawnRequested<Portal>();
                 _currentPortalSpawnTime = _mainLevelData.PortalSpawnTime;
             }
+            
+            if (_objectsOnLevel.Count > _mainLevelData.ObjectsMaxCount)
+                return;
+
+            if (tickResult <= _mainLevelData.BoxSpawnChance)
+                OnEntitySpawnRequested<Box>();
+
+            if (tickResult <= _mainLevelData.VaseSpawnChance)
+                OnEntitySpawnRequested<Vase>();
         }
 
         private void OnEntitySpawnRequested<T>() where T : ISpawnable
         {
             T entityInstance = _spawnHandler.TrySpawnAndPlaceEntity<T>(_boxCollider, _player.transform);
             if (entityInstance is IDestroyable convertable)
+            {
+                convertable.OnDestroyEvent += DestroyEventEntity;
                 _objectsOnLevel.Add(convertable);    
+            }
+
+            if (entityInstance is Box box)
+                _coinSpawner.Register(box);
+
+            if (entityInstance is Vase vase)
+            {
+                _coinSpawner.Register(vase);
+
+                foreach (Box vaseBox in vase.Boxes)
+                    _coinSpawner.Register(vaseBox);
+            }
+            
+            return;
+            
+            void DestroyEventEntity(IDestroyable destroyable)
+            {
+                destroyable.OnDestroyEvent -= DestroyEventEntity;
+                _objectsOnLevel.Remove(destroyable);
+            }
         }
     }
 }

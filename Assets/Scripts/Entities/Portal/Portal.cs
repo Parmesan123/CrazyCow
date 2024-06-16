@@ -27,6 +27,7 @@ namespace Entities
 		protected override void Interact()
 		{
 			OnEnter.Invoke();
+			gameObject.SetActive(false);
 		}
 
 		private IEnumerator TimerUntilDespawn()

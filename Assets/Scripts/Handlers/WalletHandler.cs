@@ -1,27 +1,20 @@
-using DG.Tweening;
-using TMPro;
+using System;
 using UI;
-using UnityEngine;
 
 namespace Handlers
 {
 	public class WalletHandler
 	{
-		private TextMeshProUGUI _text;
-		private int _wallet;
-
-		public WalletHandler(TextMeshProUGUI text)
-		{
-			_text = text;
-			_text.text = _wallet.ToString();
-		}
+		public event Action<int> OnUIUpdateEvent; 
+			
+		private int _coins;
 		
 		public void Register(Coin coin)
 		{
 			coin.OnDestroyEvent += CoinListener;
 		}
 
-		public void UnRegister(Coin coin)
+		private void UnRegister(Coin coin)
 		{
 			coin.OnDestroyEvent -= CoinListener;
 		}
@@ -29,16 +22,8 @@ namespace Handlers
 		private void CoinListener(Coin coin)
 		{
 			UnRegister(coin);
-			++_wallet;
-			UpdateWalletUI();
-		}
-
-		private void UpdateWalletUI() // TODO create other self
-		{
-			_text.text = _wallet.ToString();
-			_text.transform.localScale = Vector3.one;
-			_text.transform.DOKill();
-			_text.transform.DOPunchScale(new Vector3(0.5f, 0.5f, 0.5f), 0.2f, 1);
+			++_coins;
+			OnUIUpdateEvent?.Invoke(_coins);
 		}
 	}
 }

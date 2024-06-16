@@ -15,6 +15,8 @@ namespace Handlers
         private readonly BoxFactory _boxFactory;
         private readonly VaseFactory _vaseFactory;
 
+        public Action<Box, Vase> OnVaseDestroyedFromBoxEvent;
+
         private int _currentVasesOnField;
 
         [Inject]
@@ -70,7 +72,6 @@ namespace Handlers
                 throw new Exception("Remove request can't be processed in vase handler");
             
             _activeVases.Remove(convertableVase);
-            convertableVase.Destroy();
         }
 
         private void BoxEventSpawned(ISpawnable spawnedBox)
@@ -100,8 +101,8 @@ namespace Handlers
             List<Vase> removeVaseCollection = _activeVases.Where(vase => vase.TryRemoveBox(convertableBox)).ToList();
             foreach (Vase nonActiveVase in removeVaseCollection)
             {
-                _activeVases.Remove(nonActiveVase);
                 nonActiveVase.Destroy();
+                OnVaseDestroyedFromBoxEvent?.Invoke(convertableBox, nonActiveVase);
             }
         }
     }   

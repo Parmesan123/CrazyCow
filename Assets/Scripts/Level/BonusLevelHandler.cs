@@ -5,29 +5,42 @@ using Handlers;
 using Level;
 using ModestTree;
 using NaughtyAttributes;
+using UI;
 using Unity.AI.Navigation;
 using UnityEngine;
 using Zenject;
 
-public class BonusLevelHandler : BaseLevelHandler
+public class BonusLevelHandler : BaseLevelHandler, ICoinGiver
 {
     [SerializeField, Expandable] private BonusLevelData _levelData;
-    [SerializeField] private Transform _playerSpawnPoint;
+    [SerializeField] private Transform _playerStartLevelSpawnPoint;
+    [SerializeField] private Transform _playerEndLevelSpawnPoint;
+    [SerializeField] private Transform _botStartLevelSpawnPoint;
     [SerializeField] private BotBehavior _bot;
     [SerializeField] private BoxCollider _levelBounds;
     [SerializeField] private Portal _bonusLevelPortal;
+    
+    public event Action<ICoinGiver> OnCoinGiveEvent;
+    public int AmountCoin => _totalCoins;
+    public Transform Transform => transform;
 
+    public event Action OnBonusLevelStarted;
+    public event Action OnBonusLevelEnded;
+    public event Action<int> OnPlayerScoreUpdateUIEvent;
+    public event Action<int> OnBotScoreUpdateUIEvent;
     public IReadOnlyList<Vase> Vases => _vasesOnField;
 
     private NavMeshSurface _surface;
     private PortalFactory _portalFactory;
+    private CoinSpawner _coinSpawner;
     private List<Vase> _vasesOnField;
     private List<Box> _boxesOnField;
     private int _currentBotPoints;
     private int _currentPlayerPoints;
+    private int _totalCoins;
     
     [Inject]
-    protected void Construct(PauseHandler pauseHandler, SpawnHandler spawnHandler, PlayerMovement player, PortalFactory portalFactory)
+    protected void Construct(PauseHandler pauseHandler, SpawnHandler spawnHandler, PlayerMovement player, PortalFactory portalFactory, CoinSpawner coinSpawner)
     {
         base.Construct(pauseHandler, spawnHandler, player);
 
@@ -35,6 +48,8 @@ public class BonusLevelHandler : BaseLevelHandler
         _boxesOnField = new List<Box>();
 
         _portalFactory = portalFactory;
+
+        _coinSpawner = coinSpawner;
     }
 
     private void Awake()
@@ -71,10 +86,10 @@ public class BonusLevelHandler : BaseLevelHandler
     
     private void StartBonusLevel()
     {
-        _currentBotPoints = 0;
-        
-        _player.transform.position = _playerSpawnPoint.position;
-        _currentPlayerPoints = 0;
+        OnBonusLevelStarted?.Invoke();
+        _player.transform.position = _playerStartLevelSpawnPoint.position;
+        _bot.transform.position = _botStartLevelSpawnPoint.position;
+        _coinSpawner.Register(this);
 
         for (int i = 0; i < _levelData.VaseCount; i++)
         {
@@ -112,41 +127,60 @@ public class BonusLevelHandler : BaseLevelHandler
             _surface.BuildNavMesh();
 
             if (destroyable is Box box)
-            {
-                
                 _boxesOnField.Remove(box);
-            }
         }
     }
 
     private void EndBonusLevel()
     {
+        OnBonusLevelEnded?.Invoke();
+        _player.transform.position = _playerEndLevelSpawnPoint.position;
+        
         _bot.GetComponent<BoxDestroyer>().OnDestroyEvent -= VaseDestroyedByBot;
         _player.GetComponent<BoxDestroyer>().OnDestroyEvent -= VaseDestroyedByPlayer;
         
-        _bonusLevelPortal.gameObject.SetActive(true);
+        foreach (Box box in _boxesOnField)
+            box.gameObject.SetActive(false);
+        _boxesOnField.Clear();
+        
+        if (_currentPlayerPoints > _currentBotPoints)
+            OnCoinGiveEvent.Invoke(this);
+        
+        _currentBotPoints = 0;
+        OnBotScoreUpdateUIEvent?.Invoke(_currentBotPoints);
+        _currentPlayerPoints = 0;
+        OnPlayerScoreUpdateUIEvent?.Invoke(_currentPlayerPoints);
+
+        _totalCoins = 0;
     }
     
     private void VaseDestroyedByBot(Vase vase)
     {
-        _currentBotPoints++;
-
         if (!_vasesOnField.Contains(vase))
-            throw new Exception("Can't process vase destroy signal");
-        
+            return;
+            
         _vasesOnField.Remove(vase);
+        if (vase.Boxes.IsEmpty())
+        {
+            _currentBotPoints++;
+            OnBotScoreUpdateUIEvent?.Invoke(_currentBotPoints);
+        }
         
         CalculateWin();
     }
 
     private void VaseDestroyedByPlayer(Vase vase)
     {
-        _currentPlayerPoints++;
-        
         if (!_vasesOnField.Contains(vase))
-            throw new Exception("Can't process vase destroy signal");
+            return;
         
         _vasesOnField.Remove(vase);
+        _totalCoins += vase.AmountCoin;
+        if (vase.Boxes.IsEmpty())
+        {
+            _currentPlayerPoints++;
+            OnPlayerScoreUpdateUIEvent?.Invoke(_currentPlayerPoints);
+        }
         
         CalculateWin();
     }
@@ -156,6 +190,8 @@ public class BonusLevelHandler : BaseLevelHandler
         if (!_vasesOnField.IsEmpty())
             return;
 
-        Debug.Log(_currentBotPoints > _currentPlayerPoints ? "Bot win" : "Player win");
+        _totalCoins *= 2;
+        
+        _bonusLevelPortal.gameObject.SetActive(true);
     }
 }

@@ -30,8 +30,7 @@ namespace Installers
 			Container
 				.Bind<WalletHandler>()
 				.FromNew()
-				.AsSingle()
-				.WithArguments(_text);
+				.AsSingle();
 		}
 
 		private void BindDestroyHandler()

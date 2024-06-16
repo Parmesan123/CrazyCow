@@ -19,23 +19,11 @@ namespace UI
 		
 		private Coin _coinPrefab;
 		private WalletHandler _walletHandler;
-		private BoxFactory _boxFactory;
-		private VaseFactory _vaseFactory;
 
 		[Inject]
-		private void Construct(WalletHandler walletHandler, BoxFactory boxFactory, VaseFactory vaseFactory)
+		private void Construct(WalletHandler walletHandler)
 		{
 			_walletHandler = walletHandler;
-
-			_boxFactory = boxFactory;
-			_boxFactory.OnSpawnBoxEvent += Register;
-			foreach (Box spawnedBox in _boxFactory.SpawnedBoxes)
-				spawnedBox.OnSpawnEvent += Register;
-
-			_vaseFactory = vaseFactory;
-			_vaseFactory.OnSpawnVaseEvent += Register;
-			foreach (Vase spawnedVase in _vaseFactory.SpawnedVases)
-				spawnedVase.OnSpawnEvent += Register;
 		}
 
 		private void Awake()
@@ -43,19 +31,9 @@ namespace UI
 			_coinPrefab = Resources.Load<Coin>(COIN_PATH);
 		}
 
-		private void OnDestroy()
+		public void Register(ICoinGiver spawnable)
 		{
-			_boxFactory.OnSpawnBoxEvent -= Register;
-
-			_vaseFactory.OnSpawnVaseEvent -= Register;
-		}
-
-		private void Register(ISpawnable spawnable)
-		{
-			if (spawnable is not ICoinGiver coinGiver)
-				throw new Exception("Can't process registration on coin spawner");
-			
-			coinGiver.OnCoinGiveEvent += UnRegister;
+			spawnable.OnCoinGiveEvent += UnRegister;
 		}
 
 		private void UnRegister(ICoinGiver coinGiver)

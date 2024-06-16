@@ -12,6 +12,7 @@ public class LevelInstaller : MonoInstaller
     [SerializeField] private Transform _playerSpawnPosition;
     [SerializeField] private Transform _cameraHandlerParent;
     [SerializeField] private MainLevelHandler _mainLevel;
+    [SerializeField] private BonusLevelHandler _bonusLevel;
     [SerializeField] private CoinSpawner _coinSpawner;
     
     public override void InstallBindings()
@@ -20,7 +21,7 @@ public class LevelInstaller : MonoInstaller
         BindFactories();
         BindPlayer();
         BindSpawnHandler();
-        FinishBindings();
+        BindLevel();
     }
 
     private void BindCoinSpawner()
@@ -70,8 +71,11 @@ public class LevelInstaller : MonoInstaller
             .AsSingle();
     }
 
-    private void FinishBindings()
+    private void BindLevel()
     {
-        Destroy(_playerSpawnPosition.gameObject);
+        Container
+            .Bind<BonusLevelHandler>()
+            .FromInstance(_bonusLevel)
+            .AsSingle();
     }
 }

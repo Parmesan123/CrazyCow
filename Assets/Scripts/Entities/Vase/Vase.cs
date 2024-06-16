@@ -35,7 +35,6 @@ namespace Entities
 				return false;
 			
 			_boxes.Remove(box);
-			
 			return _boxes.IsEmpty();
 		}
 		
