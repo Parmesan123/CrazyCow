@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace Entities
 {
@@ -8,7 +7,6 @@ namespace Entities
         public event Action<ICoinGiver> OnCoinGiveEvent;
 
         public int AmountCoin => Data.AmountCoin;
-        public Transform Transform => transform;
 
         public override void Destroy()
         {

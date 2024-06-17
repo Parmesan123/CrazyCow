@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using ModestTree;
-using UnityEngine;
 
 namespace Entities
 {
@@ -10,7 +9,6 @@ namespace Entities
 		public event Action<ICoinGiver> OnCoinGiveEvent;
 		
 		public int AmountCoin => Data.AmountCoin;
-		public Transform Transform => transform;
 		public IEnumerable<Box> Boxes => _boxes; 
 		
 		private List<Box> _boxes;

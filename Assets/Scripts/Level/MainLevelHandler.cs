@@ -11,7 +11,6 @@ namespace Level
     public class MainLevelHandler : BaseLevelHandler
     {
         [SerializeField] private MainLevelData _mainLevelData;
-        [SerializeField] private BoxCollider _boxCollider;
 
         private float ObjectsCount => _boxesOnField.Count + _vasesOnField.Count;
         private float _currentPortalSpawnTime;

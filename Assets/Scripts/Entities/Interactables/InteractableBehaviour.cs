@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Entities
 {
-	public abstract class Interactable : MonoBehaviour
+	public abstract class InteractableBehaviour : MonoBehaviour
 	{
 		[SerializeField, Expandable] protected InteractableData _interactableData;
 

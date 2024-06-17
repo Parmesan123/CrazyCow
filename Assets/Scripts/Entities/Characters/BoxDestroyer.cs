@@ -17,6 +17,7 @@ namespace Entities
 		private List<DestroyBehavior> _destroyables;
 		private VaseHandler _vaseHandler;
 		private (DestroyBehavior destroyBehavior, Coroutine coroutine) _destroyableCoroutine;
+		private float _timer;
 		
 		[Inject]
 		private void Construct(VaseHandler vaseHandler)
@@ -87,11 +88,11 @@ namespace Entities
 
 			IEnumerator Timer()
 			{
-				float timer = destroyable.Data.TimeToDestroy;
+				_timer = destroyable.Data.TimeToDestroy;
 				
-				for (; timer >= 0;)
+				for (; _timer >= 0;)
 				{
-					timer -= Time.fixedDeltaTime;
+					_timer -= Time.fixedDeltaTime;
                    
 					yield return new WaitForFixedUpdate();
 				}
@@ -128,6 +129,9 @@ namespace Entities
 		private void DestroyVaseWithBox(Box box, Vase vase)
 		{
 			if (_destroyableCoroutine.destroyBehavior != box)
+				return;
+			
+			if (_timer > 0)
 				return;
 			
 			OnDestroyEvent?.Invoke(vase);

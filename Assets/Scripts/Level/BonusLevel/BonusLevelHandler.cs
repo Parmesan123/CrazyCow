@@ -17,7 +17,6 @@ public class BonusLevelHandler : BaseLevelHandler, ICoinGiver
     [SerializeField] private Transform _playerEndLevelSpawnPoint;
     [SerializeField] private Transform _botStartLevelSpawnPoint;
     [SerializeField] private BotBehavior _bot;
-    [SerializeField] private BoxCollider _levelBounds;
     [SerializeField] private Portal _bonusLevelPortal;
     
     public event Action<ICoinGiver> OnCoinGiveEvent;
@@ -129,9 +128,6 @@ public class BonusLevelHandler : BaseLevelHandler, ICoinGiver
     
     private void VaseDestroyedByBot(Vase vase)
     {
-        if (!_vasesOnField.Contains(vase))
-            return;
-            
         if (vase.Boxes.IsEmpty())
         {
             _currentBotPoints++;
@@ -143,9 +139,6 @@ public class BonusLevelHandler : BaseLevelHandler, ICoinGiver
 
     private void VaseDestroyedByPlayer(Vase vase)
     {
-        if (!_vasesOnField.Contains(vase))
-            return;
-        
         _totalCoins += vase.AmountCoin;
         if (vase.Boxes.IsEmpty())
         {

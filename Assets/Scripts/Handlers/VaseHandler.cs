@@ -50,9 +50,7 @@ namespace Handlers
         
         private void VaseEventSpawned(ISpawnable spawnedVase)
         {
-            if (spawnedVase is not Vase convertableVase)
-                throw new Exception("Can't process callback in vase handler");
-            
+            Vase convertableVase = spawnedVase as Vase;
             _activeVases.Add(convertableVase);
             
             Collider[] colliders = Physics.OverlapSphere(convertableVase.transform.position, _data.SeekingRadius);
@@ -68,16 +66,14 @@ namespace Handlers
         
         private void VaseEventRemoved(IDestroyable vase)
         {
-            if (vase is not Vase convertableVase)
-                throw new Exception("Remove request can't be processed in vase handler");
+            Vase convertableVase = vase as Vase;
             
             _activeVases.Remove(convertableVase);
         }
 
         private void BoxEventSpawned(ISpawnable spawnedBox)
         {
-            if (spawnedBox is not Box convertableBox)
-                throw new Exception("Can't process callback in vase handler");
+            Box convertableBox = spawnedBox as Box;
             
             Collider[] colliders = Physics.OverlapSphere(convertableBox.transform.position, _data.SeekingRadius);
             foreach (Collider col in colliders) 
@@ -94,9 +90,8 @@ namespace Handlers
         
         private void BoxEventRemoved(IDestroyable box)
         {
-            box.OnDestroyEvent -= BoxEventRemoved;
-            if (box is not Box convertableBox)
-                throw new Exception("Remove request can't be processed in vase handler");
+            Box convertableBox = box as Box;
+            convertableBox.OnDestroyEvent -= BoxEventRemoved;
                 
             List<Vase> removeVaseCollection = _activeVases.Where(vase => vase.TryRemoveBox(convertableBox)).ToList();
             foreach (Vase nonActiveVase in removeVaseCollection)

@@ -4,16 +4,16 @@ using UnityEngine;
 
 namespace Entities
 {
-	public class Portal : Interactable, ISpawnable
+	public class Portal : InteractableBehaviour, ISpawnable
 	{
-		private new PortalData _interactableData;
+		private PortalData _portalData;
 		
 		public event Action<ISpawnable> OnSpawnEvent;
 		public event Action OnEnter;
 		
 		private void Awake()
 		{
-			_interactableData = base._interactableData as PortalData;
+			_portalData = _interactableData as PortalData;
 		}
 		
 		public void Spawn()
@@ -32,7 +32,7 @@ namespace Entities
 
 		private IEnumerator TimerUntilDespawn()
 		{
-			yield return new WaitForSeconds(_interactableData.TimeUntilDespawn);
+			yield return new WaitForSeconds(_portalData.TimeUntilDespawn);
 			
 			gameObject.SetActive(false);
 		}

@@ -8,7 +8,7 @@ namespace Level
 {
     public abstract class BaseLevelHandler : MonoBehaviour
     {
-        [SerializeField] private BoxCollider _levelCollider;
+        [SerializeField] private BoxCollider _levelBounds;
         
         protected List<Box> _boxesOnField;
         protected List<Vase> _vasesOnField;
@@ -34,18 +34,14 @@ namespace Level
 
         protected virtual void OnDestroy()
         {
-            foreach (Box box in _boxesOnField)
-                Destroy(box.gameObject);
             _boxesOnField.Clear();
             
-            foreach (Vase vase in _vasesOnField)
-                Destroy(vase.gameObject);
             _vasesOnField.Clear();
         }
 
         protected T EntitySpawn<T>(Transform avoidObject = null) where T : ISpawnable
         {
-            T entityInstance = _spawnHandler.TrySpawnAndPlaceEntity<T>(_levelCollider, avoidObject);
+            T entityInstance = _spawnHandler.TrySpawnAndPlaceEntity<T>(_levelBounds, avoidObject);
 
             if (entityInstance is not IDestroyable convertable) 
                 return entityInstance;

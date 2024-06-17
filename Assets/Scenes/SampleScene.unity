@@ -757,12 +757,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0c429223dea57e4f8f7b4d7a385fb84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _levelBounds: {fileID: 430552827}
   _levelData: {fileID: 11400000, guid: c40c45a4d5d101f4e9cfc570a1f706aa, type: 2}
   _playerStartLevelSpawnPoint: {fileID: 2142841673}
   _playerEndLevelSpawnPoint: {fileID: 1991022062}
   _botStartLevelSpawnPoint: {fileID: 1769275285}
   _bot: {fileID: 1719215498}
-  _levelBounds: {fileID: 430552827}
   _bonusLevelPortal: {fileID: 820526748}
 --- !u!65 &430552832
 BoxCollider:
@@ -1888,8 +1888,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c361ceb7708e455096bf5c92e217eaa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _levelBounds: {fileID: 889782451}
   _mainLevelData: {fileID: 11400000, guid: c95486bcbe793ac428adeab62991db93, type: 2}
-  _boxCollider: {fileID: 889782451}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
