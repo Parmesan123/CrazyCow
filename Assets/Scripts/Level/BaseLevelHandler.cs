@@ -1,32 +1,84 @@
-﻿using Entities;
+﻿using System.Collections.Generic;
+using Entities;
 using Handlers;
+using UI;
 using UnityEngine;
 
 namespace Level
 {
-    public abstract class BaseLevelHandler : MonoBehaviour, IPausable
+    public abstract class BaseLevelHandler : MonoBehaviour
     {
-        protected SpawnHandler _spawnHandler;
-        protected PlayerMovement _player;
-        private PauseHandler _pauseHandler;
+        [SerializeField] private BoxCollider _levelCollider;
         
-        protected void Construct(PauseHandler pauseHandler, SpawnHandler spawnHandler, PlayerMovement player)
+        protected List<Box> _boxesOnField;
+        protected List<Vase> _vasesOnField;
+        protected CoinSpawner _coinSpawner;
+        protected PlayerMovement _player;
+        
+        private SpawnHandler _spawnHandler;
+        
+        protected void Construct(SpawnHandler spawnHandler, CoinSpawner coinSpawner, PlayerMovement player)
         {
-            _pauseHandler = pauseHandler;
-            _pauseHandler.Register(this);
-            
             _spawnHandler = spawnHandler;
-            
+
+            _coinSpawner = coinSpawner;
+
             _player = player;
+        }
+
+        protected virtual void Awake()
+        {
+            _boxesOnField = new List<Box>();
+            _vasesOnField = new List<Vase>();
         }
 
         protected virtual void OnDestroy()
         {
-            _pauseHandler.Unregister(this);
+            foreach (Box box in _boxesOnField)
+                Destroy(box.gameObject);
+            _boxesOnField.Clear();
+            
+            foreach (Vase vase in _vasesOnField)
+                Destroy(vase.gameObject);
+            _vasesOnField.Clear();
         }
 
-        public abstract void Pause();
+        protected T EntitySpawn<T>(Transform avoidObject = null) where T : ISpawnable
+        {
+            T entityInstance = _spawnHandler.TrySpawnAndPlaceEntity<T>(_levelCollider, avoidObject);
 
-        public abstract void Unpause();
+            if (entityInstance is not IDestroyable convertable) 
+                return entityInstance;
+            
+            convertable.OnDestroyEvent += EntityDestroy;
+                
+            if (convertable is Box box)
+            {
+                _boxesOnField.Add(box);
+                return entityInstance;
+            }
+
+            if (convertable is Vase vase)
+            {
+                _vasesOnField.Add(vase);
+                return entityInstance;
+            }
+
+            return entityInstance;
+
+            void EntityDestroy(IDestroyable destroyable)
+            {
+                destroyable.OnDestroyEvent -= EntityDestroy;
+
+                if (destroyable is Box convertableBox)
+                {
+                    _boxesOnField.Remove(convertableBox);
+                    return;
+                }
+
+                if (destroyable is Vase convertableVase)
+                    _vasesOnField.Remove(convertableVase);
+            }
+        }
     }
 }

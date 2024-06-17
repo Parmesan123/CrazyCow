@@ -6,22 +6,18 @@ using Zenject;
 
 namespace Entities
 {
-	public class PlayerMovement : MonoBehaviour, IPausable
+	public class PlayerMovement : MonoBehaviour
 	{
 		[SerializeField, Expandable] private CharacterData _characterData;
 		
 		private Rigidbody _rigidbody;
 		private JoyStickInput _input;
-		private PauseHandler _pauseHandler;
 		
 		private float Speed => _characterData.CharacterSpeed;
 		
 		[Inject]
-		private void Construct(PauseHandler pauseHandler, InputProvider inputProvider)
+		private void Construct(InputProvider inputProvider)
 		{
-			_pauseHandler = pauseHandler;
-			_pauseHandler.Register(this);
-			
 			_input = inputProvider.GetProfile(typeof(JoyStickInput)) as JoyStickInput;
 			_input.OnMoveEvent += MoveEvent;
 		}
@@ -36,21 +32,7 @@ namespace Entities
 
 		private void OnDestroy()
 		{
-			_pauseHandler.Unregister(this);
-
 			_input.OnMoveEvent -= MoveEvent;
-		}
-		
-		public void Pause()
-		{
-			//TODO: rework
-			_input.OnMoveEvent -= MoveEvent;
-		}
-
-		public void Unpause()
-		{
-			//TODO: rework
-			_input.OnMoveEvent += MoveEvent;
 		}
 
 		private void MoveEvent(Vector2 direction)

@@ -32,28 +32,22 @@ public class BonusLevelHandler : BaseLevelHandler, ICoinGiver
 
     private NavMeshSurface _surface;
     private PortalFactory _portalFactory;
-    private CoinSpawner _coinSpawner;
-    private List<Vase> _vasesOnField;
-    private List<Box> _boxesOnField;
     private int _currentBotPoints;
     private int _currentPlayerPoints;
     private int _totalCoins;
     
     [Inject]
-    protected void Construct(PauseHandler pauseHandler, SpawnHandler spawnHandler, PlayerMovement player, PortalFactory portalFactory, CoinSpawner coinSpawner)
+    protected void Construct(SpawnHandler spawnHandler, PlayerMovement player, PortalFactory portalFactory, CoinSpawner coinSpawner)
     {
-        base.Construct(pauseHandler, spawnHandler, player);
-
-        _vasesOnField = new List<Vase>();
-        _boxesOnField = new List<Box>();
+        base.Construct(spawnHandler, coinSpawner, player);
 
         _portalFactory = portalFactory;
-
-        _coinSpawner = coinSpawner;
     }
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+        
         _portalFactory.OnPortalEnterEvent += StartBonusLevel;
         foreach (Portal spawnedPortal in _portalFactory.SpawnedPortals)
             spawnedPortal.OnEnter += StartBonusLevel;
@@ -71,18 +65,6 @@ public class BonusLevelHandler : BaseLevelHandler, ICoinGiver
         
         _bonusLevelPortal.OnEnter -= EndBonusLevel;
     }
-
-    public override void Unpause()
-    {
-        //TODO: rework
-        _portalFactory.OnPortalEnterEvent -= StartBonusLevel;
-    }
-
-    public override void Pause()
-    {
-        //TODO: rework
-        _portalFactory.OnPortalEnterEvent -= StartBonusLevel;
-    }
     
     private void StartBonusLevel()
     {
@@ -93,24 +75,18 @@ public class BonusLevelHandler : BaseLevelHandler, ICoinGiver
 
         for (int i = 0; i < _levelData.VaseCount; i++)
         {
-            Vase newVase = _spawnHandler.TrySpawnAndPlaceEntity<Vase>(_levelBounds);
+            Vase newVase = EntitySpawn<Vase>();
+            newVase.OnDestroyEvent += EntityDestroyed;
             
             foreach (Box vaseBox in newVase.Boxes)
-            {
                 vaseBox.OnDestroyEvent += EntityDestroyed;
-                _boxesOnField.Add(vaseBox);
-            }
-            
-            newVase.OnDestroyEvent += EntityDestroyed;
-            _vasesOnField.Add(newVase);
         }
         
         for (int i = 0; i < _levelData.BoxCount; i++)
         {
-            Box newBox = _spawnHandler.TrySpawnAndPlaceEntity<Box>(_levelBounds);
+            Box newBox = EntitySpawn<Box>();
             
             newBox.OnDestroyEvent += EntityDestroyed;
-            _boxesOnField.Add(newBox);
         }
         
         _surface.BuildNavMesh();
@@ -125,9 +101,6 @@ public class BonusLevelHandler : BaseLevelHandler, ICoinGiver
         {
             destroyable.OnDestroyEvent -= EntityDestroyed;
             _surface.BuildNavMesh();
-
-            if (destroyable is Box box)
-                _boxesOnField.Remove(box);
         }
     }
 
@@ -159,7 +132,6 @@ public class BonusLevelHandler : BaseLevelHandler, ICoinGiver
         if (!_vasesOnField.Contains(vase))
             return;
             
-        _vasesOnField.Remove(vase);
         if (vase.Boxes.IsEmpty())
         {
             _currentBotPoints++;
@@ -174,7 +146,6 @@ public class BonusLevelHandler : BaseLevelHandler, ICoinGiver
         if (!_vasesOnField.Contains(vase))
             return;
         
-        _vasesOnField.Remove(vase);
         _totalCoins += vase.AmountCoin;
         if (vase.Boxes.IsEmpty())
         {

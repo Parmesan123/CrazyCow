@@ -8,7 +8,7 @@ using Zenject;
 
 namespace Entities
 {
-	public class BoxDestroyer : MonoBehaviour, IPausable
+	public class BoxDestroyer : MonoBehaviour
 	{
 		[field: SerializeField, Expandable] public CharacterData Data { get; private set; }
 		
@@ -17,14 +17,10 @@ namespace Entities
 		private List<DestroyBehavior> _destroyables;
 		private VaseHandler _vaseHandler;
 		private (DestroyBehavior destroyBehavior, Coroutine coroutine) _destroyableCoroutine;
-		private PauseHandler _pauseHandler;
 		
 		[Inject]
-		private void Construct(PauseHandler pauseHandler, VaseHandler vaseHandler)
+		private void Construct(VaseHandler vaseHandler)
 		{
-			_pauseHandler = pauseHandler;
-			_pauseHandler.Register(this);
-			
 			_destroyables = new List<DestroyBehavior>();
 
 			_vaseHandler = vaseHandler;
@@ -57,22 +53,9 @@ namespace Entities
 			destroyable.OnDestroyEvent -= OnEntityDestroyed;
 		}
 
-		private void OnDestroy()
-		{
-			_pauseHandler.Unregister(this);
-		}
-
 		private void OnDisable()
 		{
 			_destroyables.Clear();
-		}
-
-		public void Unpause()
-		{
-		}
-
-		public void Pause()
-		{
 		}
 
 		private void FixedUpdate()
