@@ -13,9 +13,12 @@ namespace Entities
 		[field: SerializeField, Expandable] public CharacterData Data { get; private set; }
 		
 		public event Action<Vase> OnDestroyEvent;
+		public float DestroyBonusTime { get; set; }
+		public float DestroyRange { get; set; }
 
 		private List<DestroyBehavior> _destroyables;
 		private VaseHandler _vaseHandler;
+		private SphereCollider _catchCollider;
 		private (DestroyBehavior destroyBehavior, Coroutine coroutine) _destroyableCoroutine;
 		private float _timer;
 		
@@ -25,15 +28,18 @@ namespace Entities
 			_destroyables = new List<DestroyBehavior>();
 
 			_vaseHandler = vaseHandler;
+
+			DestroyBonusTime = 0;
+			DestroyRange = Data.DestroyRange;
 		}
 		
 		private void Awake()
 		{
 			_vaseHandler.OnVaseDestroyedFromBoxEvent += DestroyVaseWithBox;
 			
-			SphereCollider sphereCollider = gameObject.AddComponent<SphereCollider>();
-			sphereCollider.isTrigger = true;
-			sphereCollider.radius = Data.DestroyRange;
+			_catchCollider = gameObject.AddComponent<SphereCollider>();
+			_catchCollider.isTrigger = true;
+			_catchCollider.radius = Data.DestroyRange;
 		}
 
 		private void OnTriggerEnter(Collider other)
@@ -63,6 +69,11 @@ namespace Entities
 		{
 			ChangeDestroyable(GetClosestEntity());
 		}
+
+		public void UpdateRange()
+		{
+			_catchCollider.radius = DestroyRange;
+		}
 		
 		private void ChangeDestroyable(DestroyBehavior destroyable)
 		{
@@ -88,7 +99,7 @@ namespace Entities
 
 			IEnumerator Timer()
 			{
-				_timer = destroyable.Data.TimeToDestroy;
+				_timer = destroyable.Data.TimeToDestroy - DestroyBonusTime;
 				
 				for (; _timer >= 0;)
 				{

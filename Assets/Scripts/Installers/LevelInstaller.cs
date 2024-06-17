@@ -48,6 +48,11 @@ public class LevelInstaller : MonoInstaller
             .BindInterfacesAndSelfTo<PortalFactory>()
             .FromNew()
             .AsSingle();
+
+        Container
+            .BindInterfacesAndSelfTo<PowerUpFactory>()
+            .FromNew()
+            .AsSingle();
     }
     
     private void BindPlayer()
@@ -59,6 +64,14 @@ public class LevelInstaller : MonoInstaller
         Container
             .Bind<PlayerMovement>()
             .FromInstance(playerInstance)
+            .AsSingle()
+            .NonLazy();
+
+        PlayerBehavior playerBehavior = playerInstance.GetComponent<PlayerBehavior>();
+
+        Container
+            .Bind<PlayerBehavior>()
+            .FromInstance(playerBehavior)
             .AsSingle()
             .NonLazy();
     }

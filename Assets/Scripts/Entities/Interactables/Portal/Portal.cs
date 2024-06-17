@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Entities
 {
-	public class Portal : InteractableBehaviour, ISpawnable
+	public class Portal : InteractableBehavior, ISpawnable
 	{
 		private PortalData _portalData;
 		

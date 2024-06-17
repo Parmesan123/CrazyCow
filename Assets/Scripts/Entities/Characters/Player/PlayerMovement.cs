@@ -2,6 +2,7 @@ using System;
 using InputSystem;
 using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace Entities
@@ -13,13 +14,16 @@ namespace Entities
 		private Rigidbody _rigidbody;
 		private JoyStickInput _input;
 		
-		private float Speed => _characterData.CharacterSpeed;
+		public float CurrentSpeed { get; set; }
+		private float BaseSpeed => _characterData.CharacterSpeed;
 		
 		[Inject]
 		private void Construct(InputProvider inputProvider)
 		{
 			_input = inputProvider.GetProfile(typeof(JoyStickInput)) as JoyStickInput;
 			_input.OnMoveEvent += MoveEvent;
+			
+			CurrentSpeed = BaseSpeed;
 		}
 
 		private void Awake()
@@ -37,8 +41,8 @@ namespace Entities
 
 		private void MoveEvent(Vector2 direction)
 		{
-			Vector3 offSet = new Vector3(direction.x * Time.fixedDeltaTime * Speed, 0,
-				direction.y * Time.fixedDeltaTime * Speed);
+			Vector3 offSet = new Vector3(direction.x * Time.fixedDeltaTime * CurrentSpeed, 0,
+				direction.y * Time.fixedDeltaTime * CurrentSpeed);
 			Vector3 newPosition = transform.position + offSet;
 			_rigidbody.MovePosition(newPosition);
 		}
