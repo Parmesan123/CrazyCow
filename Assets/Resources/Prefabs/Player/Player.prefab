@@ -1,5 +1,50 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1614470161796854903
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4174169219815015968}
+  - component: {fileID: 5851356173791446811}
+  m_Layer: 0
+  m_Name: boxDestroyer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4174169219815015968
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1614470161796854903}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3530314844606878711}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5851356173791446811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1614470161796854903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30a043c7d9f645f1baaa8ebec33671ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Data>k__BackingField: {fileID: 11400000, guid: da9e6008ed3887541bff6c330cf94021, type: 2}
 --- !u!1 &8511120709954061775
 GameObject:
   m_ObjectHideFlags: 0
@@ -96,7 +141,6 @@ GameObject:
   - component: {fileID: 4880787911331210452}
   - component: {fileID: 8633616547036557605}
   - component: {fileID: 8035082094261342900}
-  - component: {fileID: 8784660016438058745}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -118,6 +162,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8789255538972246151}
+  - {fileID: 4174169219815015968}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &2369164918861715318
@@ -181,7 +226,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <PlayerMovement>k__BackingField: {fileID: 8035082094261342900}
-  <PlayerBoxDestroyer>k__BackingField: {fileID: 8784660016438058745}
+  <PlayerBoxDestroyer>k__BackingField: {fileID: 5851356173791446811}
 --- !u!114 &8035082094261342900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,16 +240,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterData: {fileID: 11400000, guid: da9e6008ed3887541bff6c330cf94021, type: 2}
---- !u!114 &8784660016438058745
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8701788600873248596}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30a043c7d9f645f1baaa8ebec33671ae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <Data>k__BackingField: {fileID: 11400000, guid: da9e6008ed3887541bff6c330cf94021, type: 2}
