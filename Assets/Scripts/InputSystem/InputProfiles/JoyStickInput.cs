@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Properties;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace InputSystem
 {
@@ -43,10 +46,14 @@ namespace InputSystem
 
 			if (_touchPosition != null)
 				return;
-			
+
 			_touchPosition = Input.GetTouch(0).position;
+			Vector2 resultTouch = (Vector2)_touchPosition;
+			if (CheckTouchOnUI(resultTouch))
+				return;
+			
 			_isTouch = true;
-			OnTouchPerformedEvent.Invoke(true, (Vector2)_touchPosition);
+			OnTouchPerformedEvent.Invoke(true, resultTouch);
 		}
 
 		private Vector2 GetMoveVector()
@@ -62,6 +69,23 @@ namespace InputSystem
 				return moveVector.normalized;
 			
 			return moveVector / _joyStickData.JoyStickRadius;
+		}
+
+		private bool CheckTouchOnUI(Vector2 position)
+		{
+			PointerEventData eventData = new PointerEventData(EventSystem.current)
+			{
+				position = position
+			};
+
+			List<RaycastResult> raycastResults = new List<RaycastResult>();
+			EventSystem.current.RaycastAll(eventData, raycastResults);
+
+			foreach (RaycastResult result in raycastResults)
+				if (result.gameObject.TryGetComponent(out Button _))
+					return true;
+
+			return false;
 		}
 	}
 }

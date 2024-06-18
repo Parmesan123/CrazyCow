@@ -4,7 +4,7 @@ using Zenject;
 
 namespace UI
 {
-    public class UIJoyStick : MonoBehaviour
+    public class JoyStickUI : MonoBehaviour
     {
         [SerializeField] private GameObject _joyStickGameObject;
         [SerializeField] private GameObject _joyStickUI;

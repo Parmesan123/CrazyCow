@@ -4,27 +4,27 @@ using TMPro;
 using UnityEngine;
 using Zenject;
 
-public class UIWallet : MonoBehaviour
+public class GameWalletUI : MonoBehaviour
 {
     [SerializeField] private GameObject _walletContainer;
     [SerializeField] private TextMeshProUGUI _text;
 
-    private WalletHandler _walletHandler;
+    private GameWalletHandler _gameWalletHandler;
     private BonusLevelHandler _bonusLevelHandler;
     
     [Inject]
-    private void Construct(WalletHandler walletHandler, BonusLevelHandler bonusLevelHandler)
+    private void Construct(GameWalletHandler gameWalletHandler, BonusLevelHandler bonusLevelHandler)
     {
-        _walletHandler = walletHandler;
+        _gameWalletHandler = gameWalletHandler;
 
         _bonusLevelHandler = bonusLevelHandler;
     }
 
     private void Awake()
     {
-        UpdateWalletUI(0);
+        UpdateGameWalletUI(0);
         
-        _walletHandler.OnUIUpdateEvent += UpdateWalletUI;
+        _gameWalletHandler.OnUIUpdateEvent += UpdateGameWalletUI;
 
         _bonusLevelHandler.OnBonusLevelStarted += DisableWalletUI;
         _bonusLevelHandler.OnBonusLevelEnded += EnableWalletUI;
@@ -32,13 +32,13 @@ public class UIWallet : MonoBehaviour
 
     private void OnDestroy()
     {
-        _walletHandler.OnUIUpdateEvent -= UpdateWalletUI;
+        _gameWalletHandler.OnUIUpdateEvent -= UpdateGameWalletUI;
         
         _bonusLevelHandler.OnBonusLevelStarted -= DisableWalletUI;
         _bonusLevelHandler.OnBonusLevelEnded -= EnableWalletUI;
     }
 
-    private void UpdateWalletUI(int coins)
+    private void UpdateGameWalletUI(int coins)
     {
         _text.text = coins.ToString();
         _text.transform.localScale = Vector3.one;

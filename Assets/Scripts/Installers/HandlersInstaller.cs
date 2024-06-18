@@ -18,9 +18,12 @@ namespace Installers
 
 		private void BindWalletHandler()
 		{
+			GameObject walletContainer = new GameObject("WalletHandler");
+			GameWalletHandler walletHandler = Container.InstantiateComponent<GameWalletHandler>(walletContainer);
+			
 			Container
-				.Bind<WalletHandler>()
-				.FromNew()
+				.Bind<GameWalletHandler>()
+				.FromInstance(walletHandler)
 				.AsSingle();
 		}
 

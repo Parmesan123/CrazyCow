@@ -18,6 +18,7 @@ namespace Installers
 			List<InputProfile> inputProfiles = new List<InputProfile>
 			{
 				new JoyStickInput(),
+				new EmptyInput(),
 			};
 			
 			Container
@@ -29,9 +30,14 @@ namespace Installers
 
 		private void BindInputHandler()
 		{
-			GameObject inputHandler = new GameObject("InputHandler");
+			GameObject inputContainer = new GameObject("InputHandler");
 			
-			Container.InstantiateComponent<InputHandler>(inputHandler);
+			InputHandler inputHandler = Container.InstantiateComponent<InputHandler>(inputContainer);
+
+			Container
+				.Bind<InputHandler>()
+				.FromInstance(inputHandler)
+				.AsSingle();
 		}
 	}
 }

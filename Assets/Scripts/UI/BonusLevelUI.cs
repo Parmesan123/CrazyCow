@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using Zenject;
 
-public class UIBonusLevel : MonoBehaviour
+public class BonusLevelUI : MonoBehaviour
 {
     [SerializeField] private GameObject _scoreContainer;
     [SerializeField] private TextMeshProUGUI _playerScore;

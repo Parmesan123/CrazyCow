@@ -30,7 +30,7 @@ namespace InputSystem
 			_fixedUpdatable?.FixedUpdate();
 		}
 		
-		private void ChangeInputProfile(Type inputType = null)
+		public void ChangeInputProfile(Type inputType = null)
 		{
 			InputProfile newProfile = _inputProvider.GetProfile(inputType);
 
