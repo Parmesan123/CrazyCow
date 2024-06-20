@@ -1,19 +1,13 @@
+using ToolBox.Serialization;
 using UI;
 
 namespace Handlers
 {
 	public class GameWalletHandler : BaseWalletHandler
 	{
-		private WalletSaveData _walletData;
-			
 		public void Register(Coin coin)
 		{
 			coin.OnDestroyEvent += CoinListener;
-		}
-
-		public void SaveData()
-		{
-			_walletData.MoneyCount += _coins;
 		}
 
 		private void UnRegister(Coin coin)
@@ -26,6 +20,15 @@ namespace Handlers
 			UnRegister(coin);
 			
 			UpdateCoins(1);
+		}
+
+		public override void Save()
+		{
+			if (!DataSerializer.TryLoad(COINS_SAVE_KEY, out WalletSaveData walletData))
+				walletData = new WalletSaveData(0);
+			walletData.MoneyCount += _coins;
+			
+			DataSerializer.Save(COINS_SAVE_KEY, walletData);
 		}
 	}
 }

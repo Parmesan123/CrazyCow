@@ -38,7 +38,7 @@ public class PauseUI : MonoBehaviour
 
     private void ExitGame()
     {
-        _walletHandler.SaveData();
+        _walletHandler.Save();
         
         SceneManager.LoadScene(MAIN_MENU_SCENE_INDEX);
     }
