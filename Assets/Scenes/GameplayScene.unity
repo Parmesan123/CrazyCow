@@ -4541,15 +4541,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7550460562423281914, guid: 68b8b5e66a5e5e14b8d3cb2ef1718945, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7550460562423281914, guid: 68b8b5e66a5e5e14b8d3cb2ef1718945, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7550460562423281914, guid: 68b8b5e66a5e5e14b8d3cb2ef1718945, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7550460562423281914, guid: 68b8b5e66a5e5e14b8d3cb2ef1718945, type: 3}
       propertyPath: m_AnchoredPosition.x

@@ -1,7 +1,7 @@
 ﻿using System;
 
 [Serializable]
-public class WalletSaveData : ISaveable
+public class WalletSaveData
 {
     public string Id { get; set; }
     public int MoneyCount;

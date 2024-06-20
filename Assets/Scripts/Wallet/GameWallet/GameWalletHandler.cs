@@ -2,19 +2,13 @@ using UI;
 
 namespace Handlers
 {
-	public class GameWalletHandler : BaseWalletHandler, IBind<WalletSaveData>
+	public class GameWalletHandler : BaseWalletHandler
 	{
-		public string Id => nameof(GameWalletHandler);
 		private WalletSaveData _walletData;
 			
 		public void Register(Coin coin)
 		{
 			coin.OnDestroyEvent += CoinListener;
-		}
-		
-		public void Bind(WalletSaveData data)
-		{
-			data.Id = Id;
 		}
 
 		public void SaveData()
