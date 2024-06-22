@@ -19,7 +19,7 @@ namespace InputSystem
 			
 			ChangeInputProfile();
 		}
-		
+
 		private void Update()
 		{
 			_updatable?.Update();

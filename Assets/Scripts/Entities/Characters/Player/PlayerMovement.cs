@@ -9,21 +9,16 @@ namespace Entities
 {
 	public class PlayerMovement : MonoBehaviour
 	{
-		[SerializeField, Expandable] private CharacterData _characterData;
-		
 		private Rigidbody _rigidbody;
 		private JoyStickInput _input;
 		
 		public float CurrentSpeed { get; set; }
-		private float BaseSpeed => _characterData.CharacterSpeed;
 		
 		[Inject]
 		private void Construct(InputProvider inputProvider)
 		{
 			_input = inputProvider.GetProfile(typeof(JoyStickInput)) as JoyStickInput;
 			_input.OnMoveEvent += MoveEvent;
-			
-			CurrentSpeed = BaseSpeed;
 		}
 
 		private void Awake()

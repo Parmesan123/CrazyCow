@@ -15,15 +15,15 @@ public class DestroyRangePowerUp : IPowerUp
     {
         BoxDestroyer boxDestroyer = powerUpable.PlayerBoxDestroyer;
 
-        boxDestroyer.DestroyRange += VALUE;
-        boxDestroyer.UpdateRange();
+        float bonusRange = boxDestroyer.DestroyRadius + VALUE;
+        boxDestroyer.UpdateRange(bonusRange);
     }
 
     public void Undo(PlayerBehavior powerUpable)
     {
         BoxDestroyer boxDestroyer = powerUpable.PlayerBoxDestroyer;
 
-        boxDestroyer.DestroyRange -= VALUE;
-        boxDestroyer.UpdateRange();
+        float initialRange = boxDestroyer.DestroyRadius - VALUE;
+        boxDestroyer.UpdateRange(initialRange);
     }
 }

@@ -1,24 +1,43 @@
-﻿using ToolBox.Serialization;
+﻿using System;
+using Zenject;
 
-public class MenuWalletHandler : BaseWalletHandler
+public class MenuWalletHandler 
 {
-    private WalletSaveData _data;
+    public event Action OnCashSpendFailedEvent;
+    public event Action<int> OnCashUpdatedEvent;
 
-    private void Awake()
-    {
-        if (!DataSerializer.TryLoad(COINS_SAVE_KEY, out _data))
-            _data = new WalletSaveData(0);
-    }
+    private readonly GameData _data;
+    private int _coins;
 
-    public override void UpdateCoins(int count)
+    [Inject]
+    private MenuWalletHandler(SaveHandler saveHandler)
     {
-        base.UpdateCoins(count);
+        _data = saveHandler.SaveData;
         
-        _data.MoneyCount = _coins;
+        _coins = _data.MoneyCount;
+    }
+    
+    public bool TrySpend(int count)
+    {
+        if (_coins < count)
+        {
+            OnCashSpendFailedEvent.Invoke();
+            return false;
+        }
+
+        _coins -= count;
+        OnCashUpdatedEvent.Invoke(_coins);
+        UpdateGlobalWallet();
+        return true;
     }
 
-    public override void Save()
+    public void UpdateCoins()
     {
-        DataSerializer.Save(COINS_SAVE_KEY, _data);
+        OnCashUpdatedEvent.Invoke(_coins);
+    }
+
+    private void UpdateGlobalWallet()
+    {
+        _data.MoneyCount = _coins;
     }
 }

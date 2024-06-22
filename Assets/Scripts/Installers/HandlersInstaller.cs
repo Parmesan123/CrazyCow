@@ -11,19 +11,30 @@ namespace Installers
 		
 		public override void InstallBindings()
 		{
+			BindSaveHandler();
 			BindWalletHandler();
 			BindDestroyHandler();
 			BindVaseHandler();
 		}
+		
+		private void BindSaveHandler()
+		{
+			GameObject saveContainer = new GameObject("SaveHandler");
+
+			SaveHandler saveHandler = Container.InstantiateComponent<SaveHandler>(saveContainer);
+			saveHandler.Load();
+        
+			Container
+				.Bind<SaveHandler>()
+				.FromInstance(saveHandler)
+				.AsSingle();
+		}
 
 		private void BindWalletHandler()
 		{
-			GameObject walletContainer = new GameObject("WalletHandler");
-			GameWalletHandler walletHandler = Container.InstantiateComponent<GameWalletHandler>(walletContainer);
-			
 			Container
 				.Bind<GameWalletHandler>()
-				.FromInstance(walletHandler)
+				.FromNew()
 				.AsSingle();
 		}
 

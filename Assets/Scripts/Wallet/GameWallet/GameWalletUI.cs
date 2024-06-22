@@ -24,7 +24,7 @@ public class GameWalletUI : MonoBehaviour
     {
         UpdateGameWalletUI(0);
         
-        _gameWalletHandler.OnUIUpdateEvent += UpdateGameWalletUI;
+        _gameWalletHandler.OnCoinsUpdateEvent += UpdateGameWalletUI;
 
         _bonusLevelHandler.OnBonusLevelStarted += DisableWalletUI;
         _bonusLevelHandler.OnBonusLevelEnded += EnableWalletUI;
@@ -32,7 +32,7 @@ public class GameWalletUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        _gameWalletHandler.OnUIUpdateEvent -= UpdateGameWalletUI;
+        _gameWalletHandler.OnCoinsUpdateEvent -= UpdateGameWalletUI;
         
         _bonusLevelHandler.OnBonusLevelStarted -= DisableWalletUI;
         _bonusLevelHandler.OnBonusLevelEnded -= EnableWalletUI;

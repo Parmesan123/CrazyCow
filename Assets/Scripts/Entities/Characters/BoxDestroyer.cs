@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Handlers;
-using NaughtyAttributes;
 using UnityEngine;
 using Zenject;
 
@@ -10,11 +9,9 @@ namespace Entities
 {
 	public class BoxDestroyer : MonoBehaviour
 	{
-		[field: SerializeField, Expandable] public CharacterData Data { get; private set; }
-		
 		public event Action<Vase> OnDestroyEvent;
 		public float DestroyBonusTime { get; set; }
-		public float DestroyRange { get; set; }
+		public float DestroyRadius => _catchCollider.radius;
 
 		private List<DestroyBehavior> _destroyables;
 		private VaseHandler _vaseHandler;
@@ -28,18 +25,15 @@ namespace Entities
 			_destroyables = new List<DestroyBehavior>();
 
 			_vaseHandler = vaseHandler;
-
-			DestroyBonusTime = 0;
-			DestroyRange = Data.DestroyRange;
+			
+			_catchCollider = gameObject.AddComponent<SphereCollider>();
 		}
 		
 		private void Awake()
 		{
 			_vaseHandler.OnVaseDestroyedFromBoxEvent += DestroyVaseWithBox;
 			
-			_catchCollider = gameObject.AddComponent<SphereCollider>();
 			_catchCollider.isTrigger = true;
-			_catchCollider.radius = Data.DestroyRange;
 		}
 
 		private void OnTriggerEnter(Collider other)
@@ -70,9 +64,9 @@ namespace Entities
 			ChangeDestroyable(GetClosestEntity());
 		}
 
-		public void UpdateRange()
+		public void UpdateRange(float destroyRange)
 		{
-			_catchCollider.radius = DestroyRange;
+			_catchCollider.radius = destroyRange;
 		}
 		
 		private void ChangeDestroyable(DestroyBehavior destroyable)

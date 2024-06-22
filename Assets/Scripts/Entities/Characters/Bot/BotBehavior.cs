@@ -11,11 +11,11 @@ namespace Entities
     [SelectionBase, RequireComponent(typeof(NavMeshAgent))]
     public class BotBehavior : MonoBehaviour
     {
+        [SerializeField] private CharacterData _data;
         [SerializeField] private BonusLevelHandler _level;
         [SerializeField] private float _optimalDistance;
 
         private float _destroyDistance;
-        private CharacterData _data;
         private NavMeshAgent _navMeshAgent;
         private Vase _targetVase;
         private Coroutine _selectVaseCoroutine;
@@ -25,8 +25,9 @@ namespace Entities
         {
             _navMeshAgent = GetComponent<NavMeshAgent>();
 
-            _data = GetComponent<BoxDestroyer>().Data;
             _destroyDistance = _data.DestroyRange;
+            BoxDestroyer botBoxDestroyer = GetComponent<BoxDestroyer>();
+            botBoxDestroyer.UpdateRange(_destroyDistance);
             _navMeshAgent.speed = _data.CharacterSpeed;
         }
 
