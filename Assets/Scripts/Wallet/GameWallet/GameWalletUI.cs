@@ -1,5 +1,4 @@
 ﻿using DG.Tweening;
-using Handlers;
 using TMPro;
 using UnityEngine;
 using Zenject;
@@ -9,13 +8,13 @@ public class GameWalletUI : MonoBehaviour
     [SerializeField] private GameObject _walletContainer;
     [SerializeField] private TextMeshProUGUI _text;
 
-    private GameWalletHandler _gameWalletHandler;
+    private IWallet _walletHandler;
     private BonusLevelHandler _bonusLevelHandler;
     
     [Inject]
-    private void Construct(GameWalletHandler gameWalletHandler, BonusLevelHandler bonusLevelHandler)
+    private void Construct(IWallet gameWalletHandler, BonusLevelHandler bonusLevelHandler)
     {
-        _gameWalletHandler = gameWalletHandler;
+        _walletHandler = gameWalletHandler;
 
         _bonusLevelHandler = bonusLevelHandler;
     }
@@ -24,7 +23,7 @@ public class GameWalletUI : MonoBehaviour
     {
         UpdateGameWalletUI(0);
         
-        _gameWalletHandler.OnCoinsUpdateEvent += UpdateGameWalletUI;
+        _walletHandler.OnCashUpdatedEvent += UpdateGameWalletUI;
 
         _bonusLevelHandler.OnBonusLevelStarted += DisableWalletUI;
         _bonusLevelHandler.OnBonusLevelEnded += EnableWalletUI;
@@ -32,7 +31,7 @@ public class GameWalletUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        _gameWalletHandler.OnCoinsUpdateEvent -= UpdateGameWalletUI;
+        _walletHandler.OnCashUpdatedEvent -= UpdateGameWalletUI;
         
         _bonusLevelHandler.OnBonusLevelStarted -= DisableWalletUI;
         _bonusLevelHandler.OnBonusLevelEnded -= EnableWalletUI;

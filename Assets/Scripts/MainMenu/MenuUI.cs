@@ -4,6 +4,8 @@ using Zenject;
 
 public class MenuUI : MonoBehaviour
 {
+    private const int START_GAME_COST = 100;
+    
     [Header("Buttons")]
     [SerializeField] private Button _startGameButton;
     [SerializeField] private Button _settingsButton;
@@ -12,13 +14,17 @@ public class MenuUI : MonoBehaviour
     [Header("Containers")]
     [SerializeField] private GameObject _settingsContainer;
     [SerializeField] private GameObject _storeContainer;
+    [SerializeField] private GameObject _pickerWheelContainer;
 
     private MainMenuHandler _menuHandler;
+    private MenuWalletHandler _walletHandler;
     
     [Inject]
-    private void Construct(MainMenuHandler mainMenuHandler)
+    private void Construct(MainMenuHandler mainMenuHandler, MenuWalletHandler walletHandler)
     {
         _menuHandler = mainMenuHandler;
+
+        _walletHandler = walletHandler;
     }
 
     private void Awake()
@@ -30,6 +36,12 @@ public class MenuUI : MonoBehaviour
 
     private void OnStartGamePressed()
     {
+        if (!_walletHandler.TryRemoveCoins(START_GAME_COST))
+        {
+            _pickerWheelContainer.SetActive(true);
+            return;
+        }
+        
         _menuHandler.StartGame();
     }
 

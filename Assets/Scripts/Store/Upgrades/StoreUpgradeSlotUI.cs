@@ -45,7 +45,7 @@ public class StoreUpgradeSlotUI : MonoBehaviour
         if (_upgradeSlider.value >= _data.MaximumLevel)
             return;
         
-        if (!_walletHandler.TrySpend(_data.Cost))
+        if (!_walletHandler.TryRemoveCoins(_data.Cost))
             return;
 
         _upgradeSlider.value += 1;

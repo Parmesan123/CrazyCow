@@ -1,23 +1,22 @@
 ﻿using System;
+using UI;
 using Zenject;
 
-public class MenuWalletHandler 
+public class MenuWalletHandler : BaseWalletHandler
 {
     public event Action OnCashSpendFailedEvent;
-    public event Action<int> OnCashUpdatedEvent;
 
-    private readonly GameData _data;
-    private int _coins;
+    private readonly SaveHandler _saveHandler;
 
     [Inject]
     private MenuWalletHandler(SaveHandler saveHandler)
     {
-        _data = saveHandler.SaveData;
+        _saveHandler = saveHandler;
         
-        _coins = _data.MoneyCount;
+        _coins = saveHandler.SaveData.MoneyCount;
     }
     
-    public bool TrySpend(int count)
+    public bool TryRemoveCoins(int count)
     {
         if (_coins < count)
         {
@@ -26,18 +25,23 @@ public class MenuWalletHandler
         }
 
         _coins -= count;
-        OnCashUpdatedEvent.Invoke(_coins);
+        UpdateCoins();
         UpdateGlobalWallet();
         return true;
     }
-
-    public void UpdateCoins()
+    
+    protected override void CoinListener(Coin coin)
     {
-        OnCashUpdatedEvent.Invoke(_coins);
+        coin.OnDestroyEvent -= CoinListener;
+
+        _coins += 1;
+        UpdateCoins();
+        UpdateGlobalWallet();
+        _saveHandler.Save();
     }
 
     private void UpdateGlobalWallet()
     {
-        _data.MoneyCount = _coins;
+        _saveHandler.SaveData.MoneyCount = _coins;
     }
 }

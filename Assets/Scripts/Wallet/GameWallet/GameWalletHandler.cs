@@ -1,30 +1,15 @@
-using System;
 using UI;
 
 namespace Handlers
 {
-	public class GameWalletHandler
+	public class GameWalletHandler : BaseWalletHandler
 	{
-		public event Action<int> OnCoinsUpdateEvent;
-	
-		private int _coins;
-		
-		public void Register(Coin coin)
-		{
-			coin.OnDestroyEvent += CoinListener;
-		}
-
-		private void UnRegister(Coin coin)
+		protected override void CoinListener(Coin coin)
 		{
 			coin.OnDestroyEvent -= CoinListener;
-		}
-
-		private void CoinListener(Coin coin)
-		{
-			UnRegister(coin);
 
 			_coins += 1;
-			OnCoinsUpdateEvent.Invoke(_coins);
+			UpdateCoins();
 		}
 
 		public void SerializeInGlobalWallet(GameData data) => data.MoneyCount += _coins;

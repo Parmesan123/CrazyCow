@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using UI;
+using UnityEngine;
 using Zenject;
 
 public class MainMenuInstaller : MonoInstaller
 {
     [SerializeField] private UpgradeHandler _upgradeHandler;
+    [SerializeField] private CoinSpawner _coinSpawner;
     
     public override void InstallBindings()
     {
@@ -11,6 +13,7 @@ public class MainMenuInstaller : MonoInstaller
         BindWalletHandler();
         BindMainMenuHandler();
         BindUpgradeHandler();
+        BindCoinSpawner();
     }
     
     private void BindSaveHandler()
@@ -29,7 +32,7 @@ public class MainMenuInstaller : MonoInstaller
     private void BindWalletHandler()
     {
         Container
-            .Bind<MenuWalletHandler>()
+            .BindInterfacesAndSelfTo<MenuWalletHandler>()
             .FromNew()
             .AsSingle();
     }
@@ -53,5 +56,13 @@ public class MainMenuInstaller : MonoInstaller
             .FromInstance(_upgradeHandler)
             .AsSingle()
             .NonLazy();
+    }
+    
+    private void BindCoinSpawner()
+    {
+        Container
+            .Bind<CoinSpawner>()
+            .FromInstance(_coinSpawner)
+            .AsSingle();
     }
 }

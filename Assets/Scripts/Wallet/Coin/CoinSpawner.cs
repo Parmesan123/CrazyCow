@@ -1,5 +1,3 @@
-using System;
-using Handlers;
 using System.Collections.Generic;
 using Entities;
 using UnityEngine;
@@ -18,12 +16,12 @@ namespace UI
 		[SerializeField] private Transform _finalPoint;
 		
 		private Coin _coinPrefab;
-		private GameWalletHandler _gameWalletHandler;
+		private IWallet _walletHandler;
 
 		[Inject]
-		private void Construct(GameWalletHandler gameWalletHandler)
+		private void Construct(IWallet walletHandler)
 		{
-			_gameWalletHandler = gameWalletHandler;
+			_walletHandler = walletHandler;
 		}
 
 		private void Awake()
@@ -67,7 +65,7 @@ namespace UI
 				newCoin.transform.localPosition = randomPoint;
 				newCoin.transform.Rotate(new Vector3(0, Random.Range(-_angleOffSet, _angleOffSet), 0));
 
-				_gameWalletHandler.Register(newCoin);
+				_walletHandler.Register(newCoin);
 				
 				coins.Add(newCoin);
 			}

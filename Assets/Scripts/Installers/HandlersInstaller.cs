@@ -33,7 +33,7 @@ namespace Installers
 		private void BindWalletHandler()
 		{
 			Container
-				.Bind<GameWalletHandler>()
+				.BindInterfacesAndSelfTo<GameWalletHandler>()
 				.FromNew()
 				.AsSingle();
 		}
