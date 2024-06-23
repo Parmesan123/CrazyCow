@@ -36,7 +36,7 @@ public class BonusLevelHandler : BaseLevelHandler, ICoinGiver
     private int _totalCoins;
     
     [Inject]
-    protected void Construct(SpawnHandler spawnHandler, PlayerMovement player, PortalFactory portalFactory, CoinSpawner coinSpawner)
+    protected void Construct(SpawnHandler spawnHandler, PlayerBehavior player, PortalFactory portalFactory, CoinSpawner coinSpawner)
     {
         base.Construct(spawnHandler, coinSpawner, player);
 
@@ -93,7 +93,7 @@ public class BonusLevelHandler : BaseLevelHandler, ICoinGiver
         _bot.GetComponent<BoxDestroyer>().OnDestroyEvent += VaseDestroyedByBot;
         _bot.gameObject.SetActive(true);
         
-        _player.GetComponent<BoxDestroyer>().OnDestroyEvent += VaseDestroyedByPlayer;
+        _player.PlayerBoxDestroyer.OnDestroyEvent += VaseDestroyedByPlayer;
         return;
         
         void EntityDestroyed(IDestroyable destroyable)
@@ -109,7 +109,7 @@ public class BonusLevelHandler : BaseLevelHandler, ICoinGiver
         _player.transform.position = _playerEndLevelSpawnPoint.position;
         
         _bot.GetComponent<BoxDestroyer>().OnDestroyEvent -= VaseDestroyedByBot;
-        _player.GetComponent<BoxDestroyer>().OnDestroyEvent -= VaseDestroyedByPlayer;
+        _player.PlayerBoxDestroyer.OnDestroyEvent -= VaseDestroyedByPlayer;
         
         foreach (Box box in _boxesOnField)
             box.gameObject.SetActive(false);

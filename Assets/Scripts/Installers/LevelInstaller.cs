@@ -22,6 +22,7 @@ public class LevelInstaller : MonoInstaller
         BindPlayer();
         BindSpawnHandler();
         BindLevel();
+        BindSkillProvider();
     }
 
     private void BindCoinSpawner()
@@ -57,21 +58,13 @@ public class LevelInstaller : MonoInstaller
     
     private void BindPlayer()
     {
-        PlayerMovement playerPrefab = Resources.Load<PlayerMovement>(PLAYER_PATH);
-        PlayerMovement playerInstance = Container.InstantiatePrefabForComponent<PlayerMovement>(playerPrefab);
+        PlayerBehavior playerPrefab = Resources.Load<PlayerBehavior>(PLAYER_PATH);
+        PlayerBehavior playerInstance = Container.InstantiatePrefabForComponent<PlayerBehavior>(playerPrefab);
         playerInstance.transform.position = _playerSpawnPosition.position;
 
         Container
-            .Bind<PlayerMovement>()
-            .FromInstance(playerInstance)
-            .AsSingle()
-            .NonLazy();
-
-        PlayerBehavior playerBehavior = playerInstance.GetComponent<PlayerBehavior>();
-
-        Container
             .Bind<PlayerBehavior>()
-            .FromInstance(playerBehavior)
+            .FromInstance(playerInstance)
             .AsSingle()
             .NonLazy();
     }
@@ -89,6 +82,14 @@ public class LevelInstaller : MonoInstaller
         Container
             .Bind<BonusLevelHandler>()
             .FromInstance(_bonusLevel)
+            .AsSingle();
+    }
+
+    private void BindSkillProvider()
+    {
+        Container
+            .Bind<SkillProvider>()
+            .FromNew()
             .AsSingle();
     }
 }

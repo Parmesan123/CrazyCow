@@ -8,9 +8,9 @@ public class CameraHandler : MonoBehaviour
     [SerializeField] private CinemachineVirtualCamera _basicCamera;
     
     [Inject]
-    private void Construct(PlayerMovement playerMovement)
+    private void Construct(PlayerBehavior player)
     {
-        _basicCamera.Follow = playerMovement.transform;
-        _basicCamera.LookAt = playerMovement.transform;
+        _basicCamera.Follow = player.transform;
+        _basicCamera.LookAt = player.transform;
     }
 }

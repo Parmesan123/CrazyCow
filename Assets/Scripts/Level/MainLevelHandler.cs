@@ -20,7 +20,7 @@ namespace Level
         private Coroutine _spawnRoutine;
         
         [Inject]
-        protected void Construct(SpawnHandler spawnHandler, CoinSpawner coinSpawner, PlayerMovement player, BonusLevelHandler bonusLevelHandler)
+        protected void Construct(SpawnHandler spawnHandler, CoinSpawner coinSpawner, PlayerBehavior player, BonusLevelHandler bonusLevelHandler)
         {
             base.Construct(spawnHandler, coinSpawner, player);
 

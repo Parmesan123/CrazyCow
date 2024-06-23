@@ -14,6 +14,7 @@ public class MainMenuInstaller : MonoInstaller
         BindMainMenuHandler();
         BindUpgradeHandler();
         BindCoinSpawner();
+        BindSkillProvider();
     }
     
     private void BindSaveHandler()
@@ -63,6 +64,14 @@ public class MainMenuInstaller : MonoInstaller
         Container
             .Bind<CoinSpawner>()
             .FromInstance(_coinSpawner)
+            .AsSingle();
+    }
+    
+    private void BindSkillProvider()
+    {
+        Container
+            .Bind<SkillProvider>()
+            .FromNew()
             .AsSingle();
     }
 }

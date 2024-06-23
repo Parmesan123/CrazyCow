@@ -13,11 +13,11 @@ namespace Level
         protected List<Box> _boxesOnField;
         protected List<Vase> _vasesOnField;
         protected CoinSpawner _coinSpawner;
-        protected PlayerMovement _player;
+        protected PlayerBehavior _player;
         
         private SpawnHandler _spawnHandler;
         
-        protected void Construct(SpawnHandler spawnHandler, CoinSpawner coinSpawner, PlayerMovement player)
+        protected void Construct(SpawnHandler spawnHandler, CoinSpawner coinSpawner, PlayerBehavior player)
         {
             _spawnHandler = spawnHandler;
 

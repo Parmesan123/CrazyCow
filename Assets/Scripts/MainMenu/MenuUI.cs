@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DG.Tweening;
+using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
@@ -41,6 +42,8 @@ public class MenuUI : MonoBehaviour
             _pickerWheelContainer.SetActive(true);
             return;
         }
+        
+        DOTween.KillAll();
         
         _menuHandler.StartGame();
     }
