@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace UI
+namespace Wallet
 {
 	public class Coin : MonoBehaviour
 	{

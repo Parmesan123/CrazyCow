@@ -2,7 +2,7 @@ using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UI
+namespace Wallet
 {
 	public class CoinCluster : MonoBehaviour
 	{

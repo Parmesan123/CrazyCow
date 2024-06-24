@@ -1,4 +1,9 @@
-﻿public interface IUpgradable
+﻿using Saving;
+
+namespace Store
 {
-    public void Upgrade(PlayerData data);
+    public interface IUpgradable
+    {
+        public void Upgrade(PlayerData data);
+    }
 }

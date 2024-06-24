@@ -18,7 +18,6 @@ namespace Entities
         private float _destroyDistance;
         private NavMeshAgent _navMeshAgent;
         private Vase _targetVase;
-        private Coroutine _selectVaseCoroutine;
         private Coroutine _boxCoroutine;
 
         private void Awake()
@@ -33,7 +32,7 @@ namespace Entities
 
         public void OnEnable()
         {
-            _selectVaseCoroutine = StartCoroutine(SelectVase());
+            StartCoroutine(SelectVase());
         }
 
         public void OnDisable()

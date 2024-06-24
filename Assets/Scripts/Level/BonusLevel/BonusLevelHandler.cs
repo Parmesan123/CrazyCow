@@ -8,6 +8,7 @@ using NaughtyAttributes;
 using UI;
 using Unity.AI.Navigation;
 using UnityEngine;
+using Wallet;
 using Zenject;
 
 public class BonusLevelHandler : BaseLevelHandler, ICoinGiver

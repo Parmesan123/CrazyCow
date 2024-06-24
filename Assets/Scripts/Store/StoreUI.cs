@@ -1,22 +1,26 @@
 ﻿using System.Collections.Generic;
+using Saving;
+using Skills;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-public class StoreUI : MonoBehaviour
+namespace Store
+{
+    public class StoreUI : MonoBehaviour
 {
     [SerializeField] private Button _closeStoreButton;
     [SerializeField] private List<StoreUpgradeSlotUI> _upgradeSlots;
     [SerializeField] private List<SkillSlotUI> _skillSlots;
 
-    private UpgradeHandler _upgradeHandler;
+    private UpgradeProvider _upgradeProvider;
     private SkillProvider _skillProvider;
     private SaveHandler _saveHandler;
     
     [Inject]
-    private void Construct(UpgradeHandler upgradeHandler, SkillProvider skillProvider, SaveHandler saveHandler)
+    private void Construct(UpgradeProvider upgradeProvider, SkillProvider skillProvider, SaveHandler saveHandler)
     {
-        _upgradeHandler = upgradeHandler;
+        _upgradeProvider = upgradeProvider;
 
         _skillProvider = skillProvider;
 
@@ -34,7 +38,7 @@ public class StoreUI : MonoBehaviour
         foreach (StoreUpgradeSlotUI slotUI in _upgradeSlots)
         {
             slotUI.OnUpgradePerformed += OnUpgradeLevelUp;
-            slotUI.DefineStrategy(_upgradeHandler.Upgradables[i], data.UpgradesData[i]);
+            slotUI.DefineStrategy(_upgradeProvider.Upgradables[i], data.UpgradesData[i]);
             ++i;
         }
 
@@ -58,8 +62,9 @@ public class StoreUI : MonoBehaviour
 
     private void OnUpgradeLevelUp(IUpgradable strategy)
     {
-        _upgradeHandler.UpgradePerform(strategy);
         _saveHandler.SaveData.StoreData.UpdateUpgradeData(strategy);
+        strategy.Upgrade(_saveHandler.SaveData.PlayerData);
+        _saveHandler.Save();
     }
 
     private void OnSkillBuy(ISkill strategy)
@@ -72,4 +77,5 @@ public class StoreUI : MonoBehaviour
     {
         gameObject.SetActive(false);
     }
+}
 }

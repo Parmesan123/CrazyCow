@@ -1,21 +1,24 @@
 ﻿using System;
 using UI;
 
-public abstract class BaseWalletHandler : IWallet
+namespace Wallet
 {
-    public event Action<int> OnCashUpdatedEvent;
-    
-    protected int _coins;
-    
-    public void UpdateCoins()
+    public abstract class BaseWalletHandler : IWallet
     {
-        OnCashUpdatedEvent.Invoke(_coins);
-    }
+        public event Action<int> OnCashUpdatedEvent;
     
-    public void Register(Coin coin)
-    {
-        coin.OnDestroyEvent += CoinListener;
-    }
+        protected int _coins;
+    
+        public void UpdateCoins()
+        {
+            OnCashUpdatedEvent.Invoke(_coins);
+        }
+    
+        public void Register(Coin coin)
+        {
+            coin.OnDestroyEvent += CoinListener;
+        }
 
-    protected abstract void CoinListener(Coin coin);
+        protected abstract void CoinListener(Coin coin);
+    }
 }

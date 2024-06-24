@@ -1,9 +1,12 @@
 ﻿using System;
 using UI;
 
-public interface IWallet
+namespace Wallet
 {
-    public event Action<int> OnCashUpdatedEvent;
+    public interface IWallet
+    {
+        public event Action<int> OnCashUpdatedEvent;
 
-    public void Register(Coin coin);
+        public void Register(Coin coin);
+    }
 }

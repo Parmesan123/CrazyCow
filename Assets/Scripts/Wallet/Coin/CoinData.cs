@@ -2,7 +2,7 @@ using NaughtyAttributes;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace UI
+namespace Wallet
 {
 	[CreateAssetMenu(fileName = "CoinData", menuName = "ScriptableObjects/Data/CoinData")]
 	public class CoinData : ScriptableObject

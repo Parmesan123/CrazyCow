@@ -1,8 +1,6 @@
 using System;
 using InputSystem;
-using NaughtyAttributes;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Zenject;
 
 namespace Entities

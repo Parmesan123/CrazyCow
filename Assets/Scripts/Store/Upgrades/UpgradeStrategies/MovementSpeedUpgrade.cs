@@ -1,14 +1,19 @@
-﻿public class MovementSpeedUpgrade : IUpgradable
-{
-    private readonly float _value;
+﻿using Saving;
 
-    public MovementSpeedUpgrade(float value)
+namespace Store
+{
+    public class MovementSpeedUpgrade : IUpgradable
     {
-        _value = value;
-    }
+        private readonly float _value;
+
+        public MovementSpeedUpgrade(float value)
+        {
+            _value = value;
+        }
     
-    public void Upgrade(PlayerData data)
-    {
-        data.MovementSpeed += _value;
+        public void Upgrade(PlayerData data)
+        {
+            data.MovementSpeed += _value;
+        }
     }
 }

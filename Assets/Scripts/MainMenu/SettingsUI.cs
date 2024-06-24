@@ -1,17 +1,20 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class SettingsUI : MonoBehaviour
+namespace MainMenu
 {
-    [SerializeField] private Button _closeSettingsButton;
-
-    private void Awake()
+    public class SettingsUI : MonoBehaviour
     {
-        _closeSettingsButton.onClick.AddListener(CloseSettings);
-    }
+        [SerializeField] private Button _closeSettingsButton;
 
-    private void CloseSettings()
-    {
-        gameObject.SetActive(false);
+        private void Awake()
+        {
+            _closeSettingsButton.onClick.AddListener(CloseSettings);
+        }
+
+        private void CloseSettings()
+        {
+            gameObject.SetActive(false);
+        }
     }
 }

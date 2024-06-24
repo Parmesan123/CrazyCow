@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "PowerUpHandler", menuName = "ScriptableObjects/Data/PowerUpHandler")]
-public class PowerUpHandlerData : ScriptableObject
+namespace Entities
 {
-    [field: SerializeField, Range(0f, 1f)] public float PowerUpSpawnChance;
+    [CreateAssetMenu(fileName = "PowerUpHandler", menuName = "ScriptableObjects/Data/PowerUpHandler")]
+    public class PowerUpHandlerData : ScriptableObject
+    {
+        [field: SerializeField, Range(0f, 1f)] public float PowerUpSpawnChance;
+    }
 }

@@ -3,14 +3,17 @@ using Entities;
 using UnityEngine;
 using Zenject;
 
-public class CameraHandler : MonoBehaviour
+namespace Handlers
 {
-    [SerializeField] private CinemachineVirtualCamera _basicCamera;
-    
-    [Inject]
-    private void Construct(PlayerBehavior player)
+    public class CameraHandler : MonoBehaviour
     {
-        _basicCamera.Follow = player.transform;
-        _basicCamera.LookAt = player.transform;
+        [SerializeField] private CinemachineVirtualCamera _basicCamera;
+    
+        [Inject]
+        private void Construct(PlayerBehavior player)
+        {
+            _basicCamera.Follow = player.transform;
+            _basicCamera.LookAt = player.transform;
+        }
     }
 }

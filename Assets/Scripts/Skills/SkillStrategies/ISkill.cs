@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 
-public interface ISkill
+namespace Skills
 {
-    public SkillData Data { get; }
+    public interface ISkill
+    {
+        public SkillData Data { get; }
     
-    public void Perform(Transform player);
+        public void Perform(Transform player);
+    }
 }

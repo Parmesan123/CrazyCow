@@ -4,7 +4,7 @@ using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
 
-namespace UI
+namespace Wallet
 {
 	public class CoinSpawner : MonoBehaviour
 	{

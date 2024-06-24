@@ -1,35 +1,38 @@
 ﻿using Entities;
 using UnityEngine;
 
-public class DestroyFirstBoxSkill : ISkill
+namespace Skills
 {
-    private float _defaultRadius;
-
-    public SkillData Data { get; }
-
-    public DestroyFirstBoxSkill(SkillData data)
+    public class DestroyFirstBoxSkill : ISkill
     {
-        Data = data;
+        private float _defaultRadius;
 
-        _defaultRadius = Data.Radius;
-    }
+        public SkillData Data { get; }
 
-    public void Perform(Transform player)
-    {
-        for (int i = 0; i < 400; i++)
+        public DestroyFirstBoxSkill(SkillData data)
         {
-            Collider[] colliders = Physics.OverlapSphere(player.position, _defaultRadius);
+            Data = data;
 
-            foreach (Collider collider in colliders)
+            _defaultRadius = Data.Radius;
+        }
+
+        public void Perform(Transform player)
+        {
+            for (int i = 0; i < 400; i++)
             {
-                if (!collider.TryGetComponent(out Box boxToDestroy)) 
-                    continue;
-                
-                boxToDestroy.Destroy();
-                return;
-            }
+                Collider[] colliders = Physics.OverlapSphere(player.position, _defaultRadius);
 
-            _defaultRadius += 1;
+                foreach (Collider collider in colliders)
+                {
+                    if (!collider.TryGetComponent(out Box boxToDestroy)) 
+                        continue;
+                
+                    boxToDestroy.Destroy();
+                    return;
+                }
+
+                _defaultRadius += 1;
+            }
         }
     }
 }

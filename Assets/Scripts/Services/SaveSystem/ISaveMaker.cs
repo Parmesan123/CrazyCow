@@ -1,5 +1,8 @@
-﻿public interface ISaveMaker
+﻿namespace Services
 {
-    public void Save<T>(T toSave, string path);
-    public T Load<T>(string path);
+    public interface ISaveMaker
+    {
+        public void Save<T>(T toSave, string path);
+        public T Load<T>(string path);
+    }
 }

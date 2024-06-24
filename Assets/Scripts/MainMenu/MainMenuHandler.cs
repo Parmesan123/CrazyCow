@@ -1,37 +1,41 @@
-﻿using DG.Tweening;
+﻿using Saving;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Wallet;
 using Zenject;
 
-public class MainMenuHandler : MonoBehaviour
+namespace MainMenu
 {
-    private const int GAMEPLAY_SCENE_INDEX = 1;
-
-    private MenuWalletHandler _wallet;
-    private SaveHandler _saveHandler;
-
-    [Inject]
-    private void Construct(MenuWalletHandler walletHandler, SaveHandler saveHandler)
+    public class MainMenuHandler : MonoBehaviour
     {
-        _wallet = walletHandler;
+        private const int GAMEPLAY_SCENE_INDEX = 1;
 
-        _saveHandler = saveHandler;
-    }
+        private MenuWalletHandler _wallet;
+        private SaveHandler _saveHandler;
 
-    private void Start()
-    {
-        UpdateWallet();
-    }
+        [Inject]
+        private void Construct(MenuWalletHandler walletHandler, SaveHandler saveHandler)
+        {
+            _wallet = walletHandler;
 
-    private void UpdateWallet()
-    {
-        _wallet.UpdateCoins();
-    }
+            _saveHandler = saveHandler;
+        }
 
-    public void StartGame()
-    {
-        _saveHandler.Save();
+        private void Start()
+        {
+            UpdateWallet();
+        }
+
+        private void UpdateWallet()
+        {
+            _wallet.UpdateCoins();
+        }
+
+        public void StartGame()
+        {
+            _saveHandler.Save();
         
-        SceneManager.LoadScene(GAMEPLAY_SCENE_INDEX);
-    }
+            SceneManager.LoadScene(GAMEPLAY_SCENE_INDEX);
+        }
+    }   
 }

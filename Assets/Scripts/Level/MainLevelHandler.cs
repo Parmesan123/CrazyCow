@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using Entities;
 using Handlers;
-using UI;
 using UnityEngine;
+using Wallet;
 using Zenject;
 using Random = UnityEngine.Random;
 

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Entities;
 using Handlers;
-using UI;
 using UnityEngine;
+using Wallet;
 
 namespace Level
 {

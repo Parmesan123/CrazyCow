@@ -1,95 +1,99 @@
 ﻿using Entities;
 using Handlers;
 using Level;
-using UI;
+using Skills;
 using UnityEngine;
+using Wallet;
 using Zenject;
 
-public class LevelInstaller : MonoInstaller
+namespace Installers
 {
-    private const string PLAYER_PATH = "Prefabs/Player/Player";
-    
-    [SerializeField] private Transform _playerSpawnPosition;
-    [SerializeField] private Transform _cameraHandlerParent;
-    [SerializeField] private MainLevelHandler _mainLevel;
-    [SerializeField] private BonusLevelHandler _bonusLevel;
-    [SerializeField] private CoinSpawner _coinSpawner;
-    
-    public override void InstallBindings()
+    public class LevelInstaller : MonoInstaller
     {
-        BindCoinSpawner();
-        BindFactories();
-        BindPlayer();
-        BindSpawnHandler();
-        BindLevel();
-        BindSkillProvider();
-    }
+        private const string PLAYER_PATH = "Prefabs/Player/Player";
 
-    private void BindCoinSpawner()
-    {
-        Container
-            .Bind<CoinSpawner>()
-            .FromInstance(_coinSpawner)
-            .AsSingle();
-    }
-    
-    private void BindFactories()
-    {
-        Container
-            .BindInterfacesAndSelfTo<BoxFactory>()
-            .FromNew()
-            .AsSingle();
+        [SerializeField] private Transform _playerSpawnPosition;
+        [SerializeField] private Transform _cameraHandlerParent;
+        [SerializeField] private MainLevelHandler _mainLevel;
+        [SerializeField] private BonusLevelHandler _bonusLevel;
+        [SerializeField] private CoinSpawner _coinSpawner;
 
-        Container
-            .BindInterfacesAndSelfTo<VaseFactory>()
-            .FromNew()
-            .AsSingle();
+        public override void InstallBindings()
+        {
+            BindCoinSpawner();
+            BindFactories();
+            BindPlayer();
+            BindSpawnHandler();
+            BindLevel();
+            BindSkillProvider();
+        }
 
-        Container
-            .BindInterfacesAndSelfTo<PortalFactory>()
-            .FromNew()
-            .AsSingle();
+        private void BindCoinSpawner()
+        {
+            Container
+                .Bind<CoinSpawner>()
+                .FromInstance(_coinSpawner)
+                .AsSingle();
+        }
 
-        Container
-            .BindInterfacesAndSelfTo<PowerUpFactory>()
-            .FromNew()
-            .AsSingle();
-    }
-    
-    private void BindPlayer()
-    {
-        PlayerBehavior playerPrefab = Resources.Load<PlayerBehavior>(PLAYER_PATH);
-        PlayerBehavior playerInstance = Container.InstantiatePrefabForComponent<PlayerBehavior>(playerPrefab);
-        playerInstance.transform.position = _playerSpawnPosition.position;
+        private void BindFactories()
+        {
+            Container
+                .BindInterfacesAndSelfTo<BoxFactory>()
+                .FromNew()
+                .AsSingle();
 
-        Container
-            .Bind<PlayerBehavior>()
-            .FromInstance(playerInstance)
-            .AsSingle()
-            .NonLazy();
-    }
+            Container
+                .BindInterfacesAndSelfTo<VaseFactory>()
+                .FromNew()
+                .AsSingle();
 
-    private void BindSpawnHandler()
-    {
-        Container
-            .Bind<SpawnHandler>()
-            .FromNew()
-            .AsSingle();
-    }
+            Container
+                .BindInterfacesAndSelfTo<PortalFactory>()
+                .FromNew()
+                .AsSingle();
 
-    private void BindLevel()
-    {
-        Container
-            .Bind<BonusLevelHandler>()
-            .FromInstance(_bonusLevel)
-            .AsSingle();
-    }
+            Container
+                .BindInterfacesAndSelfTo<PowerUpFactory>()
+                .FromNew()
+                .AsSingle();
+        }
 
-    private void BindSkillProvider()
-    {
-        Container
-            .Bind<SkillProvider>()
-            .FromNew()
-            .AsSingle();
+        private void BindPlayer()
+        {
+            PlayerBehavior playerPrefab = Resources.Load<PlayerBehavior>(PLAYER_PATH);
+            PlayerBehavior playerInstance = Container.InstantiatePrefabForComponent<PlayerBehavior>(playerPrefab);
+            playerInstance.transform.position = _playerSpawnPosition.position;
+
+            Container
+                .Bind<PlayerBehavior>()
+                .FromInstance(playerInstance)
+                .AsSingle()
+                .NonLazy();
+        }
+
+        private void BindSpawnHandler()
+        {
+            Container
+                .Bind<SpawnHandler>()
+                .FromNew()
+                .AsSingle();
+        }
+
+        private void BindLevel()
+        {
+            Container
+                .Bind<BonusLevelHandler>()
+                .FromInstance(_bonusLevel)
+                .AsSingle();
+        }
+
+        private void BindSkillProvider()
+        {
+            Container
+                .Bind<SkillProvider>()
+                .FromNew()
+                .AsSingle();
+        }
     }
 }

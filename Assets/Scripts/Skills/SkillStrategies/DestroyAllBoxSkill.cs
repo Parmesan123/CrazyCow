@@ -1,25 +1,28 @@
 ﻿using Entities;
 using UnityEngine;
 
-public class DestroyAllBoxSkill : ISkill
+namespace Skills
 {
-    private readonly float _radius;
-
-    public SkillData Data { get; }
-
-    public DestroyAllBoxSkill(SkillData data)
+    public class DestroyAllBoxSkill : ISkill
     {
-        Data = data;
+        private readonly float _radius;
 
-        _radius = Data.Radius;
-    }
+        public SkillData Data { get; }
 
-    public void Perform(Transform player)
-    {
-        Collider[] colliders = Physics.OverlapSphere(player.position, _radius);
+        public DestroyAllBoxSkill(SkillData data)
+        {
+            Data = data;
 
-        foreach (Collider collider in colliders)
-            if (collider.TryGetComponent(out Box boxToDestroy))
-                boxToDestroy.Destroy();
-    }
+            _radius = Data.Radius;
+        }
+
+        public void Perform(Transform player)
+        {
+            Collider[] colliders = Physics.OverlapSphere(player.position, _radius);
+
+            foreach (Collider collider in colliders)
+                if (collider.TryGetComponent(out Box boxToDestroy))
+                    boxToDestroy.Destroy();
+        }
+    }    
 }

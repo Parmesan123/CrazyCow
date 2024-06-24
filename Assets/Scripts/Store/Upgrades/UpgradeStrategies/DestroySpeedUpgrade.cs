@@ -1,14 +1,19 @@
-﻿public class DestroySpeedUpgrade : IUpgradable
-{
-    private readonly float _value;
+﻿using Saving;
 
-    public DestroySpeedUpgrade(float value)
+namespace Store
+{
+    public class DestroySpeedUpgrade : IUpgradable
     {
-        _value = value;
-    }
+        private readonly float _value;
+
+        public DestroySpeedUpgrade(float value)
+        {
+            _value = value;
+        }
     
-    public void Upgrade(PlayerData data)
-    {
-        data.DestroyBonusTime += _value;
+        public void Upgrade(PlayerData data)
+        {
+            data.DestroyBonusTime += _value;
+        }
     }
 }

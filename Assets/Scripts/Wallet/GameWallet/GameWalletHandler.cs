@@ -1,6 +1,6 @@
-using UI;
+using Saving;
 
-namespace Handlers
+namespace Wallet
 {
 	public class GameWalletHandler : BaseWalletHandler
 	{

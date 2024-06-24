@@ -1,6 +1,7 @@
-﻿using InputSystem;
-
-public class EmptyInput : InputProfile
+﻿namespace InputSystem
 {
+    public class EmptyInput : InputProfile
+    {
     
+    }
 }
